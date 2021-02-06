@@ -1,7 +1,7 @@
 <div align="center"><a href="https://ghosteshop.com"><img src="http://ghosteshop.com/icon.png" height="64px"></a></div>
  
 # Ghost-Eshop-Alternative-3DS
-An Alternative eShop for Nintendo 3DS
+An Alternative eShop for Nintendo 3DS<br>This is a clone of [Universal-Updater](https://github.com/Universal-Team/Universal-Updater/)
 
 # Download
 ### Requirement
