@@ -5,7 +5,7 @@ An Alternative eShop for Nintendo 3DS<br>This is a clone of [Universal-Updater](
 
 # Download
 ### Requirement
--Latest version available [here](https://github.com/Ghost0159/Ghost-eShop-Homebrew/releases/latest/)
+-Latest version available [here](https://ghosteshop.com)
 
 -An hacked 3ds
 
