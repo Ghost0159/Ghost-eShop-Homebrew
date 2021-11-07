@@ -1,0 +1,295 @@
+Eden a 3D bannerért
+
+Tedd a 3DSX fájlokat a mappába
+
+Ha engedélyezve van, a 3DSX fájlok egy olyan mappába kerülnek, amelynek a neve megegyezik az utoljára beállított mappáéval
+
+%s törölve!
+
+%s sikertelen!
+
+Intézkedés szükséges!
+
+%s sikeres!
+
+Aktív téma
+
+Érvénytelen argumentum.\nKérjük, ellenőrizze az xml fájlban a megfelelő argumentumokat.
+
+Felfelé haladó
+
+Szerző
+
+Automatikus frissítési beállítások
+
+Automatikus frissítési beállítások...
+	
+Automatikus frissítés eShop
+	
+Ezzel a beállítással a Ghost eShop indításakor automatikusan frissül a legutóbb használt eShop.
+	
+Ghost eShop automatikus frissítése
+	
+Ha ez a beállítás be van kapcsolva, a Ghost eShop minden megnyitáskor ellenőrizni fogja a frissítéseket.
+	
+Elérhető letöltések
+	
+Szeretné elindítani ezt a címet?
+	
+Anonyku a YouTube-on való közvetítéshez
+	
+Cancel
+	
+Kategória
+	
+3DSX útvonal módosítása
+	
+Archívum elérési útvonalának módosítása
+	
+A cég elérési útvonalának módosítása
+	
+NDS elérési útvonal módosítása
+	
+Shortcut elérési útvonal módosítása
+	
+Az eShop frissítések ellenőrzése...
+	
+Ghost eShop frissítések ellenőrzése...
+	
+Citra & Nintendo az ikonokhoz
+
+Nyomja meg a \uE000 gombot a megerősítéshez, a \uE001 gombot a törléshez.
+	
+Kérjük, csatlakozzon a WiFi-hez.
+	
+Megerősítés
+	
+Konzol
+	
+- Minden fordító és közreműködő
+	
+Másolás... %s / %s (%.2f%%%)
+	
+Másolási hiba!
+	
+Szeretne létrehozni egy parancsikont?
+	
+Hitelek
+	
+Jelenlegi verzió: 
+	
+Jelenleg extrahál:
+	
+Egyéni betűtípus használata
+	
+Ha engedélyezve van, az 'sdmc:/3ds/GhosteShop/font.bcfnt' lesz használva a rendszer betűtípusa helyett, ha megtalálható.
+
+Hiba törlése!
+	
+Biztos, hogy törölni szeretné ezt a könyvtárat?
+
+Nem szükséges fájl törlése...
+
+Törlés...
+
+Lefelé haladó
+	
+Irány
+	
+Címtár beállítások
+	
+Címtárbeállítások...
+	
+Kész!
+	
+Letöltési hiba!
+	
+A letöltés sikertelen!
+	
+Sebesség: %lld KiB/s
+	
+Letöltés... %s / %s (%.2f%%%)
+	
+Kompatibilis betűtípus letöltése...
+	
+Spritesheet letöltése...
+	
+Spritesheet %i of %i letöltése...
+	
+GhosteShop.eshop letöltése...
+	
+Ghost eShop letöltése...
+	
+Letöltés eShop...
+	
+Adja meg a parancsikon leírását.
+	
+Adja meg, hogy mit szeretne keresni.
+	
+Adja meg a parancsikon fájlnevét (kiterjesztés nélkül).
+	
+Adja meg a parancsikon címét.
+	
+Adja meg az eShop URL-címét.
+	
+Bejegyzések
+	
+eShop BG használata
+	
+Ha engedélyezve van, az eShop által biztosított BG szín jelenik meg a felső képernyő egyszínű BG színe helyett.
+	
+Ez az eShop érvénytelen, és nem tölthető\nbetölthető a Ghost eShop segítségével.\nLehet, hogy ellenőrizze, hogy vannak-e szintaktikai hibák?
+	
+A Ghost eShop verziója\túl régi ahhoz, hogy ezt az eShopot használhassa.\nKérlek, frissítsd a legújabb verzióra.",
+	
+Ez az eShop elavult, és nem használható\na Ghost eShop ezen verziójával.\nKérje meg a készítőjét, hogy frissítse.
+	
+Szeretné végrehajtani ezt a bejegyzést?
+	
+Kilépés a Ghost eShopból
+	
+Kivonás... %s / %s (%.2f%%%)
+	
+Kivonási hiba!
+	
+Ennek a funkciónak mellékhatásai lehetnek, amíg a várólista fut.\nSzüksége van a folytatásra?
+	
+Régi metaadatok lekérése...
+	
+Ajánlott eShop lekérése...
+	
+fájl kinyomtatva.
+	
+Úgy tűnik, hogy a fájlnévben egy '/' szerepel, ami nem támogatott.\nKérlek, változtasd meg a fájlnév 'lapját'.
+	
+Fájl: %d / %d
+	
+Kivont fájlok.
+	
+Filter to:
+	
+A teljes hitelesítés megtalálható a GitHubon.
+	
+Grid
+	
+GUI beállítások
+	
+GUI beállítások...
+	
+Tartalmazza az eredményeket:
+	
+%s / %s (%.2f%%%)
+	
+Ghost eShop telepítése...
+	
+Érvénytelen eShop
+	
+Nyomja meg bármelyik billentyűt a folytatáshoz.
+	
+Nyelv
+	
+Utolsó frissítés
+
+Licenc
+	
+Lista
+	
+Pillanatkép betöltése...
+	
+Spritesheet %i betöltése %i-ből...
+	
+MediaType NAND
+	
+MédiaTípus SD
+	
+Mozgathiba!
+
+Nincs további tartalom elérhető
+	
+Nincs letöltés
+	
+Nincs licenc
+	
+Nincsenek elérhető képernyőképek
+	
+Még nem valósult meg
+	
+Másolás
+	
+Törlés
+	
+Letöltés
+	
+Kivonás
+	
+Telepítés
+	
+Mozgatás
+	
+Várakozás
+	
+Queue
+	
+Sorban állás
+	
+Lépés: %d / %d
+	
+Ajánlott eShop
+	
+Felülvizsgálat
+	
+Képernyőkép %d / %d
+	
+A képernyőképet nem sikerült betölteni.
+	
+A módosításhoz és a nagyításhoz nyomja meg a gombot
+	
+Keresés és szűrők
+	
+Téma kiválasztása
+	
+Válasszon ki egy könyvtárat
+	
+Válassza ki a nyelvet
+	
+Válassza ki az eShopot
+	
+Válasszon ki egy eShopot
+	
+Válogatás hozzáadása a várólistához
+	
+Beállítások
+	
+Úgy tűnik, mintha egy '/' lenne benne, ami nem támogatott.\nKérlek cseréld le a 'lap'-ot csak fájlnévre.
+
+Shortcut létrehozva!
+	
+Méret
+	
+Rendezés
+
+Rendezés
+	
+Nyomja meg a START gombot az aktuális mappa kiválasztásához
+	
+Tárolási információk
+	
+Szintaxis hiba!
+	
+Cím
+	
+Top stílus
+	
+Frissítés elérhető!
+	
+Frissítés kész! Kérjük, nyissa meg újra a Ghost eShopot.
+	
+Spritesheet frissítése...
+	
+Spritesheet %i frissítése a %i...
+	
+Az eShop frissítése...
+	
+Verzió
+
+A teljes kreditpontok és a változások listája megtalálható a wikiben.

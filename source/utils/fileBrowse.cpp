@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 */
 
 #include "fileBrowse.hpp"
+#include "files.hpp"
 #include "json.hpp"
 #include "structs.hpp"
 #include <3ds.h>
@@ -87,33 +88,30 @@ void getDirectoryContents(std::vector<DirEntry> &dirContents) {
 	getDirectoryContents(dirContents, {});
 }
 
-std::vector<std::string> getContents(const std::string &name, const std::vector<std::string> &extensionList) {
-	std::vector<std::string> dirContents;
-	DIR *pdir = opendir(name.c_str());
-	struct dirent *pent;
-
-	while ((pent = readdir(pdir)) != NULL) {
-		if (nameEndsWith(pent->d_name, extensionList)) dirContents.push_back(pent->d_name);
-	}
-
-	closedir(pdir);
-	return dirContents;
-}
-
 /*
-	Retourner les informations eShop.
-	const std::string &file : Const Référence au chemin du fichier.
-	const std::string &fieName : Const Référence au nom de fichier, sans chemin.
+	Return eShop info.
+
+	const std::string &file: Const Reference to the path of the file.
+	const std::string &fieName: Const Reference to the filename, without path.
 */
 EshopInfo GetInfo(const std::string &file, const std::string &fileName) {
-	EshopInfo Temp = { "", "", "", "", fileName, "", -1, -1, -1 }; // Titre, Auteur, URL, Fichier (pour vérifier s’il n’existe pas de barre oblique), FileName, Desc, Version, Révision, Entrées.
-	nlohmann::json JSON = nullptr;
+	EshopInfo Temp = { "", "", "", "", fileName, "", -1, -1, -1 }; // Title, Author, URL, File (to check if no slash exist), FileName, Desc, Version, Revision, entries.
 
-	FILE *temp = fopen(file.c_str(), "r");
-	JSON = nlohmann::json::parse(temp, nullptr, false);
-	fclose(temp);
+	if (fileName.length() > 4) {
+		if(*(u32*)(fileName.c_str() + fileName.length() - 4) == (1886349435 & ~(1 << 3))) return Temp;
+	}
 
-	if (!JSON.contains("storeInfo")) return Temp; // storeInfo n'existe pas.
+	nlohmann::json JSON;
+	FILE *temp = fopen(file.c_str(), "rt");
+	if(temp) {
+		JSON = nlohmann::json::parse(temp, nullptr, false);
+		fclose(temp);
+	}
+	if (JSON.is_discarded())
+		JSON = { };
+
+
+	if (!JSON.contains("storeInfo")) return Temp; // storeInfo does not exist.
 
 	if (JSON["storeInfo"].contains("title") && JSON["storeInfo"]["title"].is_string()) {
 		Temp.Title = JSON["storeInfo"]["title"];
@@ -149,21 +147,22 @@ EshopInfo GetInfo(const std::string &file, const std::string &fileName) {
 }
 
 /*
-	Renvoie le vecteur d’informations eShop.
-	const std::string &path : Const Référence au chemin, où vérifier.
+	Return eShop info vector.
+
+	const std::string &path: Const Reference to the path, where to check.
 */
 std::vector<EshopInfo> GetEshopInfo(const std::string &path) {
 	std::vector<EshopInfo> info;
 	std::vector<DirEntry> dirContents;
 
-	if (access(path.c_str(), F_OK) != 0) return {}; // Le dossier n’existe pas.
+	if (access(path.c_str(), F_OK) != 0) return {}; // Folder does not exist.
 
 	chdir(path.c_str());
-	getDirectoryContents(dirContents, { "eshop" });
+	getDirectoryContents(dirContents, { "unistore" });
 
 	for(uint i = 0; i < dirContents.size(); i++) {
-		/* Assurez-vous de SEULEMENT pousser .eshop, et pas de dossiers. Évite les plantages dans ce cas aussi. */
-		if ((path + dirContents[i].name).find(".eshop") != std::string::npos) {
+		/* Make sure to ONLY push .eshop, and no folders. Avoids crashes in that case too. */
+		if ((path + dirContents[i].name).find(".unistore") != std::string::npos) {
 			info.push_back( GetInfo(path + dirContents[i].name, dirContents[i].name) );
 		}
 	}
@@ -175,25 +174,30 @@ std::vector<EshopInfo> GetEshopInfo(const std::string &path) {
 u32 copyBuf[copyBufSize];
 
 /*
-	Copiez un répertoire.
-	DirEntry *entry : pointeur vers un DirEntry.
-	const char *destinationPath : pointeur vers le chemin de destination.
-	const char *sourcePath : pointeur vers le chemin source.
+	Copy a directory.
+
+	DirEntry &entry: A DirEntry reference.
+	const char *destinationPath: Pointer to the destination path.
+	const char *sourcePath: Pointer to the source path.
 */
-void dirCopy(DirEntry *entry, const char *destinationPath, const char *sourcePath) {
+void dirCopy(const DirEntry &entry, const char *destinationPath, const char *sourcePath) {
 	std::vector<DirEntry> dirContents;
 	dirContents.clear();
-	if (entry->isDirectory)	chdir((sourcePath + ("/" + entry->name)).c_str());
+	if (entry.isDirectory)
+		chdir((sourcePath + ("/" + entry.name)).c_str());
 	getDirectoryContents(dirContents);
-	if (((int)dirContents.size()) == 1)	mkdir((destinationPath + ("/" + entry->name)).c_str(), 0777);
-	if (((int)dirContents.size()) != 1)	fcopy((sourcePath + ("/" + entry->name)).c_str(), (destinationPath + ("/" + entry->name)).c_str());
+	if (((int)dirContents.size()) == 1)
+		mkdir((destinationPath + ("/" + entry.name)).c_str(), 0777);
+	if (((int)dirContents.size()) != 1)
+		fcopy((sourcePath + ("/" + entry.name)).c_str(), (destinationPath + ("/" + entry.name)).c_str());
 }
 
 u32 copyOffset = 0, copySize = 0;
 /*
-	L’opération de copie.
-	const char *destinationPath : pointeur vers le chemin de destination.
-	const char *sourcePath : pointeur vers le chemin source.
+	The copy operation.
+
+	const char *destinationPath: Pointer to the destination path.
+	const char *sourcePath: Pointer to the source path.
 */
 int fcopy(const char *sourcePath, const char *destinationPath) {
 	copyOffset = 0, copySize = 0;
@@ -203,17 +207,15 @@ int fcopy(const char *sourcePath, const char *destinationPath) {
 	if (isDir != NULL) {
 		closedir(isDir);
 
-		/* Le chemin source est un répertoire. */
+		/* Source path is a directory. */
 		chdir(sourcePath);
 		std::vector<DirEntry> dirContents;
 		getDirectoryContents(dirContents);
-		DirEntry *entry = &dirContents.at(1);
 		mkdir(destinationPath, 0777);
 
 		for(int i = 1; i < ((int)dirContents.size()); i++) {
 			chdir(sourcePath);
-			entry = &dirContents.at(i);
-			dirCopy(entry, destinationPath, sourcePath);
+			dirCopy(dirContents[i], destinationPath, sourcePath);
 		}
 
 		chdir(destinationPath);
@@ -223,59 +225,48 @@ int fcopy(const char *sourcePath, const char *destinationPath) {
 	} else {
 		closedir(isDir);
 
-		/* Le chemin source est un fichier. */
+		/* Source path is a file. */
 		FILE *sourceFile = fopen(sourcePath, "rb");
 		copySize = 0, copyOffset = 0;
 
 		if (sourceFile) {
 			fseek(sourceFile, 0, SEEK_END);
-			copySize = ftell(sourceFile); // Obtenir la taille du fichier source.
+			copySize = ftell(sourceFile); // Get source file's size.
 			fseek(sourceFile, 0, SEEK_SET);
-
 		} else {
+			return -1;
+		}
+
+		if(getAvailableSpace() < copySize) {
 			fclose(sourceFile);
 			return -1;
 		}
 
 		FILE *destinationFile = fopen(destinationPath, "wb");
-		//if (destinationFile) {
-			fseek(destinationFile, 0, SEEK_SET);
-		/*} else {
+		if (!destinationFile) {
 			fclose(sourceFile);
-			fclose(destinationFile);
 			return -1;
-		}*/
+		}
 
-		int numr;
 		while(1) {
-			scanKeys();
-			if (keysHeld() & KEY_B) {
-				/* Annuler la copie. */
+			/* Copy file to destination path. */
+			int numr = fread(copyBuf, sizeof(u32), copyBufSize, sourceFile);
+			int written = fwrite(copyBuf, sizeof(u32), numr, destinationFile);
+
+			if(written != numr) {
 				fclose(sourceFile);
 				fclose(destinationFile);
+
 				return -1;
-				break;
 			}
 
-			printf("\x1b[16;0H");
-			printf("Progress:\n");
-			printf("%i/%i Bytes					   ", (int)copyOffset, (int)copySize);
-
-			/* Copier le fichier vers le chemin de destination. */
-			numr = fread(copyBuf, 2, copyBufSize, sourceFile);
-			fwrite(copyBuf, 2, numr, destinationFile);
-			copyOffset += copyBufSize;
+			copyOffset += copyBufSize * sizeof(u32);
 
 			if (copyOffset > copySize) {
 				fclose(sourceFile);
 				fclose(destinationFile);
 
-				printf("\x1b[17;0H");
-				printf("%i/%i Bytes					   ", (int)copyOffset, (int)copySize);
-				for(int i = 0; i < 30; i++) gspWaitForVBlank();
-
 				return 1;
-				break;
 			}
 		}
 

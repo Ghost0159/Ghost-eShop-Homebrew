@@ -1,0 +1,295 @@
+Eden pour la bannière 3D
+
+Mettre les fichiers 3DSX dans un dossier
+
+S'ils sont activés, les fichiers 3DSX seront placés dans un dossier portant le même nom que le dernier dossier défini.
+
+%s canceled !
+
+%s failed !
+
+Action requise !
+
+%s a réussi !
+
+Thème actif
+
+Invalid argument.\NVeuillez vérifier le fichier xml pour les arguments appropriés.
+
+Ascendant
+
+Auteur
+
+Paramètres de mise à jour automatique
+
+Mise à jour automatique des paramètres...
+	
+Mise à jour automatique de la boutique en ligne
+	
+Avec ceci, la dernière boutique en ligne utilisée sera mise à jour automatiquement lors du lancement de Ghost eShop.
+	
+Mise à jour automatique de Ghost eShop
+	
+Lorsque cette option est activée, Ghost eShop vérifiera les mises à jour à chaque fois qu'il est ouvert.
+	
+Téléchargements disponibles
+	
+Vous souhaitez démarrer ce titre ?
+	
+Anonyku pour diffusion sur YouTube
+	
+Annuler
+	
+Catégorie
+	
+Modifier le chemin 3DSX
+	
+Modifier le chemin des archives
+	
+Modifier le chemin de l'entreprise
+	
+Modifier le chemin NDS
+	
+Modifier le chemin des raccourcis
+	
+Vérification des mises à jour de l'eShop...
+	
+Vérification des mises à jour de l'eShop Ghost...
+	
+Citra & Nintendo pour les icônes
+
+Appuyez sur \uE000 pour confirmer, \uE001 pour annuler.
+	
+Veuillez vous connecter au WiFi.
+	
+Confirmez
+	
+Console
+	
+- Tous les traducteurs et contributeurs
+	
+Copie... %s / %s (%.2f%%)
+	
+Erreur de copie !
+	
+Voulez-vous créer un raccourci ?
+	
+Crédits
+	
+Version actuelle : 
+	
+Actuellement en cours d'extraction :
+	
+Utiliser une police personnalisée
+	
+Si cette option est activée, 'sdmc:/3ds/GhosteShop/font.bcfnt' sera utilisée à la place de la police système, si elle est trouvée.
+
+Erreur de suppression !
+	
+Êtes-vous sûr de vouloir supprimer ce répertoire ?
+
+Suppression d'un fichier inutile...
+
+Suppression...
+
+Descendant
+	
+Direction
+	
+Paramètres du répertoire
+	
+Paramètres du répertoire...
+	
+Terminé !
+	
+Erreur de téléchargement !
+	
+Échec du téléchargement !
+	
+Vitesse : %lld KiB/s
+	
+Téléchargement de... %s / %s (%.2f%%)
+	
+Téléchargement de la police compatible...
+	
+Téléchargement du Spritesheet...
+	
+Téléchargement du Spritesheet %i de %i...
+	
+Téléchargement de GhosteShop.eshop...
+	
+Téléchargement de Ghoste eShop...
+	
+Téléchargement de la boutique en ligne...
+	
+Entrez la description du raccourci.
+	
+Entrez ce que vous souhaitez rechercher.
+	
+Saisissez le nom du fichier du raccourci (sans extension).
+	
+Saisissez le titre du raccourci.
+	
+Entrez l'URL de la boutique en ligne.
+	
+Entrées
+	
+Utiliser le BG de la eShop
+	
+Lorsque cette option est activée, le fond d'écran fourni par la boutique en ligne s'affiche à la place du fond d'écran solide de l'écran supérieur.
+	
+Cette boutique électronique n'est pas valide et ne peut pas être chargée avec Ghost eShop.\NVérifiez peut-être s'il y a des erreurs de syntaxe ?
+	
+Votre version de la boutique électronique Ghost est trop ancienne pour utiliser cette boutique électronique. Veuillez mettre à jour votre version,
+	
+Cette eShop est périmée et ne peut pas être utilisée avec cette version de Ghost eShop.\nVeuillez demander au créateur de la mettre à jour.
+	
+Souhaitez-vous exécuter cette entrée ?
+	
+Quitter Ghost eShop
+	
+Extraction... %s / %s (%.2f%%)
+	
+Erreur d'extraction !
+	
+Cette fonctionnalité peut avoir des effets secondaires pendant l'exécution de la file d'attente. Êtes-vous sûr de vouloir continuer ?
+	
+Récupération des anciennes métadonnées...
+	
+Récupération de l'eShop recommandé...
+	
+Fichier extrait.
+	
+Il semble qu'un '/' soit inclus dans le nom du fichier, ce qui n'est pas pris en charge. Veuillez changer la 'feuille' du nom de fichier.
+	
+Fichier : %d / %d
+	
+fichiers extraits.
+	
+Filtrer vers :
+	
+Les crédits complets sont disponibles sur GitHub.
+	
+Grille
+	
+Paramètres de l'interface graphique
+	
+Paramètres de l'interface graphique...
+	
+Inclure dans les résultats :
+	
+Installation de... %s / %s (%.2f%%)
+	
+Installation de la boutique virtuelle Ghost...
+	
+eShop non valide
+	
+Appuyez sur n'importe quelle touche pour continuer.
+	
+Langue
+	
+Dernière mise à jour
+
+Licence
+	
+Liste
+	
+Chargement de la capture d'écran...
+	
+Chargement du Spritesheet %i de %i...
+	
+MediaType NAND
+	
+MediaType SD
+	
+Erreur de déplacement !
+
+Aucun contenu supplémentaire disponible
+	
+Aucun téléchargement disponible
+	
+Pas de licence
+	
+Pas de captures d'écran disponibles
+	
+Pas encore implémenté
+	
+Copie de
+	
+Suppression
+	
+Télécharger
+	
+Extraction
+	
+Installer
+	
+Déplacer
+	
+Attendre
+	
+File d'attente
+	
+Position de la file d'attente
+	
+Étape : %d / %d
+	
+eShop recommandé
+	
+Révision
+	
+Capture d'écran %d / %d
+	
+La capture d'écran n'a pas pu être chargée.
+	
+Appuyez pour changer et pour zoomer
+	
+Recherche et filtres
+	
+Sélectionnez un thème
+	
+Sélectionnez un répertoire
+	
+Choisir la langue
+	
+Sélectionner une eShop
+	
+Sélectionnez une boutique en ligne
+	
+Ajouter la sélection à la file d'attente
+	
+Paramètres
+	
+Il semble qu'un '/' soit inclus, ce qui n'est pas pris en charge. Veuillez remplacer 'feuille' par un nom de fichier uniquement.
+
+Raccourci créé !
+	
+Taille
+	
+Trier par
+
+Triage
+	
+Appuyez sur START pour sélectionner le dossier actuel
+	
+Info sur le magasin
+	
+Erreur de syntaxe !
+	
+Titre
+	
+Top Style
+	
+Mise à jour disponible !
+	
+Mise à jour effectuée ! Veuillez rouvrir l'eShop de Ghost.
+	
+Mise à jour du Spritesheet...
+	
+Mise à jour du Spritesheet %i de %i...
+	
+Mise à jour de la boutique en ligne...
+	
+Version
+
+Les crédits complets et le journal des modifications se trouvent sur le wiki.

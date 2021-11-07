@@ -1,0 +1,24 @@
+{
+	"Default": {
+		"BGColor": "#C67C00",
+		"BarColor": "#DF6500",
+		"BarOutline": "#B97E05",
+		"BoxInside": "#C05A00",
+		"BoxSelected": "#FF5200",
+		"BoxUnselected": "#000000",
+		"Description": "Ghost eShop's default Theme.\n\nBy: Ghost eShop Team",
+		"DownListPrev": "#9C6000",
+		"EntryBar": "#DF6500",
+		"EntryOutline": "#BF4500",
+		"MarkSelected": "#D09500",
+		"MarkUnselected": "#9A5100",
+		"ProgressbarIn": "#FFD200",
+		"ProgressbarOut": "#FF7800",
+		"SearchBar": "#FFA000",
+		"SearchBarOutline": "#191E35",
+		"SideBarIconColor": "#FFCCEF",
+		"SideBarSelected": "#FF829B",
+		"SideBarUnselected": "#DF6500",
+		"TextColor": "#FFFFFF"
+	}
+}

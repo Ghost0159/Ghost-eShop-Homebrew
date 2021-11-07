@@ -1,0 +1,295 @@
+Eden para el banner 3D
+
+Poner los archivos 3DSX en una carpeta
+
+Si están activados, los archivos 3DSX se pondrán en una carpeta con el mismo nombre que la última carpeta establecida
+
+¡%s cancelado!
+
+¡%s ha fallado!
+
+¡Acción requerida!
+
+%s ¡con éxito!
+
+Tema activo
+
+Argumento inválido.\NPor favor, revise el archivo xml para ver los argumentos adecuados.
+
+Ascendente
+
+Autor
+
+Ajustes de auto-actualización
+
+Ajustes de auto-actualización...
+	
+Auto-actualización de la eShop
+	
+Con esto, la última eShop utilizada se actualizará automáticamente al iniciar Ghost eShop.
+	
+Actualización automática de Ghost eShop
+	
+Si esta opción está activada, Ghost eShop buscará actualizaciones cada vez que se abra.
+	
+Descargas disponibles
+	
+¿Quieres arrancar este título?
+	
+Anonyku para transmitir en YouTube
+	
+Cancelar
+	
+Categoría
+	
+Cambiar la ruta de 3DSX
+	
+Cambiar la ruta del archivo
+	
+Cambiar la ruta de la firma
+	
+Cambiar la ruta de NDS
+	
+Cambiar la ruta de acceso directo
+	
+Comprobación de las actualizaciones de la eShop...
+	
+Comprobación de las actualizaciones de Ghost eShop...
+	
+Citra y Nintendo para los iconos
+
+Pulsa \uE000 para confirmar, \uE001 para cancelar.
+	
+Por favor, conéctate al WiFi.
+	
+Confirmar
+	
+Consola
+	
+- Todos los traductores y colaboradores
+	
+Copiando... %s / %s (%.2f%%)
+	
+¡Error de copia!
+	
+¿Desea crear un acceso directo?
+	
+Créditos
+	
+Versión actual: 
+	
+Actualmente se está extrayendo:
+	
+Usar fuente personalizada
+	
+Si se activa, se utilizará 'sdmc:/3ds/GhosteShop/font.bcfnt' en lugar de la fuente del sistema, si se encuentra.
+
+¡Error de borrado!
+	
+¿Está seguro de que desea eliminar este directorio?
+
+Eliminando un archivo innecesario...
+
+Borrando...
+
+Descendiendo
+	
+Dirección
+	
+Configuración del directorio
+	
+Configuración del directorio...
+	
+¡Hecho!
+	
+¡Error de descarga!
+	
+¡Descarga fallida!
+	
+Velocidad: %lld KiB/s
+	
+Descargando... %s / %s (%.2f%%)
+	
+Descargando fuente compatible...
+	
+Descargando Spritesheet...
+	
+Descargando Spritesheet %i de %i...
+	
+Descargando GhosteShop.eshop...
+	
+Descargando Ghost eShop...
+	
+Descargando eShop...
+	
+Introduce la descripción del acceso directo.
+	
+Introduce lo que quieres buscar.
+	
+Introduce el nombre del archivo del acceso directo (sin extensión).
+	
+Introduce el título del acceso directo.
+	
+Introduce la URL de la eShop.
+	
+Entradas
+	
+Usar BG de la eShop
+	
+Cuando se activa, el BG proporcionado por la eShop se mostrará en lugar del color BG sólido para la pantalla superior.
+	
+Esta eShop no es válida y no puede cargarse con Ghost eShop.
+	
+Su versión de Ghost eShop es demasiado antigua para utilizar esta eShop.\NPor favor, actualice a la última versión",
+	
+Esta eShop está obsoleta y no puede utilizarse con esta versión de Ghost eShop.
+	
+¿Desea ejecutar esta entrada?
+	
+Salir de Ghost eShop
+	
+Extrayendo... %s / %s (%.2f%%)
+	
+¡Error de extracción!
+	
+Esta función puede tener efectos secundarios mientras se ejecuta la cola.\N¿Seguro que quieres continuar?
+	
+Recuperando metadatos antiguos...
+	
+Obteniendo la eShop recomendada...
+	
+archivo extraído.
+	
+Parece que se ha incluido un '/' en el nombre del archivo, lo cual no es compatible.\nPor favor, cambie la 'hoja' del nombre del archivo
+	
+Archivo: %d / %d
+	
+archivos extraídos.
+	
+Filtrar a:
+	
+Los créditos completos se pueden encontrar en GitHub
+	
+Rejilla
+	
+Ajustes de la GUI
+	
+Ajustes de la GUI...
+	
+Incluir en los resultados:
+	
+Instalando... %s / %s (%.2f%%)
+	
+Instalando Ghost eShop...
+	
+eShop inválido
+	
+Pulsa cualquier tecla para continuar.
+	
+Idioma
+	
+Última actualización
+
+Licencia
+	
+Lista
+	
+Cargando la captura de pantalla...
+	
+Cargando Spritesheet %i de %i...
+	
+MediaType NAND
+	
+MediaType SD
+	
+¡Error de movimiento!
+
+No hay contenido adicional disponible
+	
+No hay descargas disponibles
+	
+No hay licencia
+	
+No hay capturas de pantalla disponibles
+	
+No se ha implementado todavía
+	
+Copia de
+	
+Eliminación de
+	
+Descargando
+	
+Extrayendo
+	
+Instalar
+	
+Moviendo
+	
+Esperando
+	
+Cola de espera
+	
+Posición de la cola
+	
+Paso: %d / %d
+	
+Tienda electrónica recomendada
+	
+Revisión
+	
+Captura de pantalla %d / %d
+	
+No se ha podido cargar la captura de pantalla.
+	
+Pulse para cambiar y para ampliar
+	
+Búsqueda y filtros
+	
+Seleccione un tema
+	
+Seleccione un directorio
+	
+Elige el idioma
+	
+Seleccione una eShop
+	
+Seleccione una eShop
+	
+Añadir la selección a la cola
+	
+Configuración
+	
+Parece que se incluye un '/', que no es compatible.\NPor favor, cambie 'hoja' por nombre de archivo solamente.
+
+¡Acceso directo creado!
+	
+Tamaño
+	
+Ordenar por
+
+Ordenar
+	
+Pulse START para seleccionar la carpeta actual
+	
+Almacenar información
+	
+Error de sintaxis
+	
+Título
+	
+Estilo superior
+	
+¡Actualización disponible!
+	
+¡Actualización realizada! Vuelve a abrir la eShop de Ghost.
+	
+Actualizando Spritesheet...
+	
+Actualizando Spritesheet %i de %i...
+	
+Actualizando la eShop...
+	
+Versión
+
+Los créditos completos y el registro de cambios se pueden encontrar en la wiki

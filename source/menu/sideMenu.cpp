@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 */
 
 #include "animation.hpp"
+#include "common.hpp"
 #include "storeUtils.hpp"
 #include "structs.hpp"
 
@@ -39,36 +40,39 @@ static const std::vector<Structs::ButtonPos> sidePos = {
 };
 
 /*
-	Dessinez la partie Menu latéral.
-	int currentMenu : Le Mode Store / Menu courant.
+	Draw the Side Menu part.
+
+	int currentMenu: The current store Mode / Menu.
 */
 void StoreUtils::DrawSideMenu(int currentMenu) {
 	for (int i = 0; i < 6; i++) {
 		if (i == currentMenu) {
-			Gui::Draw_Rect(sidePos[i].x, sidePos[i].y, sidePos[i].w, sidePos[i].h, SIDEBAR_SELECTED_COLOR);
+			Gui::Draw_Rect(sidePos[i].x, sidePos[i].y, sidePos[i].w, sidePos[i].h, UIThemes->SideBarSelected());
 
 		} else {
-			Gui::Draw_Rect(sidePos[i].x, sidePos[i].y, sidePos[i].w, sidePos[i].h, SIDEBAR_UNSELECTED_COLOR);
+			Gui::Draw_Rect(sidePos[i].x, sidePos[i].y, sidePos[i].w, sidePos[i].h, UIThemes->SideBarUnselected());
 		}
 	}
 
-	GFX::DrawSprite(sprites_info_idx, sidePos[0].x, sidePos[0].y);
-	GFX::DrawSprite(sprites_download_idx, sidePos[1].x, sidePos[1].y);
+	GFX::DrawIcon(sprites_info_idx, sidePos[0].x, sidePos[0].y);
+	GFX::DrawIcon(sprites_download_idx, sidePos[1].x, sidePos[1].y);
 	Animation::DrawQueue(sidePos[2].x, sidePos[2].y);
-	GFX::DrawSprite(sprites_search_idx, sidePos[3].x, sidePos[3].y);
-	GFX::DrawSprite(sprites_sort_idx, sidePos[4].x, sidePos[4].y);
-	GFX::DrawSprite(sprites_settings_idx, sidePos[5].x, sidePos[5].y);
+	GFX::DrawIcon(sprites_search_idx, sidePos[3].x, sidePos[3].y);
+	GFX::DrawIcon(sprites_sort_idx, sidePos[4].x, sidePos[4].y);
+	GFX::DrawIcon(sprites_settings_idx, sidePos[5].x, sidePos[5].y);
 
-	Gui::Draw_Rect(40, 0, 1, 240, BAR_OUTL_COLOR);
+	Gui::Draw_Rect(40, 0, 1, 240, UIThemes->BarOutline());
 }
 
 /*
-	Poignée de menu latéral.
-	Ici vous pouvez..
-	- Basculer entre les menus à travers la barre latérale.
-	int tMenu : Référence au Mode Store / Menu.
-	bool &fetch : Référence de la variable download fetch.. donc nous savons, si nous avons besoin de récupérer les entrées de téléchargement.
-	int &lastMenu : Référence au dernier menu.
+	Side Menu Handle.
+	Here you can..
+
+	- Switch between the Menus through the sidebar.
+
+	int &currentMenu: Reference to the store Mode / Menu.
+	bool &fetch: Reference of the download fetch variable.. so we know, if we need to fetch the download entries.
+	int &lastMenu: Reference to the last menu.
 */
 void StoreUtils::SideMenuHandle(int &currentMenu, bool &fetch, int &lastMenu) {
 	Animation::QueueAnimHandle();
@@ -77,7 +81,7 @@ void StoreUtils::SideMenuHandle(int &currentMenu, bool &fetch, int &lastMenu) {
 		for (int i = 0; i < 6; i++) {
 			if (touching(touch, sidePos[i])) {
 				lastMenu = currentMenu;
-				if (i == 1) fetch = true; // Récupérez la liste des téléchargements, si 1.
+				if (i == 1) fetch = true; // Fetch download list, if 1.
 				currentMenu = i;
 				break;
 			}
@@ -87,7 +91,7 @@ void StoreUtils::SideMenuHandle(int &currentMenu, bool &fetch, int &lastMenu) {
 	if (hRepeat & KEY_R) {
 		if (currentMenu < 5) {
 			lastMenu = currentMenu;
-			if (currentMenu + 1 == 1) fetch = true; // Récupérez la liste des téléchargements, si 1.
+			if (currentMenu + 1 == 1) fetch = true; // Fetch download list, if 1.
 			currentMenu++;
 		}
 	}
@@ -95,7 +99,7 @@ void StoreUtils::SideMenuHandle(int &currentMenu, bool &fetch, int &lastMenu) {
 	if (hRepeat & KEY_L) {
 		if (currentMenu > 0) {
 			lastMenu = currentMenu;
-			if (currentMenu - 1 == 1) fetch = true; // Récupérez la liste des téléchargements, si 1.
+			if (currentMenu - 1 == 1) fetch = true; // Fetch download list, if 1.
 			currentMenu--;
 		}
 	}

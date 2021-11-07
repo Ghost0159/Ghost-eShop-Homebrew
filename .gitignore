@@ -1,3 +1,4 @@
+
 *.bin
 *.d
 *.o
@@ -5,7 +6,17 @@
 *.elf
 *.cia
 *.3dsx
-*/build
-build/sprites.h
+*build
 *.map
 *.lst
+.vscode
+*.DS_Store
+romfs/gfx/*.t3x
+include/version.hpp
+cppcheck.log
+
+bannertool*
+makerom*
+*.pfs0
+*.nso
+*.nacp

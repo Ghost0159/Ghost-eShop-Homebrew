@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -26,26 +26,29 @@
 
 #include "common.hpp"
 #include "stringutils.hpp"
+#include <stdarg.h>
 
 /*
-	Pour la conversion en minuscules.
-	const std::string &str : La chaîne qui doit être convertie.
+	To lowercase conversion.
+
+	const std::string &str: The string which should be converted.
 */
 std::string StringUtils::lower_case(const std::string &str) {
 	std::string lower;
-	transform(str.begin(), str.end(), std::back_inserter(lower), tolower); // Transformez la chaîne en minuscules.
+	transform(str.begin(), str.end(), std::back_inserter(lower), tolower); // Transform the string to lowercase.
 
 	return lower;
 }
 
 /*
-	Récupère les chaînes d’un vecteur et les retourne comme une seule chaîne.
-	std::vector<std::string> fetch : Le vecteur.
+	Fetch strings from a vector and return it as a single string.
+
+	std::vector<std::string> fetch: The vector.
 */
 std::string StringUtils::FetchStringsFromVector(const std::vector<std::string> &fetch) {
 	std::string temp;
 
-	if (fetch.size() < 1) return ""; // Plus petit que 1 --> Retour vide.
+	if (fetch.size() < 1) return ""; // Smaller than 1 --> Return empty.
 
 	for (int i = 0; i < (int)fetch.size(); i++) {
 		if (i != (int)fetch.size() - 1) {
@@ -60,22 +63,23 @@ std::string StringUtils::FetchStringsFromVector(const std::vector<std::string> &
 }
 
 /*
-	Adapté de l’analyse d’octets de GM9i.
+	adapted from GM9i's byte parsing.
 */
-std::string StringUtils::formatBytes(int bytes) {
+std::string StringUtils::formatBytes(u64 bytes) {
 	char out[32];
 
-	if (bytes == 1)							snprintf(out, sizeof(out), "%d Byte", bytes);
-	else if (bytes < 1024)					snprintf(out, sizeof(out), "%d Bytes", bytes);
-	else if (bytes < 1024 * 1024)			snprintf(out, sizeof(out), "%.1f KB", (float)bytes / 1024);
-	else if (bytes < 1024 * 1024 * 1024)	snprintf(out, sizeof(out), "%.1f MB", (float)bytes / 1024 / 1024);
-	else									snprintf(out, sizeof(out), "%.1f GB", (float)bytes / 1024 / 1024 / 1024);
+	if (bytes == 1)					snprintf(out, sizeof(out), "%lld Byte", bytes);
+	else if (bytes < 1ull << 10)	snprintf(out, sizeof(out), "%lld Bytes", bytes);
+	else if (bytes < 1ull << 20)	snprintf(out, sizeof(out), "%.1f KiB", (float)bytes / 1024);
+	else if (bytes < 1ull << 30)	snprintf(out, sizeof(out), "%.1f MiB", (float)bytes / 1024 / 1024);
+	else if (bytes < 1ull << 40)	snprintf(out, sizeof(out), "%.1f GiB", (float)bytes / 1024 / 1024 / 1024);
+	else							snprintf(out, sizeof(out), "%.1f TiB", (float)bytes / 1024 / 1024 / 1024 / 1024);
 
 	return out;
 }
 
 /*
-	Renvoie un vecteur de toutes les marques.
+	Return a vector of all marks.
 */
 std::vector<std::string> StringUtils::GetMarks(int marks) {
 	std::vector<std::string> out;
@@ -90,7 +94,7 @@ std::vector<std::string> StringUtils::GetMarks(int marks) {
 }
 
 /*
-	Renvoie une chaîne de toutes les marques.
+	Return a string of all marks.
 */
 std::string StringUtils::GetMarkString(int marks) {
 	std::string out;
@@ -102,4 +106,15 @@ std::string StringUtils::GetMarkString(int marks) {
 	if (marks & favoriteMarks::SPADE)	out += "♠";
 
 	return out;
+}
+
+std::string StringUtils::format(const char *fmt_str, ...) {
+	va_list ap;
+	char *fp = nullptr;
+	va_start(ap, fmt_str);
+	vasprintf(&fp, fmt_str, ap);
+	va_end(ap);
+
+	std::unique_ptr<char, decltype(free) *> formatted(fp, free);
+	return std::string(formatted.get());
 }

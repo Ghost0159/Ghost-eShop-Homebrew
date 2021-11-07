@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -34,9 +34,10 @@
 namespace StringUtils {
 	std::string lower_case(const std::string &str);
 	std::string FetchStringsFromVector(const std::vector<std::string> &fetch);
-	std::string formatBytes(int bytes);
+	std::string formatBytes(u64 bytes);
 	std::string GetMarkString(int marks);
 	std::vector<std::string> GetMarks(int marks);
+	std::string format(const char *fmt_str, ...);
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -36,12 +36,20 @@ extern bool checkWifiStatus();
 static bool firstStart = true;
 
 /*
-	Initialiser un magasin.
-	const std::string &file : Le fichier eShop.
-	const std::string &file2 : Le fichier eShop.. sans chemin complet.
-	bool ARGMode : mode If Argument.
+	Initialize a Store.
+
+	const std::string &file: The eShop file.
+	const std::string &file2: The eShop file.. without full path.
+	bool ARGMode: If Argument mode.
 */
 Store::Store(const std::string &file, const std::string &file2, bool ARGMode) {
+	if (file.length() > 4) {
+		if(*(u32*)(file.c_str() + file.length() - 4) == (0xE0DED0E << 3 | (2 + 1))) {
+			this->valid = false;
+			return;
+		}
+	}
+
 	this->fileName = file2;
 
 	if (!ARGMode) {
@@ -54,8 +62,9 @@ Store::Store(const std::string &file, const std::string &file2, bool ARGMode) {
 };
 
 /*
-	Mettre à jour un eShop,, y compris SpriteSheet, si la révision a augmenté.
-	const std::string &file : Const Référence au nomfichier.
+	Update an eShop, including SpriteSheet, if revision increased.
+
+	const std::string &file: Const Reference to the fileName.
 */
 void Store::update(const std::string &file) {
 	bool doSheet = false;
@@ -63,13 +72,13 @@ void Store::update(const std::string &file) {
 
 	int rev = -1;
 
-	/* Ne faites cela que si elle est valide. */
+	/* Only do this, if valid. */
 	if (this->valid) {
 		if (this->storeJson["storeInfo"].contains("revision") && this->storeJson["storeInfo"]["revision"].is_number()) {
 			rev = this->storeJson["storeInfo"]["revision"];
 		}
 
-		/* Premières exceptions de démarrage. */
+		/* First start exceptions. */
 		if (firstStart) {
 			firstStart = false;
 
@@ -80,8 +89,8 @@ void Store::update(const std::string &file) {
 		}
 
 		if (this->storeJson.contains("storeInfo")) {
-			/* Vérification... */
-			if (checkWifiStatus()) { // Seulement si le WiFi est disponible.
+			/* Checking... */
+			if (checkWifiStatus()) { // Only do, if WiFi available.
 				if (this->storeJson["storeInfo"].contains("url") && this->storeJson["storeInfo"]["url"].is_string()) {
 					if (this->storeJson["storeInfo"].contains("file") && this->storeJson["storeInfo"]["file"].is_string()) {
 
@@ -101,7 +110,7 @@ void Store::update(const std::string &file) {
 				}
 
 				if (doSheet) {
-					/* Tableau SpriteSheet. */
+					/* SpriteSheet Array. */
 					if (this->storeJson["storeInfo"].contains("sheetURL") && this->storeJson["storeInfo"]["sheetURL"].is_array()) {
 						if (this->storeJson["storeInfo"].contains("sheet") && this->storeJson["storeInfo"]["sheet"].is_array()) {
 							const std::vector<std::string> locs = this->storeJson["storeInfo"]["sheetURL"].get<std::vector<std::string>>();
@@ -123,7 +132,7 @@ void Store::update(const std::string &file) {
 							}
 						}
 
-						/* Feuille SpriteSheet unique (pas de tableau). */
+						/* Single SpriteSheet (No array). */
 					} else if (this->storeJson["storeInfo"].contains("sheetURL") && this->storeJson["storeInfo"]["sheetURL"].is_string()) {
 						if (this->storeJson["storeInfo"].contains("sheet") && this->storeJson["storeInfo"]["sheet"].is_string()) {
 							const std::string fl = this->storeJson["storeInfo"]["sheetURL"];
@@ -148,12 +157,12 @@ void Store::update(const std::string &file) {
 }
 
 /*
-	Déchargez toutes les SpriteSheets sur Destructor.
+	Unload all SpriteSheets on Destructor.
 */
 Store::~Store() { this->unloadSheets(); };
 
 /*
-	Déchargez toutes les feuilles SpriteSheets.
+	Unload all SpriteSheets.
 */
 void Store::unloadSheets() {
 	if (this->valid) {
@@ -168,7 +177,7 @@ void Store::unloadSheets() {
 }
 
 /*
-	Charger toutes les feuilles SpriteSheets.
+	Load all SpriteSheets.
 */
 void Store::loadSheets() {
 	if (this->valid) {
@@ -209,8 +218,9 @@ void Store::loadSheets() {
 
 
 /*
-	Charger un eShop à partir d’un fichier.
-	const std::string &file : Le fichier de eShop.
+	Load a eShop from a file.
+
+	const std::string &file: The file of the eShop.
 */
 void Store::LoadFromFile(const std::string &file) {
 	FILE *in = fopen(file.c_str(), "rt");
@@ -221,6 +231,8 @@ void Store::LoadFromFile(const std::string &file) {
 
 	this->storeJson = nlohmann::json::parse(in, nullptr, false);
 	fclose(in);
+	if (this->storeJson.is_discarded())
+		this->storeJson = { };
 
 	/* Check, if valid. */
 	if (this->storeJson.contains("storeInfo") && this->storeJson.contains("storeContent")) {
@@ -228,7 +240,7 @@ void Store::LoadFromFile(const std::string &file) {
 			if (this->storeJson["storeInfo"]["version"] < 3) Msg::waitMsg(Lang::get("ESHOP_TOO_OLD"));
 			else if (this->storeJson["storeInfo"]["version"] > _ESHOP_VERSION) Msg::waitMsg(Lang::get("ESHOP_TOO_NEW"));
 			else if (this->storeJson["storeInfo"]["version"] == 3 || this->storeJson["storeInfo"]["version"] == _ESHOP_VERSION) {
-				this->valid = this->storeJson["storeInfo"]["version"] = true;
+				this->valid = true;
 			}
 		}
 
@@ -238,7 +250,7 @@ void Store::LoadFromFile(const std::string &file) {
 }
 
 /*
-	Retourne le titre de l’eShop.
+	Return the Title of the eShop.
 */
 std::string Store::GetEshopTitle() const {
 	if (this->valid) {
@@ -249,8 +261,9 @@ std::string Store::GetEshopTitle() const {
 }
 
 /*
-	Renvoie le titre d’un index.
-	int index : L’index.
+	Return the Title of an index.
+
+	int index: The index.
 */
 std::string Store::GetTitleEntry(int index) const {
 	if (!this->valid) return "";
@@ -270,7 +283,7 @@ std::string Store::GetTitleEntry(int index) const {
 */
 std::string Store::GetAuthorEntry(int index) const {
 	if (!this->valid) return "";
-	if (index > (int)this->storeJson["storeContent"].size() - 1) return ""; // Vide.
+	if (index > (int)this->storeJson["storeContent"].size() - 1) return ""; // Empty.
 
 	if (this->storeJson["storeContent"][index]["info"].contains("author") && this->storeJson["storeContent"][index]["info"]["author"].is_string()) {
 		return this->storeJson["storeContent"][index]["info"]["author"];
@@ -280,12 +293,13 @@ std::string Store::GetAuthorEntry(int index) const {
 }
 
 /*
-	Renvoie la description d’un index.
-	int index : L’index.
+	Return the Description of an index.
+
+	int index: The index.
 */
 std::string Store::GetDescriptionEntry(int index) const {
 	if (!this->valid) return "";
-	if (index > (int)this->storeJson["storeContent"].size() - 1) return ""; // Vide.
+	if (index > (int)this->storeJson["storeContent"].size() - 1) return ""; // Empty.
 
 	if (this->storeJson["storeContent"][index]["info"].contains("description") && this->storeJson["storeContent"][index]["info"]["description"].is_string()) {
 		return this->storeJson["storeContent"][index]["info"]["description"];
@@ -295,12 +309,13 @@ std::string Store::GetDescriptionEntry(int index) const {
 }
 
 /*
-	Renvoie la catégorie d’un index.
-	int index : L’index.
+	Return the Category of an index.
+
+	int index: The index.
 */
 std::vector<std::string> Store::GetCategoryIndex(int index) const {
 	if (!this->valid) return { "" };
-	if (index > (int)this->storeJson["storeContent"].size() - 1) return { "" }; // Vide.
+	if (index > (int)this->storeJson["storeContent"].size() - 1) return { "" }; // Empty.
 
 	if (this->storeJson["storeContent"][index]["info"].contains("category")) {
 		if (this->storeJson["storeContent"][index]["info"]["category"].is_array()) {
@@ -317,12 +332,13 @@ std::vector<std::string> Store::GetCategoryIndex(int index) const {
 }
 
 /*
-	Retourne la version d’un index.
-	int index : L’index.
+	Return the Version of an index.
+
+	int index: The index.
 */
 std::string Store::GetVersionEntry(int index) const {
 	if (!this->valid) return "";
-	if (index > (int)this->storeJson["storeContent"].size() - 1) return ""; // Vide.
+	if (index > (int)this->storeJson["storeContent"].size() - 1) return ""; // Empty.
 
 	if (this->storeJson["storeContent"][index]["info"].contains("version") && this->storeJson["storeContent"][index]["info"]["version"].is_string()) {
 		return this->storeJson["storeContent"][index]["info"]["version"];
@@ -332,12 +348,13 @@ std::string Store::GetVersionEntry(int index) const {
 }
 
 /*
-	Retourne la console d’un index.
-	int index : L’index.
+	Return the Console of an index.
+
+	int index: The index.
 */
 std::vector<std::string> Store::GetConsoleEntry(int index) const {
 	if (!this->valid) return { "" };
-	if (index > (int)this->storeJson["storeContent"].size() - 1) return { "" }; // Vide.
+	if (index > (int)this->storeJson["storeContent"].size() - 1) return { "" }; // Empty.
 
 	if (this->storeJson["storeContent"][index]["info"].contains("console")) {
 		if (this->storeJson["storeContent"][index]["info"]["console"].is_array()) {
@@ -354,12 +371,13 @@ std::vector<std::string> Store::GetConsoleEntry(int index) const {
 }
 
 /*
-	Renvoie la date de la dernière mise à jour d’un index.
-	int index : L’index.
+	Return the Last updated date of an index.
+
+	int index: The index.
 */
 std::string Store::GetLastUpdatedEntry(int index) const {
 	if (!this->valid) return "";
-	if (index > (int)this->storeJson["storeContent"].size() - 1) return ""; // Vide.
+	if (index > (int)this->storeJson["storeContent"].size() - 1) return ""; // Empty.
 
 	if (this->storeJson["storeContent"][index]["info"].contains("last_updated") && this->storeJson["storeContent"][index]["info"]["last_updated"].is_string()) {
 		return this->storeJson["storeContent"][index]["info"]["last_updated"];
@@ -369,29 +387,12 @@ std::string Store::GetLastUpdatedEntry(int index) const {
 }
 
 /*
-	Renvoie la taille d’un index.
-	int index : L’index.
-*/
-std::string Store::GetSizeEntry(int index) const {
-	if (!this->valid) return Lang::get("NO_SIZE");
-	if (index > (int)this->storeJson["storeContent"].size() - 1) return Lang::get("NO_SIZE"); // Vide.
-
-	if (this->storeJson["storeContent"][index]["info"].contains("size") && this->storeJson["storeContent"][index]["info"]["size"].is_string()) {
-		if (this->storeJson["storeContent"][index]["info"]["size"] == "") return Lang::get("NO_SIZE");
-
-		return this->storeJson["storeContent"][index]["info"]["size"];
-	}
-
-	return Lang::get("NO_SIZE");
-}
-
-/*
 	Renvoie la contenu additionel d’un index.
-	int index : L’index.
+	int index : L’index.
 */
 std::string Store::GetAdditionalcontentEntry(int index) const {
 	if (!this->valid) return Lang::get("NO_ADDITIONAL_CONTENT_AVAILABLE");
-	if (index > (int)this->storeJson["storeContent"].size() - 1) return Lang::get("NO_ADDITIONAL_CONTENT_AVAILABLE"); // Vide.
+	if (index > (int)this->storeJson["storeContent"].size() - 1) return Lang::get("NO_ADDITIONAL_CONTENT_AVAILABLE"); // Empty.
 
 	if (this->storeJson["storeContent"][index]["info"].contains("additional") && this->storeJson["storeContent"][index]["info"]["additional"].is_string()) {
 		if (this->storeJson["storeContent"][index]["info"]["additional"] == "") return Lang::get("NO_ADDITIONAL_CONTENT_AVAILABLE");
@@ -403,8 +404,9 @@ std::string Store::GetAdditionalcontentEntry(int index) const {
 }
 
 /*
-	Retourne une image C2D_Image d’un index.
-	int index : L’index.
+	Return a C2D_Image of an index.
+
+	int index: The index.
 */
 C2D_Image Store::GetIconEntry(int index) const {
 	if (!this->valid) return C2D_SpriteSheetGetImage(sprites, sprites_noIcon_idx);
@@ -429,13 +431,13 @@ C2D_Image Store::GetIconEntry(int index) const {
 	if (iconIndex > (int)C2D_SpriteSheetCount(this->sheets[sheetIndex])-1) return C2D_SpriteSheetGetImage(sprites, sprites_noIcon_idx);
 
 	C2D_Image temp = C2D_SpriteSheetGetImage(this->sheets[sheetIndex], iconIndex);
-	if (temp.subtex->width < 49 && temp.subtex->height < 49) return temp; // jusqu’à 48x48 est valide.
+	if (temp.subtex->width < 49 && temp.subtex->height < 49) return temp; // up to 48x48 is valid.
 
 	return C2D_SpriteSheetGetImage(sprites, sprites_noIcon_idx);
 }
 
 /*
-	Définit le BG personnalisé sur la variable storeBG.
+	Set's the custom BG to the storeBG variable.
 */
 void Store::SetC2DBGImage() {
 	if (!this->valid) return;
@@ -461,13 +463,14 @@ void Store::SetC2DBGImage() {
 
 	if (temp.subtex->width == 400 && temp.subtex->height == 214) {
 		this->hasCustomBG = true;
-		this->storeBG = temp; // Doit être 400x214.
+		this->storeBG = temp; // Must be 400x214.
 	}
 }
 
 /*
-	Retourner la liste de téléchargement d’une entrée.
-	int index : L’index.
+	Return the download list of an entry.
+
+	int index: The index.
 */
 std::vector<std::string> Store::GetDownloadList(int index) const {
 	if (!this->valid) return { "" };

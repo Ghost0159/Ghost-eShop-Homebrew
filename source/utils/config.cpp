@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <unistd.h>
 
 /*
-	Détecte la langue du système et est utilisé plus tard pour définir la langue de l’application à la langue du système.
+	Detects system language and is used later to set app language to system language.
 */
 void Config::sysLang() {
 	u8 language = 1;
@@ -51,7 +51,7 @@ void Config::sysLang() {
 			break;
 
 		case 3:
-			this->language("de"); // Allemand (Deutsche), traduit.
+			this->language("de"); // Allemand (German), traduit.
 			break;
 
 		case 4:
@@ -63,13 +63,13 @@ void Config::sysLang() {
 			break;
 
 		case 6:
-			this->language("cn-SI"); // Chinois simplifié (简体中文), traduit.
+			this->language("zh-CN"); // Chinois simplifié (简体中文), traduit.
 			break;
 
 		case 7:
 			this->language("kr"); // Coréen (한국어), traduit.
 			break;
-
+		
 		case 8:
 			this->language("nl"); // Néerlandais (Nederlands), pas totalement traduit.
 			break;
@@ -83,34 +83,42 @@ void Config::sysLang() {
 			break;
 
 		case 11:
-			this->language("cn-TR"); // chinois traditionnel (繁體中文), traduit.
+			this->language("zh-TW"); // chinois traditionnel (繁體中文), traduit.
+			break;
+
+		default:
+			this->language("en"); // Fall back to English if missing
 			break;
 	}
 }
 
 /*
-	Au cas où ça n’existe pas.
+	In case it doesn't exist.
 */
 void Config::initialize() {
-	FILE *temp = fopen("sdmc:/3ds/GhosteShop/Config.json", "w");
+	FILE *temp = fopen("sdmc:/3ds/Universal-Updater/GhosteShop/Config.json", "w");
 	char tmp[2] = { '{', '}' };
 	fwrite(tmp, sizeof(tmp), 1, temp);
 	fclose(temp);
 }
 
 /*
-	Constructeur de la configuration.
+	Constructor of the config.
 */
 Config::Config() {
-	if (access("sdmc:/3ds/GhosteShop/Config.json", F_OK) != 0) {
+	if (access("sdmc:/3ds/Universal-Updater/GhosteShop/Config.json", F_OK) != 0) {
 		this->initialize();
 	}
 
-	FILE *file = fopen("sdmc:/3ds/GhosteShop/Config.json", "r");
-	this->json = nlohmann::json::parse(file, nullptr, false);
-	fclose(file);
+	FILE *file = fopen("sdmc:/3ds/Universal-Updater/GhosteShop/Config.json", "rt");
+	if (file) {
+		this->json = nlohmann::json::parse(file, nullptr, false);
+		fclose(file);
+	}
+	if (this->json.is_discarded())
+		this->json = { };
 
-	/* Créons-en une nouvelle. */
+	/* Let us create a new one. */
 	if (!this->json.contains("Version")) this->initialize();
 
 	if (!this->json.contains("Language")) this->sysLang();
@@ -120,8 +128,10 @@ Config::Config() {
 	if (this->json.contains("List")) this->list(this->getBool("List"));
 	if (this->json.contains("AutoUpdate")) this->autoupdate(this->getBool("AutoUpdate"));
 	if (this->json.contains("_3DSX_Path")) this->_3dsxPath(this->getString("_3DSX_Path"));
+	if (this->json.contains("_3DSX_InFolder")) this->_3dsxInFolder(this->getBool("_3DSX_InFolder"));
 	if (this->json.contains("NDS_Path")) this->ndsPath(this->getString("NDS_Path"));
 	if (this->json.contains("Archive_Path")) this->archPath(this->getString("Archive_Path"));
+	if (this->json.contains("Firm_Path")) this->firmPath(this->getString("Firm_Path"));
 	if (this->json.contains("MetaData")) this->metadata(this->getBool("MetaData"));
 	if (this->json.contains("UpdateCheck")) this->updatecheck(this->getBool("UpdateCheck"));
 	if (this->json.contains("UseBG")) this->usebg(this->getBool("UseBG"));
@@ -129,55 +139,78 @@ Config::Config() {
 	if (this->json.contains("Shortcut_Path")) this->shortcut(this->getString("Shortcut_Path"));
 	if (this->json.contains("Display_Changelog")) this->changelog(this->getBool("Display_Changelog"));
 
-	this->changesMade = false; // Aucune modification n’a encore été apportée.
+	/* Exceptions for it. It was an INT before. */
+	if (this->json.contains("Active_Theme")) {
+		if (this->json["Active_Theme"].is_number()) {
+			this->json["Active_Theme"] = "Default";
+			this->theme(this->getString("Active_Theme"));
+
+		} else {
+			this->theme(this->getString("Active_Theme"));
+		}
+	}
+
+	if (this->json.contains("Prompt")) this->prompt(this->getBool("Prompt"));
+
+	this->changesMade = false; // No changes made yet.
 }
 
-/* Ecrivez à config si changesMade. */
+/* Write to config if changesMade. */
 void Config::save() {
 	if (this->changesMade) {
-		FILE *file = fopen("sdmc:/3ds/GhosteShop/Config.json", "w");
+		FILE *file = fopen("sdmc:/3ds/Universal-Updater/GhosteShop/Config.json", "w");
 
-		/* Valeurs Théoriques. */
+		/* Set values. */
 		this->setString("Language", this->language());
 		this->setInt("Version", 1);
 		this->setString("LastStore", this->lastStore());
 		this->setBool("List", this->list());
 		this->setBool("AutoUpdate", this->autoupdate());
 		this->setString("_3DSX_Path", this->_3dsxPath());
+		this->setBool("_3DSX_InFolder", this->_3dsxInFolder());
 		this->setString("NDS_Path", this->ndsPath());
 		this->setString("Archive_Path", this->archPath());
+		this->setString("Firm_Path", this->firmPath());
 		this->setBool("MetaData", this->metadata());
 		this->setBool("UpdateCheck", this->updatecheck());
 		this->setBool("UseBG", this->usebg());
 		this->setBool("CustomFont", this->customfont());
 		this->setString("Shortcut_Path", this->shortcut());
 		this->setBool("Display_Changelog", this->changelog());
+		this->setString("Active_Theme", this->theme());
+		this->setBool("Prompt", this->prompt());
 
-		/* Écrire les modifications au fichier. */
+		/* Write changes to file. */
 		const std::string dump = this->json.dump(1, '\t');
 		fwrite(dump.c_str(), 1, this->json.dump(1, '\t').size(), file);
 		fclose(file);
 	}
 }
 
-/* Fonctions d’aide. */
+/* Helper functions. */
 bool Config::getBool(const std::string &key) {
 	if (!this->json.contains(key)) return false;
 
 	return this->json.at(key).get_ref<const bool &>();
 }
-void Config::setBool(const std::string &key, bool v) { this->json[key] = v; };
+void Config::setBool(const std::string &key, bool v) {
+	this->json[key] = v;
+};
 
 int Config::getInt(const std::string &key) {
 	if (!this->json.contains(key)) return 0;
 
 	return this->json.at(key).get_ref<const int64_t &>();
 }
-void Config::setInt(const std::string &key, int v) { this->json[key] = v; };
+void Config::setInt(const std::string &key, int v) {
+	this->json[key] = v;
+};
 
 std::string Config::getString(const std::string &key) {
 	if (!this->json.contains(key)) return "";
 
 	return this->json.at(key).get_ref<const std::string &>();
 }
-void Config::setString(const std::string &key, const std::string &v) { this->json[key] = v; };
+void Config::setString(const std::string &key, const std::string &v) {
+	this->json[key] = v;
+};

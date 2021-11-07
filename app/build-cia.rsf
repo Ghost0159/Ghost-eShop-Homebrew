@@ -11,28 +11,28 @@ TitleInfo:
   UniqueId                : 0x73926
 
 Option:
-  UseOnSD                 : true # true si l'application doit être installée sur SD
-  FreeProductCode         : true # Supprime les limitations sur ProductCode
-  MediaFootPadding        : false # Si de vrais fichiers CCI sont créés avec un remplissage
-  EnableCrypt             : false # Active le cryptage pour NCCH et CIA
-  EnableCompress          : true # Compresse le cas échéant (actuellement uniquement exefs: /. Code)
+  UseOnSD                 : true # true if App is to be installed to SD
+  FreeProductCode         : true # Removes limitations on ProductCode
+  MediaFootPadding        : false # If true CCI files are created with padding
+  EnableCrypt             : false # Enables encryption for NCCH and CIA
+  EnableCompress          : true # Compresses where applicable (currently only exefs:/.code)
   
 AccessControlInfo:
   CoreVersion                   : 2
 
-  # Version du format Exheader
+  # Exheader Format Version
   DescVersion                   : 2
   
-  # Version minimale requise du noyau (ci-dessous est pour 4.5.0)
+  # Minimum Required Kernel Version (below is for 4.5.0)
   ReleaseKernelMajor            : "02"
   ReleaseKernelMinor            : "33" 
 
   # ExtData
-  UseExtSaveData                : false # active ExtData       
-  #ExtSaveDataId                : 0x300 # définissez ceci uniquement lorsque l'ID est différent de UniqueId
+  UseExtSaveData                : false # enables ExtData       
+  #ExtSaveDataId                : 0x300 # only set this when the ID is different to the UniqueId
 
-  # FS: autorisations d'accès aux archives USER
-  # Décommenter si nécessaire
+  # FS:USER Archive Access Permissions
+  # Uncomment as required
   FileSystemAccess:
    - CategorySystemApplication
    - CategoryHardwareCheck
@@ -66,13 +66,13 @@ AccessControlInfo:
    #- CreateSeed
    - UseCardSpi
 
-  # Paramètres de processus
+  # Process Settings
   MemoryType                    : Application # Application/System/Base
-  SystemMode                    : 64MB # 64MB(Defaut)/96MB/80MB/72MB/32MB
+  SystemMode                    : 64MB # 64MB(Default)/96MB/80MB/72MB/32MB
   IdealProcessor                : 0
   AffinityMask                  : 1
   Priority                      : 16
-  MaxCpu                        : 0x9E # Defaut
+  MaxCpu                        : 0x9E # Default
   HandleTableSize               : 0x200
   DisableDebug                  : false
   EnableForceDebug              : false
@@ -84,19 +84,19 @@ AccessControlInfo:
   RunnableOnSleep               : false
   SpecialMemoryArrange          : true
 
-  # Paramètres de processus exclusifs New3DS
-  SystemModeExt                 : Legacy # Legacy (par défaut) / 124 Mo / 178 Mo Legacy: utilisez le mode système Old3DS
-  CpuSpeed                      : 804MHz # 268MHz(Defaut)/804MHz
-  EnableL2Cache                 : true # false (par défaut) / true
+  # New3DS Exclusive Process Settings
+  SystemModeExt                 : Legacy # Legacy(Default)/124MB/178MB  Legacy:Use Old3DS SystemMode
+  CpuSpeed                      : 804MHz # 268MHz(Default)/804MHz
+  EnableL2Cache                 : true # false(default)/true
   CanAccessCore2                : true 
 
-  # Correspondances d’adresses virtuelles
+  # Virtual Address Mappings
   IORegisterMapping:
    - 1ff00000-1ff7ffff   # DSP memory
   MemoryMapping: 
    - 1f000000-1f5fffff:r # VRAM
 
-  # SVC accessibles, <Name>:<ID>
+  # Accessible SVCs, <Name>:<ID>
   SystemCallAccess: 
     ControlMemory: 1
     QueryMemory: 2
@@ -206,8 +206,8 @@ AccessControlInfo:
     KernelSetState: 124
     QueryProcessMemory: 125
 
-  # Liste des services
-  # 34 services maximum (32 si le micrologiciel est antérieur à la version 9.6.0)
+  # Service List
+  # Maximum 34 services (32 if firmware is prior to 9.6.0)
   ServiceAccessControl:
    - APT:U
    - ac:u
@@ -246,8 +246,8 @@ SystemControlInfo:
   RemasterVersion: $(APP_VERSION_MAJOR)
   StackSize: 0x40000
 
-  # Les modules qui exécutent les services énumérés ci-dessus doivent être inclus sous
-  # 48 dépendances maximum
+  # Modules that run services listed above should be included below
+  # Maximum 48 dependencies
   # <module name>:<module titleid>
   Dependency: 
     ac: 0x0004013000002402

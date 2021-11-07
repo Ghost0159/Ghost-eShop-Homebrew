@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -24,97 +24,131 @@
 *         reasonable ways as different from the original version.
 */
 
+#include "common.hpp"
 #include "init.hpp"
 #include "overlay.hpp"
 #include "scriptUtils.hpp"
 #include "storeUtils.hpp"
 #include <unistd.h>
 
-extern bool exiting;
+extern bool exiting, QueueRuns;
 extern bool touching(touchPosition touch, Structs::ButtonPos button);
 static const std::vector<Structs::ButtonPos> mainButtons = {
-	{ 46, 32, 270, 22 },
-	{ 46, 62, 270, 22 },
-	{ 46, 92, 270, 22 },
-	{ 46, 122, 270, 22 },
-	{ 46, 152, 270, 22 },
-	{ 46, 182, 270, 22 },
-	{ 46, 212, 270, 22 }
+	{ 45, 32, 271, 22 },
+	{ 45, 62, 271, 22 },
+	{ 45, 92, 271, 22 },
+	{ 45, 122, 271, 22 },
+	{ 45, 152, 271, 22 },
+	{ 45, 182, 271, 22 },
+	{ 45, 212, 271, 22 }
 };
 
 static const std::vector<Structs::ButtonPos> langButtons = {
-	{ 46, 32, 270, 22 },
-	{ 46, 62, 270, 22 },
-	{ 46, 92, 270, 22 },
-	{ 46, 122, 270, 22 },
-	{ 46, 152, 270, 22 },
-	{ 46, 182, 270, 22 },
+	{ 45, 32, 271, 22 },
+	{ 45, 62, 271, 22 },
+	{ 45, 92, 271, 22 },
+	{ 45, 122, 271, 22 },
+	{ 45, 152, 271, 22 },
+	{ 45, 182, 271, 22 },
 
-	{ 44, 220, 16, 16 } // Add Font.
+	{ 45, 220, 16, 16 } // Add Font.
 };
 
 static const std::vector<Structs::ButtonPos> toggleAbles = {
-	{ 280, 64, 24, 24 },
-	{ 280, 140, 24, 24 }
+	{ 288, 44, 24, 24 },
+	{ 288, 120, 24, 24 }
 };
 
-static const Structs::ButtonPos back = { 44, 0, 24, 24 }; // Back arrow for directory.
+static const std::vector<Structs::ButtonPos> dirButtons = {
+	{ 41, 34, 280, 24 },
+	{ 41, 64, 280, 24 },
+	{ 41, 120, 280, 24 },
+	{ 41, 150, 280, 24 },
+	{ 41, 180, 280, 24 },
+	{ 41, 210, 280, 24 }
+};
+
+static const std::vector<Structs::ButtonPos> dirIcons = {
+	{ 288, 34, 24, 24 },
+	{ 288, 64, 24, 24 },
+	{ 288, 120, 24, 24 },
+	{ 288, 150, 24, 24 },
+	{ 288, 180, 24, 24 },
+	{ 288, 210, 24, 24 }
+};
+
+static const Structs::ButtonPos back = { 45, 0, 24, 24 }; // Back arrow for directory.
+static const Structs::ButtonPos Theme = { 40, 196, 280, 24 }; // Themes.
 
 
 static const std::vector<std::string> mainStrings = { "LANGUAGE", "SELECT_ESHOP", "AUTO_UPDATE_SETTINGS_BTN", "GUI_SETTINGS_BTN", "DIRECTORY_SETTINGS_BTN", "CREDITS", "EXIT_APP" };
-static const std::vector<std::string> dirStrings = { "CHANGE_3DSX_PATH", "CHANGE_NDS_PATH", "CHANGE_ARCHIVE_PATH", "CHANGE_SHORTCUT_PATH" };
+static const std::vector<std::string> dirStrings = { "CHANGE_3DSX_PATH", "3DSX_IN_FOLDER", "CHANGE_NDS_PATH", "CHANGE_ARCHIVE_PATH", "CHANGE_SHORTCUT_PATH", "CHANGE_FIRM_PATH" };
+extern std::vector<std::pair<std::string, std::string>> Themes;
 
 /* Note: Украïнська is spelled using a latin i with dieresis to work in the system font */
-												   /* en 	|	 es		|	 fr		|   jp	 |	  de	 |	  it	 |	  pt	  |			pt-BR		   |	ru	  |	  cn-TR  |	 da	  |	    lt	  |	   pl	 |	 hu	   |	gr	   |	 uk		  |	  tr -*/
+												   /* en 	|	 es		|	 fr		|   jp	 |	  de	 |	  it	 |	  pt	  |			pt-BR		   |	ru	  |	  cn-TR  |	 da	  |	    lt	  |	   pl	 |	 hu	   |	gr	   |	 uk		  |	  tr*/
 static const std::vector<std::string> languages = {"English", "Español", "Français", "日本人", "Deutsche", "Italiano", "Português", "Português (Brasilian)", "Pусский", "繁體中文", "Dansk", "Lietuvis", "Polskie", "Magyar", "Ελληνικά", "Український", "Türk"};
 static const std::string langsTemp[] = {"en", "es", "fr", "jp", "de", "it", "pt", "pt-BR", "ru", "cn-TR", "da", "lt", "pl", "hu", "gr", "uk", "tr"};
+static const std::pair<int, int> langSprites[] = { {-1, 0}, {-1, 0}, {-1, 0}, {sprites_jp_idx, 31}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {sprites_zh_TW_idx, 55}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0} };
 
 /*
 	Main Settings.
+
 	int selection: The Settings Selection.
 */
 static void DrawSettingsMain(int selection) {
-	Gui::Draw_Rect(40, 0, 280, 25, ENTRY_BAR_COLOR);
-	Gui::Draw_Rect(40, 25, 280, 1, ENTRY_BAR_OUTL_COLOR);
-	Gui::DrawStringCentered(17, 2, 0.6, TEXT_COLOR, Lang::get("SETTINGS"), 273, 0, font);
+	Gui::Draw_Rect(40, 0, 280, 25, UIThemes->EntryBar());
+	Gui::Draw_Rect(40, 25, 280, 1, UIThemes->EntryOutline());
+	Gui::DrawStringCentered(20, 2, 0.6, UIThemes->TextColor(), Lang::get("SETTINGS"), 280, 0, font);
 
 	for (int i = 0; i < 7; i++) {
-		if (i == selection) GFX::DrawBox(mainButtons[i].x, mainButtons[i].y, mainButtons[i].w, mainButtons[i].h, false);
-		Gui::DrawStringCentered(22, mainButtons[i].y + 4, 0.45f, TEXT_COLOR, Lang::get(mainStrings[i]), 255, 0, font);
+		if (i == selection) Gui::Draw_Rect(mainButtons[i].x, mainButtons[i].y, mainButtons[i].w, mainButtons[i].h, UIThemes->MarkSelected());
+		Gui::DrawStringCentered(20, mainButtons[i].y + 4, 0.45f, UIThemes->TextColor(), Lang::get(mainStrings[i]), 255, 0, font);
 	}
 }
 
 /*
 	Draw the Language Selection.
+
 	int selection: The Language Selection.
 	int sPos: The Screen Position.
 */
 static void DrawLanguageSettings(int selection, int sPos) {
-	Gui::Draw_Rect(40, 0, 280, 25, ENTRY_BAR_COLOR);
-	Gui::Draw_Rect(40, 25, 280, 1, ENTRY_BAR_OUTL_COLOR);
-	GFX::DrawSprite(sprites_arrow_idx, back.x, back.y);
-	GFX::DrawSprite(sprites_add_font_idx, langButtons[6].x, langButtons[6].y);
-	Gui::DrawStringCentered(24, 2, 0.6, TEXT_COLOR, Lang::get("SELECT_LANG"), 248, 0, font);
+	Gui::Draw_Rect(40, 0, 280, 25, UIThemes->EntryBar());
+	Gui::Draw_Rect(40, 25, 280, 1, UIThemes->EntryOutline());
+	GFX::DrawIcon(sprites_arrow_idx, back.x, back.y, UIThemes->TextColor());
+	GFX::DrawIcon(sprites_add_font_idx, langButtons[6].x, langButtons[6].y, UIThemes->TextColor());
+	Gui::DrawStringCentered(20, 2, 0.6, UIThemes->TextColor(), Lang::get("SELECT_LANG"), 248, 0, font);
 
 	for(int i = 0; i < 6 && i < (int)languages.size(); i++) {
-		if (sPos + i == selection) GFX::DrawBox(langButtons[i].x, langButtons[i].y, langButtons[i].w, langButtons[i].h, false);
-		Gui::DrawStringCentered(22, langButtons[i].y + 4, 0.45f, TEXT_COLOR, languages[sPos + i], 280, 0, font);
+		if (sPos + i == selection) Gui::Draw_Rect(langButtons[i].x, langButtons[i].y, langButtons[i].w, langButtons[i].h, UIThemes->MarkSelected());
+		if(langSprites[sPos + i].first != -1)
+			GFX::DrawIcon(langSprites[sPos + i].first, 160 + 20 - (langSprites[sPos + i].second / 2), langButtons[i].y + 6, UIThemes->TextColor());
+		else
+			Gui::DrawStringCentered(20, langButtons[i].y + 4, 0.45f, UIThemes->TextColor(), languages[sPos + i], 280, 0, font);
 	}
 }
 
 /*
 	Directory Change Draw.
+
 	int selection: The Settings Selection.
 */
 static void DrawSettingsDir(int selection) {
-	Gui::Draw_Rect(40, 0, 280, 25, ENTRY_BAR_COLOR);
-	Gui::Draw_Rect(40, 25, 280, 1, ENTRY_BAR_OUTL_COLOR);
-	GFX::DrawSprite(sprites_arrow_idx, back.x, back.y);
-	Gui::DrawStringCentered(24, 2, 0.6, TEXT_COLOR, Lang::get("DIRECTORY_SETTINGS"), 248, 0, font);
+	Gui::Draw_Rect(40, 0, 280, 25, UIThemes->EntryBar());
+	Gui::Draw_Rect(40, 25, 280, 1, UIThemes->EntryOutline());
+	GFX::DrawIcon(sprites_arrow_idx, back.x, back.y, UIThemes->TextColor(), 1.0f);
+	Gui::DrawStringCentered(20, 2, 0.6, UIThemes->TextColor(), Lang::get("DIRECTORY_SETTINGS"), 248, 0, font);
 
-	for (int i = 0; i < 4; i++) {
-		if (i == selection) GFX::DrawBox(mainButtons[i].x, mainButtons[i].y, mainButtons[i].w, mainButtons[i].h, false);
-		Gui::DrawStringCentered(22, mainButtons[i].y + 4, 0.45f, TEXT_COLOR, Lang::get(dirStrings[i]), 255, 0, font);
+	for (int i = 0; i < (int)dirButtons.size(); i++) {
+		Gui::Draw_Rect(dirButtons[i].x, dirButtons[i].y, dirButtons[i].w, dirButtons[i].h, (selection == i ? UIThemes->MarkSelected() : UIThemes->MarkUnselected()));
+		Gui::DrawString(dirButtons[i].x + 4, dirButtons[i].y + 4, 0.5f, UIThemes->TextColor(), Lang::get(dirStrings[i]), 210, 0, font);
+		if(i == 1) { // Put 3DSX in folder has a toggle and description
+			GFX::DrawToggle(dirIcons[i].x, dirIcons[i].y, config->_3dsxInFolder());
+			Gui::DrawString(dirButtons[i].x + 4, dirButtons[i].y + 28, 0.4f, UIThemes->TextColor(), Lang::get("3DSX_IN_FOLDER_DESC"), 265, 0, font, C2D_WordWrap);
+		} else {
+			GFX::DrawIcon(sprites_arrow_idx, dirIcons[i].x, dirIcons[i].y, UIThemes->TextColor(), 1.0f, -1.0f);
+		}
 	}
 }
 
@@ -122,64 +156,69 @@ static void DrawSettingsDir(int selection) {
 	Draw Auto-Update Settings page.
 */
 static void DrawAutoUpdate(int selection) {
-	Gui::Draw_Rect(40, 0, 280, 25, ENTRY_BAR_COLOR);
-	Gui::Draw_Rect(40, 25, 280, 1, ENTRY_BAR_OUTL_COLOR);
-	GFX::DrawSprite(sprites_arrow_idx, back.x, back.y);
+	Gui::Draw_Rect(40, 0, 280, 25, UIThemes->EntryBar());
+	Gui::Draw_Rect(40, 25, 280, 1, UIThemes->EntryOutline());
+	GFX::DrawIcon(sprites_arrow_idx, back.x, back.y, UIThemes->TextColor());
 
-	Gui::DrawStringCentered(24, 2, 0.6, TEXT_COLOR, Lang::get("AUTO_UPDATE_SETTINGS"), 240, 0, font);
+	Gui::DrawStringCentered(20, 2, 0.6, UIThemes->TextColor(), Lang::get("AUTO_UPDATE_SETTINGS"), 240, 0, font);
 
 	/* Toggle Boxes. */
-	Gui::Draw_Rect(40, 64, 273, 24, (selection == 0 ? SIDEBAR_UNSELECTED_COLOR : BOX_INSIDE_COLOR));
-	Gui::DrawString(47, 68, 0.5f, TEXT_COLOR, Lang::get("AUTO_UPDATE_ESHOP"), 210, 0, font);
-	GFX::DrawToggle(280, 64, config->autoupdate());
-	Gui::DrawString(47, 95, 0.4f, TEXT_COLOR, Lang::get("AUTO_UPDATE_ESHOP_DESC"), 265, 0, font, C2D_WordWrap);
+	Gui::Draw_Rect(40, 44, 280, 24, (selection == 0 ? UIThemes->MarkSelected() : UIThemes->MarkUnselected()));
+	Gui::DrawString(47, 48, 0.5f, UIThemes->TextColor(), Lang::get("AUTO_UPDATE_ESHOP"), 210, 0, font);
+	GFX::DrawToggle(toggleAbles[0].x, toggleAbles[0].y, config->autoupdate());
+	Gui::DrawString(47, 75, 0.4f, UIThemes->TextColor(), Lang::get("AUTO_UPDATE_ESHOP_DESC"), 265, 0, font, C2D_WordWrap);
 
-	Gui::Draw_Rect(40, 140, 273, 24, (selection == 1 ? SIDEBAR_UNSELECTED_COLOR : BOX_INSIDE_COLOR));
-	Gui::DrawString(47, 144, 0.5f, TEXT_COLOR, Lang::get("AUTO_UPDATE_GE"), 210, 0, font);
-	GFX::DrawToggle(280, 140, config->updatecheck());
-	Gui::DrawString(47, 171, 0.4f, TEXT_COLOR, Lang::get("AUTO_UPDATE_GE_DESC"), 265, 0, font, C2D_WordWrap);
+	Gui::Draw_Rect(40, 120, 280, 24, (selection == 1 ? UIThemes->MarkSelected() : UIThemes->MarkUnselected()));
+	Gui::DrawString(47, 124, 0.5f, UIThemes->TextColor(), Lang::get("AUTO_UPDATE_GE"), 210, 0, font);
+	GFX::DrawToggle(toggleAbles[1].x, toggleAbles[1].y, config->updatecheck());
+	Gui::DrawString(47, 151, 0.4f, UIThemes->TextColor(), Lang::get("AUTO_UPDATE_GE_DESC"), 265, 0, font, C2D_WordWrap);
 }
 
 /*
 	Draw the GUI Settings.
+
 	int selection: The Settings Selection.
 */
 static void DrawGUISettings(int selection) {
-	Gui::Draw_Rect(40, 0, 280, 25, ENTRY_BAR_COLOR);
-	Gui::Draw_Rect(40, 25, 280, 1, ENTRY_BAR_OUTL_COLOR);
-	GFX::DrawSprite(sprites_arrow_idx, back.x, back.y);
+	Gui::Draw_Rect(40, 0, 280, 25, UIThemes->EntryBar());
+	Gui::Draw_Rect(40, 25, 280, 1, UIThemes->EntryOutline());
+	GFX::DrawIcon(sprites_arrow_idx, back.x, back.y, UIThemes->TextColor());
 
-	Gui::DrawStringCentered(24, 2, 0.6, TEXT_COLOR, Lang::get("GUI_SETTINGS"), 248, 0, font);
+	Gui::DrawStringCentered(20, 2, 0.6, UIThemes->TextColor(), Lang::get("GUI_SETTINGS"), 248, 0, font);
 
-	Gui::Draw_Rect(40, 64, 273, 24, (selection == 0 ? SIDEBAR_UNSELECTED_COLOR : BOX_INSIDE_COLOR));
-	Gui::DrawString(47, 68, 0.5f, TEXT_COLOR, Lang::get("ESHOP_BG"), 210, 0, font);
-	GFX::DrawToggle(280, 64, config->usebg());
-	Gui::DrawString(47, 95, 0.4f, TEXT_COLOR, Lang::get("ESHOP_BG_DESC"), 265, 0, font, C2D_WordWrap);
+	Gui::Draw_Rect(40, 44, 280, 24, (selection == 0 ? UIThemes->MarkSelected() : UIThemes->MarkUnselected()));
+	Gui::DrawString(47, 48, 0.5f, UIThemes->TextColor(), Lang::get("ESHOP_BG"), 210, 0, font);
+	GFX::DrawToggle(toggleAbles[0].x, toggleAbles[0].y, config->usebg());
+	Gui::DrawString(47, 75, 0.4f, UIThemes->TextColor(), Lang::get("ESHOP_BG_DESC"), 265, 0, font, C2D_WordWrap);
 
-	Gui::Draw_Rect(40, 140, 273, 24, (selection == 1 ? SIDEBAR_UNSELECTED_COLOR : BOX_INSIDE_COLOR));
-	Gui::DrawString(47, 144, 0.5f, TEXT_COLOR, Lang::get("CUSTOM_FONT"), 210, 0, font);
-	GFX::DrawToggle(280, 140, config->customfont());
-	Gui::DrawString(47, 171, 0.4f, TEXT_COLOR, Lang::get("CUSTOM_FONT_DESC"), 265, 0, font, C2D_WordWrap);
+	Gui::Draw_Rect(40, 120, 280, 24, (selection == 1 ? UIThemes->MarkSelected() : UIThemes->MarkUnselected()));
+	Gui::DrawString(47, 124, 0.5f, UIThemes->TextColor(), Lang::get("CUSTOM_FONT"), 210, 0, font);
+	GFX::DrawToggle(toggleAbles[1].x, toggleAbles[1].y, config->customfont());
+	Gui::DrawString(47, 151, 0.4f, UIThemes->TextColor(), Lang::get("CUSTOM_FONT_DESC"), 265, 0, font, C2D_WordWrap);
+
+	if (!Themes.empty()) {
+		Gui::Draw_Rect(40, 196, 280, 24, (selection == 2 ? UIThemes->MarkSelected() : UIThemes->MarkUnselected()));
+		Gui::DrawString(47, 200, 0.5f, UIThemes->TextColor(), Lang::get("ACTIVE_THEME") + ": " + config->theme(), 270, 0, font);
+	}
 }
 
 
 /*
 	Settings Main Handle.
 	Here you can..
+
 	- Change the Language.
 	- Access the eShop Manage Handle.
 	- Enable eShop auto update on boot.
 	- Show the Credits.
 	- Exit Ghost eShop.
+
 	int &page: Reference to the page.
 	bool &dspSettings: Reference to the display Settings.
-	int &storeMode: Reference to the Store Mode.
+	int &storeMode: Reference to the store Mode.
 	int &selection: Reference to the Selection.
-	std::unique_ptr<Store> &store: Reference to the Store class.
-	std::vector<std::unique_ptr<StoreEntry>> &entries: Reference to the StoreEntries.
-	std::unique_ptr<Meta> &meta: Reference to the Meta class.
 */
-static void SettingsHandleMain(int &page, bool &dspSettings, int &storeMode, int &selection, std::unique_ptr<Store> &store, std::vector<std::unique_ptr<StoreEntry>> &entries, std::unique_ptr<Meta> &meta) {
+static void SettingsHandleMain(int &page, bool &dspSettings, int &storeMode, int &selection) {
 	if (hDown & KEY_B) {
 		selection = 0;
 		storeMode = 0;
@@ -211,7 +250,12 @@ static void SettingsHandleMain(int &page, bool &dspSettings, int &storeMode, int
 			page = 4;
 
 		} else if (touching(touch, mainButtons[1])) {
-			Overlays::SelectStore(store, entries, meta);
+			if (QueueRuns) {
+				if (Msg::promptMsg(Lang::get("FEATURE_SIDE_EFFECTS"))) Overlays::SelectStore();
+
+			} else {
+				Overlays::SelectStore();
+			}
 
 		} else if (touching(touch, mainButtons[2])) {
 			selection = 0;
@@ -229,7 +273,7 @@ static void SettingsHandleMain(int &page, bool &dspSettings, int &storeMode, int
 			Overlays::ShowCredits();
 
 		} else if (touching(touch, mainButtons[6])) {
-			exiting = true;
+			if (!QueueRuns) exiting = true;
 		}
 	}
 
@@ -241,7 +285,12 @@ static void SettingsHandleMain(int &page, bool &dspSettings, int &storeMode, int
 				break;
 
 			case 1:
-				Overlays::SelectStore(store, entries, meta);
+				if (QueueRuns) {
+					if (Msg::promptMsg(Lang::get("FEATURE_SIDE_EFFECTS"))) Overlays::SelectStore();
+
+				} else {
+					Overlays::SelectStore();
+				}
 				break;
 
 			case 2:
@@ -264,7 +313,7 @@ static void SettingsHandleMain(int &page, bool &dspSettings, int &storeMode, int
 				break;
 
 			case 6:
-				exiting = true;
+				if (!QueueRuns) exiting = true;
 				break;
 		}
 	}
@@ -273,19 +322,21 @@ static void SettingsHandleMain(int &page, bool &dspSettings, int &storeMode, int
 /*
 	Directory Handle.
 	Here you can..
+
 	- Change the Directory of...
 		- 3DSX, NDS & Archives.
+
 	int &page: Reference to the page.
 	int &selection: Reference to the Selection.
 */
-static void SettingsHandleDir(int &page, int &selection, const std::unique_ptr<Store> &store) {
+static void SettingsHandleDir(int &page, int &selection) {
 	if (hDown & KEY_B) {
 		page = 0;
 		selection = 4;
 	}
 
 	if (hRepeat & KEY_DOWN) {
-		if (selection < 3) selection++;
+		if (selection < (int)dirStrings.size() - 1) selection++;
 		else selection = 0;
 	}
 
@@ -309,21 +360,28 @@ static void SettingsHandleDir(int &page, int &selection, const std::unique_ptr<S
 			page = 0;
 			selection = 4;
 
-		} else if (touching(touch, mainButtons[0])) {
-			const std::string path = Overlays::SelectDir(config->_3dsxPath(), Lang::get("SELECT_DIR"), store);
+		} else if (touching(touch, dirButtons[0])) {
+			const std::string path = Overlays::SelectDir(config->_3dsxPath(), Lang::get("SELECT_DIR"));
 			if (path != "") config->_3dsxPath(path);
 
-		} else if (touching(touch, mainButtons[1])) {
-			const std::string path = Overlays::SelectDir(config->ndsPath(), Lang::get("SELECT_DIR"), store);
+		} else if (touching(touch, dirButtons[1])) {
+			config->_3dsxInFolder(!config->_3dsxInFolder());
+
+		} else if (touching(touch, dirButtons[2])) {
+			const std::string path = Overlays::SelectDir(config->ndsPath(), Lang::get("SELECT_DIR"));
 			if (path != "") config->ndsPath(path);
 
-		} else if (touching(touch, mainButtons[2])) {
-			const std::string path = Overlays::SelectDir(config->archPath(), Lang::get("SELECT_DIR"), store);
+		} else if (touching(touch, dirButtons[3])) {
+			const std::string path = Overlays::SelectDir(config->archPath(), Lang::get("SELECT_DIR"));
 			if (path != "") config->archPath(path);
 
-		} else if (touching(touch, mainButtons[3])) {
-			const std::string path = Overlays::SelectDir(config->shortcut(), Lang::get("SELECT_DIR"), store);
+		} else if (touching(touch, dirButtons[4])) {
+			const std::string path = Overlays::SelectDir(config->shortcut(), Lang::get("SELECT_DIR"));
 			if (path != "") config->shortcut(path);
+
+		} else if (touching(touch, dirButtons[5])) {
+			const std::string path = Overlays::SelectDir(config->firmPath(), Lang::get("SELECT_DIR"));
+			if (path != "") config->firmPath(path);
 		}
 	}
 
@@ -332,23 +390,32 @@ static void SettingsHandleDir(int &page, int &selection, const std::unique_ptr<S
 
 		switch(selection) {
 			case 0:
-				path = Overlays::SelectDir(config->_3dsxPath(), Lang::get("SELECT_DIR"), store);
+				path = Overlays::SelectDir(config->_3dsxPath(), Lang::get("SELECT_DIR"));
 				if (path != "") config->_3dsxPath(path);
 				break;
 
 			case 1:
-				path = Overlays::SelectDir(config->ndsPath(), Lang::get("SELECT_DIR"), store);
-				if (path != "") config->ndsPath(path);
+				config->_3dsxInFolder(!config->_3dsxInFolder());
 				break;
 
 			case 2:
-				path = Overlays::SelectDir(config->archPath(), Lang::get("SELECT_DIR"), store);
-				if (path != "") config->archPath(path);
+				path = Overlays::SelectDir(config->ndsPath(), Lang::get("SELECT_DIR"));
+				if (path != "") config->ndsPath(path);
 				break;
 
 			case 3:
-				path = Overlays::SelectDir(config->shortcut(), Lang::get("SELECT_DIR"), store);
+				path = Overlays::SelectDir(config->archPath(), Lang::get("SELECT_DIR"));
+				if (path != "") config->archPath(path);
+				break;
+
+			case 4:
+				path = Overlays::SelectDir(config->shortcut(), Lang::get("SELECT_DIR"));
 				if (path != "") config->shortcut(path);
+				break;
+
+			case 5:
+				path = Overlays::SelectDir(config->firmPath(), Lang::get("SELECT_DIR"));
+				if (path != "") config->firmPath(path);
 				break;
 		}
 	}
@@ -356,9 +423,12 @@ static void SettingsHandleDir(int &page, int &selection, const std::unique_ptr<S
 
 /*
 	Logic of the Auto-Update Settings.
+
 	Here you can..
+
 	- Enable / Disable Automatically updating the eShop on boot.
 	- Enable / Disable Automatically check for Ghost eShop updates on boot.
+
 	int &page: Reference to the page.
 	int &selection: Reference to the Selection.
 */
@@ -404,8 +474,11 @@ static void AutoUpdateLogic(int &page, int &selection) {
 
 /*
 	Logic of the GUI Settings.
+
 	Here you can..
+
 	- Enable / Disable using the SpriteSheet Background Image, if exist.
+
 	int &page: Reference to the page.
 	int &selection: Reference to the Selection.
 */
@@ -416,7 +489,7 @@ static void GUISettingsLogic(int &page, int &selection) {
 	}
 
 	if (hRepeat & KEY_DOWN) {
-		if (selection < 1) selection++;
+		if (selection < (Themes.empty() ? 1 : 2)) selection++;
 	}
 
 	if (hRepeat & KEY_UP) {
@@ -435,6 +508,9 @@ static void GUISettingsLogic(int &page, int &selection) {
 			config->customfont(!config->customfont());
 
 			(config->customfont() ? Init::LoadFont() : Init::UnloadFont());
+
+		} else if (touching(touch, Theme)) {
+			if (!Themes.empty()) Overlays::SelectTheme();
 		}
 	}
 
@@ -449,14 +525,21 @@ static void GUISettingsLogic(int &page, int &selection) {
 
 				(config->customfont() ? Init::LoadFont() : Init::UnloadFont());
 				break;
+
+			case 2:
+				if (!Themes.empty()) Overlays::SelectTheme();
+				break;
 		}
 	}
 }
 
 /*
 	Logic of the Language Settings.
+
 	Here you can..
+
 	- Select the language, which should be used with the app.
+
 	int &page: Reference to the page.
 	int &selection: Reference to the Selection.
 	int &sPos: Reference to the ScreenPos variable.
@@ -491,14 +574,25 @@ static void LanguageLogic(int &page, int &selection, int &sPos) {
 	if (hDown & KEY_A) {
 		const std::string l = langsTemp[selection];
 
-		/* Check if is "uk". */
+		/* Check if language needs a custom font. */
 		if (l == "uk") {
-			if (access("sdmc:/3ds/GhosteShop/font.bcfnt", F_OK) != 0) {
-				ScriptUtils::downloadFile("https://cdn.ghosteshop.com/script/ghosteshop.bcfnt", "sdmc:/3ds/GhosteShop/font.bcfnt", Lang::get("DOWNLOADING_COMPATIBLE_FONT"));
+			if (access("sdmc:/3ds/Universal-Updater/font.bcfnt", F_OK) != 0) {
+				ScriptUtils::downloadFile("https://cdn.ghosteshop.com/script/ghosteshop.bcfnt", "sdmc:/3ds/Universal-Updater/font.bcfnt", Lang::get("DOWNLOADING_COMPATIBLE_FONT"), true);
+				Init::UnloadFont();
 			}
 
 			config->customfont(true);
 			Init::LoadFont();
+		} else if(!config->customfont()) {
+			CFG_Region region = CFG_REGION_USA;
+			if(l == "cn-SI") {
+				region = CFG_REGION_CHN;
+			} else if(l == "cn-TR") {
+				region = CFG_REGION_TWN;
+			} else if(l == "kr") {
+				region = CFG_REGION_KOR;
+			}
+			Gui::loadSystemFont(region);
 		}
 
 		config->language(l);
@@ -514,14 +608,25 @@ static void LanguageLogic(int &page, int &selection, int &sPos) {
 				if (i + sPos < (int)languages.size()) {
 					const std::string l = langsTemp[i + sPos];
 
-					/* Check if is "uk". */
+					/* Check if language needs a custom font. */
 					if (l == "uk") {
-						if (access("sdmc:/3ds/GhosteShop/font.bcfnt", F_OK) != 0) {
-							ScriptUtils::downloadFile("https://cdn.ghosteshop.com/script/ghosteshop.bcfnt", "sdmc:/3ds/GhosteShop/font.bcfnt", Lang::get("DOWNLOADING_COMPATIBLE_FONT"));
+						if (access("sdmc:/3ds/Universal-Updater/font.bcfnt", F_OK) != 0) {
+							ScriptUtils::downloadFile("https://cdn.ghosteshop.com/script/ghosteshop.bcfnt", "sdmc:/3ds/Universal-Updater/font.bcfnt", Lang::get("DOWNLOADING_COMPATIBLE_FONT"), true);
+							Init::UnloadFont();
 						}
 
 						config->customfont(true);
 						Init::LoadFont();
+					} else if(!config->customfont()) {
+						CFG_Region region = CFG_REGION_USA;
+						if(l == "cn-SI") {
+							region = CFG_REGION_CHN;
+						} else if(l == "cn-TR") {
+							region = CFG_REGION_TWN;
+						} else if(l == "kr") {
+							region = CFG_REGION_KOR;
+						}
+						Gui::loadSystemFont(region);
 					}
 
 					config->language(l);
@@ -530,15 +635,16 @@ static void LanguageLogic(int &page, int &selection, int &sPos) {
 					sPos = 0;
 					page = 0;
 				}
+
+				break;
 			}
 		}
-	}
 
-	if (hDown & KEY_TOUCH) {
 		if (touching(touch, langButtons[6])) {
-			/* Télécharger la police. */
-			ScriptUtils::downloadFile("https://cdn.ghosteshop.com/script/ghosteshop.bcfnt", "sdmc:/3ds/GhosteShop/font.bcfnt", Lang::get("DOWNLOADING_COMPATIBLE_FONT"));
+			/* Download Font. */
+			ScriptUtils::downloadFile("https://cdn.ghosteshop.com/script/ghosteshop.bcfnt", "sdmc:/3ds/Universal-Updater/font.bcfnt", Lang::get("DOWNLOADING_COMPATIBLE_FONT"), true);
 			config->customfont(true);
+			Init::UnloadFont();
 			Init::LoadFont();
 		}
 	}
@@ -549,6 +655,7 @@ static void LanguageLogic(int &page, int &selection, int &sPos) {
 
 /*
 	Draw the Settings.
+
 	int page: The page.
 	int selection: The selection.
 */
@@ -578,22 +685,21 @@ void StoreUtils::DrawSettings(int page, int selection, int sPos) {
 
 /*
 	Settings Handle.
+
 	int &page: Reference to the page.
 	bool &dspSettings: Reference to the display Settings.
-	int &storeMode: Reference to the Store Mode.
+	int &storeMode: Reference to the store Mode.
 	int &selection: Reference to the Selection.
-	std::unique_ptr<Store> &store: Reference to the Store class.
-	std::vector<std::unique_ptr<StoreEntry>> &entries: Reference to the StoreEntries.
-	std::unique_ptr<Meta> &meta: Reference to the Meta class.
+	int &sPos: Reference to screen position.
 */
-void StoreUtils::SettingsHandle(int &page, bool &dspSettings, int &storeMode, int &selection, std::unique_ptr<Store> &store, std::vector<std::unique_ptr<StoreEntry>> &entries, std::unique_ptr<Meta> &meta, int &sPos) {
+void StoreUtils::SettingsHandle(int &page, bool &dspSettings, int &storeMode, int &selection, int &sPos) {
 	switch(page) {
 		case 0:
-			SettingsHandleMain(page, dspSettings, storeMode, selection, store, entries, meta);
+			SettingsHandleMain(page, dspSettings, storeMode, selection);
 			break;
 
 		case 1:
-			SettingsHandleDir(page, selection, store);
+			SettingsHandleDir(page, selection);
 			break;
 
 		case 2:

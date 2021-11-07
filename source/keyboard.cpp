@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -31,13 +31,14 @@
 static std::vector<SwkbdDictWord> words;
 
 /*
-	Retourne une chaîne du clavier.
-	uint maxLongueur : La longueur maximale.
-	const std::string &Text : Const Référence au texte.
-	const std::vectorstd::unique_ptrStoreEntry>> &entries : Const Référence de toutes les entrées pour les mots à suggérer.
+	Return a string of the keyboard.
+
+	uint maxLength: The max length.
+	const std::string &Text: Const Reference to the Text.
+	const std::vector<std::unique_ptr<StoreEntry>> &entries: Const Reference of all entries for the words to suggest.
 */
 std::string Input::setkbdString(uint maxLength, const std::string &Text, const std::vector<std::unique_ptr<StoreEntry>> &entries) {
-	C3D_FrameEnd(0); // Nécessaire pour que le système ne gèle pas.
+	C3D_FrameEnd(0); // Needed, so the system will not freeze.
 
 	SwkbdState state;
 	swkbdInit(&state, SWKBD_TYPE_NORMAL, 2, maxLength);
@@ -50,7 +51,7 @@ std::string Input::setkbdString(uint maxLength, const std::string &Text, const s
 		words.resize(entries.size());
 
 		for (uint i = 0; i < entries.size(); i++) {
-			/* Vérification pour non nullptr. */
+			/* Checking for not nullptr. */
 			if (entries[i]) swkbdSetDictWord(&words[i], StringUtils::lower_case(entries[i]->GetTitle()).c_str(), entries[i]->GetTitle().c_str());
 			else swkbdSetDictWord(&words[i], "", "");
 		}

@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 
 #include "json.hpp"
 #include <string>
+#include <vector>
 
 enum favoriteMarks {
 	STAR = 1 << 0,
@@ -43,17 +44,52 @@ public:
 	Meta();
 	~Meta() { this->SaveCall(); };
 
-	std::string GetUpdated(const std::string &EshopName, const std::string &entry) const;
-	int GetMarks(const std::string &EshopName, const std::string &entry) const;
-	bool UpdateAvailable(const std::string &EshopName, const std::string &entry, const std::string &updated) const;
+	std::string GetUpdated(const std::string &eshopName, const std::string &entry) const;
+	int GetMarks(const std::string &eshopName, const std::string &entry) const;
+	bool UpdateAvailable(const std::string &eshopName, const std::string &entry, const std::string &updated) const;
+	std::vector<std::string> GetInstalled(const std::string &eshopName, const std::string &entry) const;
 
-	void SetUpdated(const std::string &EshopName, const std::string &entry, const std::string &updated) {
-		this->metadataJson[EshopName][entry]["updated"] = updated;
+	void SetUpdated(const std::string &eshopName, const std::string &entry, const std::string &updated) {
+		this->metadataJson[eshopName][entry]["updated"] = updated;
 	};
 
-	void SetMarks(const std::string &EshopName, const std::string &entry, int marks) {
-		this->metadataJson[EshopName][entry]["marks"] = marks;
+	void SetMarks(const std::string &eshopName, const std::string &entry, int marks) {
+		this->metadataJson[eshopName][entry]["marks"] = marks;
 	};
+
+	/* TODO: Handle this better. */
+	void SetInstalled(const std::string &eshopName, const std::string &entry, const std::string &name) {
+		const std::vector<std::string> installs = this->GetInstalled(eshopName, entry);
+		bool write = true;
+
+		if (!installs.empty()) {
+			write = !installs.empty();
+
+			for (int i = 0; i < (int)installs.size(); i++) {
+				if (installs[i] == name) {
+					write = false;
+					break;
+				}
+			}
+		}
+
+		if (write) this->metadataJson[eshopName][entry]["installed"] += name;
+	}
+
+	/* Remove installed state from a download list entry. */
+	void RemoveInstalled(const std::string &eshopName, const std::string &entry, const std::string &name) {
+		const std::vector<std::string> installs = this->GetInstalled(eshopName, entry);
+		if (installs.empty()) return;
+
+		for (int i = 0; i < (int)installs.size(); i++) {
+			if (installs[i] == name) {
+				this->metadataJson[eshopName][entry]["installed"].erase(i);
+				break;
+			}
+		}
+
+		if (this->metadataJson[eshopName][entry]["installed"].empty() && this->metadataJson[eshopName][entry].contains("updated")) this->metadataJson[eshopName][entry].erase("updated");
+	}
 
 	void ImportMetadata();
 	void SaveCall();

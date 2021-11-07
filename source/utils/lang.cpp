@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -39,17 +39,25 @@ std::string Lang::get(const std::string &key) {
 void Lang::load(const std::string &lang) {
 	FILE *values;
 
-	/* Vérifier si il existe. */
+	/* Check if exist. */
 	if (access(("romfs:/lang/" + lang + "/app.json").c_str(), F_OK) == 0) {
-		values = fopen(std::string(("romfs:/lang/" + lang + "/app.json")).c_str(), "rt");
-		appJson = nlohmann::json::parse(values, nullptr, false);
-		fclose(values);
+		values = fopen(("romfs:/lang/" + lang + "/app.json").c_str(), "rt");
+		if (values) {
+			appJson = nlohmann::json::parse(values, nullptr, false);
+			fclose(values);
+		}
+		if (appJson.is_discarded())
+			appJson = { };
 		return;
 
 	} else {
-		values = fopen(("romfs:/lang/en/app.json"), "rt");
-		appJson = nlohmann::json::parse(values, nullptr, false);
-		fclose(values);
+		values = fopen("romfs:/lang/en/app.json", "rt");
+		if (values) {
+			appJson = nlohmann::json::parse(values, nullptr, false);
+			fclose(values);
+		}
+		if (appJson.is_discarded())
+			appJson = { };
 		return;
 	}
 }

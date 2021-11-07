@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Core
-*   Copyright (C) 2020 Universal-Team
+*   Copyright (C) 2020-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -53,8 +53,17 @@ namespace Gui {
 	/*
 		Initialize the GUI with Citro2D & Citro3D and initialize the Textbuffer.
 		call this when initializing.
+
+		fontRegion: The region to use for the system font.
 	*/
-	Result init(void);
+	Result init(CFG_Region fontRegion = CFG_REGION_USA);
+
+	/*
+		Load a system font.
+
+		fontRegion: The region to use for the system font.
+	*/
+	void loadSystemFont(CFG_Region fontRegion = CFG_REGION_USA);
 
 	/*
 		Load a Font. (BCFNT)
@@ -95,8 +104,10 @@ namespace Gui {
 
 	/*
 		Reinit the GUI.
+
+		fontRegion: The region to use for the system font.
 	*/
-	Result reinit(void);
+	Result reinit(CFG_Region fontRegion = CFG_REGION_USA);
 
 	/*
 		Draws a centered String.
@@ -110,7 +121,7 @@ namespace Gui {
 		fnt: The Font which should be used. Uses SystemFont by default. (Optional!)
 		int flags: C2D text flags to use. (Optional!)
 	*/
-	void DrawStringCentered(float x, float y, float size, u32 color, std::string Text, int maxWidth = 0, int maxHeight = 0, C2D_Font fnt = nullptr, int flags = 0);
+	void DrawStringCentered(float x, float y, float size, u32 color, const std::string &Text, int maxWidth = 0, int maxHeight = 0, C2D_Font fnt = nullptr, int flags = 0);
 
 	/*
 		Draws a String.
@@ -125,7 +136,7 @@ namespace Gui {
 		fnt: The Font which should be used. Uses SystemFont by default. (Optional!)
 		flags: C2D text flags to use.
 	*/
-	void DrawString(float x, float y, float size, u32 color, std::string Text, int maxWidth = 0, int maxHeight = 0, C2D_Font fnt = nullptr, int flags = 0);
+	void DrawString(float x, float y, float size, u32 color, const std::string &Text, int maxWidth = 0, int maxHeight = 0, C2D_Font fnt = nullptr, int flags = 0);
 
 	/*
 		Get the width of a String.
@@ -134,7 +145,7 @@ namespace Gui {
 		Text: The Text where the width should be getted from.
 		fnt: The Font which should be used. Uses SystemFont by default. (Optional!)
 	*/
-	float GetStringWidth(float size, std::string Text, C2D_Font fnt = nullptr);
+	float GetStringWidth(float size, const std::string &Text, C2D_Font fnt = nullptr);
 
 	/*
 		Get the size of a String.
@@ -145,7 +156,7 @@ namespace Gui {
 		Text: The Text where the size should be getted from.
 		fnt: The Font which should be used. Uses SystemFont by default. (Optional!)
 	*/
-	void GetStringSize(float size, float *width, float *height, std::string Text, C2D_Font fnt = nullptr);
+	void GetStringSize(float size, float *width, float *height, const std::string &Text, C2D_Font fnt = nullptr);
 
 	/*
 		Get the height of a String.
@@ -154,7 +165,7 @@ namespace Gui {
 		Text: The Text where the height should be getted from.
 		fnt: The Font which should be used. Uses SystemFont by default. (Optional!)
 	*/
-	float GetStringHeight(float size, std::string Text, C2D_Font fnt = nullptr);
+	float GetStringHeight(float size, const std::string &Text, C2D_Font fnt = nullptr);
 
 	/*
 		Draw a Rectangle.

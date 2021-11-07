@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -43,17 +43,20 @@ public:
 	std::string language() const { return this->v_language; };
 	void language(const std::string &v) { this->v_language = v; if (!this->changesMade) this->changesMade = true; };
 
-	/* Dernier Magasin. */
+	/* Last Store. */
 	std::string lastStore() const { return this->v_lastStore; };
 	void lastStore(const std::string &v) { this->v_lastStore = v; if (!this->changesMade) this->changesMade = true; };
 
-	/* Utilisation De La Liste Supérieure. */
+	/* Using Top List. */
 	bool list() const { return this->v_list; };
 	void list(bool v) { this->v_list = v; if (!this->changesMade) this->changesMade = true; };
 
-	/* Mise à Jour Automatique Au Démarrage. */
+	/* Auto update on boot. */
 	bool autoupdate() const { return this->v_autoUpdate; };
 	void autoupdate(bool v) { this->v_autoUpdate = v; if (!this->changesMade) this->changesMade = true; };
+
+	bool _3dsxInFolder() const { return this->v_3dsxInFolder; };
+	void _3dsxInFolder(bool v) { this->v_3dsxInFolder = v; if (!this->changesMade) this->changesMade = true; };
 
 	std::string _3dsxPath() const { return this->v_3dsxPath; };
 	void _3dsxPath(const std::string &v) { this->v_3dsxPath = v; if (!this->changesMade) this->changesMade = true; };
@@ -64,31 +67,42 @@ public:
 	std::string archPath() const { return this->v_archivePath; };
 	void archPath(const std::string &v) { this->v_archivePath = v; if (!this->changesMade) this->changesMade = true; };
 
-	/* Récupération d'anciennes métadonnées. */
+	std::string firmPath() const { return this->v_firmPath; };
+	void firmPath(const std::string &v) { this->v_firmPath = v; if (!this->changesMade) this->changesMade = true; };
+
+	/* Fetching old metadata. */
 	bool metadata() const { return this->v_metadata; };
 	void metadata(bool v) { this->v_metadata = v; if (!this->changesMade) this->changesMade = true; };
 
-	/* Vérification des Mises à Jour de Ghost eShop au Démarrage. */
+	/* Ghost eShop Update check on startup. */
 	bool updatecheck() const { return this->v_updateCheck; };
 	void updatecheck(bool v) { this->v_updateCheck = v; if (!this->changesMade) this->changesMade = true; };
 
-	/* Vérification des Mises à Jour de Ghost eShop au Démarrage. */
+	/* Ghost eShop Update check on startup. */
 	bool usebg() const { return this->v_showBg; };
 	void usebg(bool v) { this->v_showBg = v; if (!this->changesMade) this->changesMade = true; };
 
-	/* Si vous utilisez une police personnalisée. */
+	/* If using custom Font. */
 	bool customfont() const { return this->v_customFont; };
 	void customfont(bool v) { this->v_customFont = v; if (!this->changesMade) this->changesMade = true; };
 
-	/* Le chemin du raccourci. */
+	/* The shortcut path. */
 	std::string shortcut() const { return this->v_shortcutPath; };
 	void shortcut(const std::string &v) { this->v_shortcutPath = v; if (!this->changesMade) this->changesMade = true; };
 
 	/* If displaying changelog. */
 	bool changelog() const { return this->v_changelog; };
 	void changelog(bool v) { this->v_changelog = v; if (!this->changesMade) this->changesMade = true; };
+
+	/* The active Theme. */
+	std::string theme() const { return this->v_theme; };
+	void theme(const std::string &v) { this->v_theme = v; if (!this->changesMade) this->changesMade = true; };
+
+	/* If showing prompt if action failed / succeeded. */
+	bool prompt() const { return this->v_prompt; };
+	void prompt(bool v) { this->v_prompt = v; if (!this->changesMade) this->changesMade = true; };
 private:
-	/* Principalement aide. */
+	/* Mainly helper. */
 	bool getBool(const std::string &key);
 	void setBool(const std::string &key, bool v);
 	int getInt(const std::string &key);
@@ -99,12 +113,12 @@ private:
 	nlohmann::json json;
 	bool changesMade = false;
 
-	std::string v_language = "en", v_lastStore = "ghosteshop.eshop",
+	std::string v_language = "en", v_lastStore = "ghosteshop.unistore",
 				v_3dsxPath = "sdmc:/3ds", v_ndsPath = "sdmc:", v_archivePath = "sdmc:",
-				v_shortcutPath = "sdmc:/3ds/GhosteShop/shortcuts";
+				v_shortcutPath = "sdmc:/3ds/Universal-Updater/shortcuts", v_firmPath = "sdmc:/luma/payloads", v_theme = "Default";
 
 	bool v_list = false, v_autoUpdate = true, v_metadata = true, v_updateCheck = true,
-		v_showBg = false, v_customFont = false, v_changelog = true;
+		v_showBg = false, v_customFont = false, v_changelog = true, v_prompt = true, v_3dsxInFolder = false;
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -39,13 +39,13 @@ struct DirEntry {
 };
 
 /*
-	Information de la structure de l'eShop
+	eShop Info struct.
 */
 struct EshopInfo {
 	std::string Title;
 	std::string Author;
 	std::string URL;
-	std::string File; // Permet de vérifier si le fichier ne contient PAS de barre oblique.
+	std::string File; // Used to check, if File does NOT contain a slash or so.
 	std::string FileName;
 	std::string Description;
 	int Version;
@@ -56,7 +56,6 @@ struct EshopInfo {
 bool nameEndsWith(const std::string &name, const std::vector<std::string> &extensionList);
 void getDirectoryContents(std::vector<DirEntry> &dirContents, const std::vector<std::string> &extensionList);
 void getDirectoryContents(std::vector<DirEntry> &dirContents);
-std::vector<std::string> getContents(const std::string &name, const std::vector<std::string> &extensionList);
 
 std::vector<EshopInfo> GetEshopInfo(const std::string &path);
 

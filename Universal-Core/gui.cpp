@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Core
-*   Copyright (C) 2020 Universal-Team
+*   Copyright (C) 2020-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@ bool currentScreen = false;
 bool fadeout = false, fadein = false, fadeout2 = false, fadein2 = false;
 int fadealpha = 0;
 int fadecolor = 0;
+CFG_Region loadedSystemFont = (CFG_Region)-1;
+float fontScaleFix = 1.0f;
 
 /*
 	Clear the Text Buffer.
@@ -73,8 +75,10 @@ void Gui::DrawSprite(C2D_SpriteSheet sheet, size_t imgindex, int x, int y, float
 
 	Contains initializing Citro2D, Citro3D and the screen targets.
 	Call this when initing the app.
+
+	fontRegion: The region to use for the system font.
 */
-Result Gui::init(void) {
+Result Gui::init(CFG_Region fontRegion) {
 	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
 	C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
 	C2D_Prepare();
@@ -86,8 +90,21 @@ Result Gui::init(void) {
 
 	/* Load Textbuffer. */
 	TextBuf = C2D_TextBufNew(4096);
-	Font = C2D_FontLoadSystem(CFG_REGION_USA); // Load System font.
+	fontScaleFix = C2D_FontGetInfo(nullptr)->tglp->cellHeight / 30.0f;
+	loadSystemFont(fontRegion);
 	return 0;
+}
+
+/*
+	Load a system font.
+
+	fontRegion: The region to use for the system font.
+*/
+void Gui::loadSystemFont(CFG_Region fontRegion) {
+	if(loadedSystemFont != fontRegion) {
+		Font = C2D_FontLoadSystem(fontRegion);
+		loadedSystemFont = fontRegion;
+	}
 }
 
 /*
@@ -151,13 +168,15 @@ void Gui::exit(void) {
 
 /*
 	Reinitialize the GUI.
+
+	fontRegion: The region to use for the system font.
 */
-Result Gui::reinit(void) {
+Result Gui::reinit(CFG_Region fontRegion) {
 	C2D_TextBufDelete(TextBuf);
 	C2D_Fini();
 	C3D_Fini();
 
-	return Gui::init();
+	return Gui::init(fontRegion);
 }
 
 /*
@@ -173,7 +192,7 @@ Result Gui::reinit(void) {
 	C2D_Font fnt: (Optional) The wanted C2D_Font. Is nullptr by default.
 	int flags: (Optional) C2D text flags to use.
 */
-void Gui::DrawStringCentered(float x, float y, float size, u32 color, std::string Text, int maxWidth, int maxHeight, C2D_Font fnt, int flags) {
+void Gui::DrawStringCentered(float x, float y, float size, u32 color, const std::string &Text, int maxWidth, int maxHeight, C2D_Font fnt, int flags) {
 	Gui::DrawString(x +(currentScreen ? 200 : 160), y, size, color, Text, maxWidth, maxHeight, fnt, flags | C2D_AlignCenter);
 }
 
@@ -190,13 +209,34 @@ void Gui::DrawStringCentered(float x, float y, float size, u32 color, std::strin
 	C2D_Font fnt: (Optional) The wanted C2D_Font. Is nullptr by default.
 	int flags: (Optional) C2D text flags to use.
 */
-void Gui::DrawString(float x, float y, float size, u32 color, std::string Text, int maxWidth, int maxHeight, C2D_Font fnt, int flags) {
+void Gui::DrawString(float x, float y, float size, u32 color, const std::string &Text, int maxWidth, int maxHeight, C2D_Font fnt, int flags) {
 	C2D_Text c2d_text;
 
 	if (fnt) C2D_TextFontParse(&c2d_text, fnt, TextBuf, Text.c_str());
 	else C2D_TextFontParse(&c2d_text, Font, TextBuf, Text.c_str());
 
 	C2D_TextOptimize(&c2d_text);
+
+	// Fix Citro2D messing up font scales on Chinese / Taiwanese / Korean consoles
+	size *= fontScaleFix;
+
+	if(!fnt) {
+		switch(loadedSystemFont) {
+			case CFG_REGION_CHN:
+				size *= 1.1f;
+				y += 3.0f * size;
+				break;
+			case CFG_REGION_KOR:
+				y += 3.0f * size;
+				break;
+			case CFG_REGION_TWN:
+				size *= 1.4f;
+				y += 3.0f * size;
+				break;
+			default:
+				break;
+		}
+	}
 
 	float heightScale;
 
@@ -225,7 +265,7 @@ void Gui::DrawString(float x, float y, float size, u32 color, std::string Text, 
 	std::string Text: The Text.
 	C2D_Font fnt: (Optional) The wanted C2D_Font. Is nullptr by default.
 */
-float Gui::GetStringWidth(float size, std::string Text, C2D_Font fnt) {
+float Gui::GetStringWidth(float size, const std::string &Text, C2D_Font fnt) {
 	float width = 0;
 
 	if (fnt) GetStringSize(size, &width, NULL, Text, fnt);
@@ -243,7 +283,7 @@ float Gui::GetStringWidth(float size, std::string Text, C2D_Font fnt) {
 	std::string Text: The Text.
 	C2D_Font fnt: (Optional) The wanted C2D_Font. Is nullptr by default.
 */
-void Gui::GetStringSize(float size, float *width, float *height, std::string Text, C2D_Font fnt) {
+void Gui::GetStringSize(float size, float *width, float *height, const std::string &Text, C2D_Font fnt) {
 	C2D_Text c2d_text;
 
 	if (fnt) C2D_TextFontParse(&c2d_text, fnt, TextBuf, Text.c_str());
@@ -260,11 +300,11 @@ void Gui::GetStringSize(float size, float *width, float *height, std::string Tex
 	std::string Text: The Text.
 	C2D_Font fnt: (Optional) The wanted C2D_Font. Is nullptr by default.
 */
-float Gui::GetStringHeight(float size, std::string Text, C2D_Font fnt) {
+float Gui::GetStringHeight(float size, const std::string &Text, C2D_Font fnt) {
 	float height = 0;
 
-	if (fnt) GetStringSize(size, NULL, &height, Text.c_str(), fnt);
-	else GetStringSize(size, NULL, &height, Text.c_str());
+	if (fnt) GetStringSize(size, NULL, &height, Text, fnt);
+	else GetStringSize(size, NULL, &height, Text);
 
 	return height;
 }
@@ -308,15 +348,17 @@ void Gui::DrawScreen(bool stack) {
 void Gui::ScreenLogic(u32 hDown, u32 hHeld, touchPosition touch, bool waitFade, bool stack) {
 	if (waitFade) {
 		if (!fadein && !fadeout && !fadein2 && !fadeout2) {
-			if (!stack) if (usedScreen) usedScreen->Logic(hDown, hHeld, touch);
+			if (!stack) {
+				if (usedScreen)	usedScreen->Logic(hDown, hHeld, touch);
 
-		} else {
-			if (!screens.empty()) screens.top()->Logic(hDown, hHeld, touch);
+			} else {
+				if (!screens.empty()) screens.top()->Logic(hDown, hHeld, touch);
+			}
 		}
 
 	} else {
 		if (!stack) {
-			if (usedScreen) usedScreen->Logic(hDown, hHeld, touch);
+			if (usedScreen)	usedScreen->Logic(hDown, hHeld, touch);
 
 		} else {
 			if (!screens.empty()) screens.top()->Logic(hDown, hHeld, touch);

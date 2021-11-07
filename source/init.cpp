@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -38,11 +38,13 @@ bool exiting = false, is3DSX = false, needUnloadFont = false;
 C2D_SpriteSheet sprites;
 int fadeAlpha = 0;
 u32 old_time_limit;
+std::unique_ptr<Theme> UIThemes = nullptr;
 std::unique_ptr<Sound> Music = nullptr;
 bool dspfirmFound = false;
+std::vector<std::pair<std::string, std::string>> Themes = { };
 
 /*
-	Set, si 3DSX ou CIA.
+	Set, if 3DSX or CIA.
 */
 static void getCurrentUsage(){
 	u64 id;
@@ -55,10 +57,10 @@ static void getCurrentUsage(){
 */
 static void InitMusic() {
 	if (access("sdmc:/3ds/dspfirm.cdc", F_OK) == 0) { // Ensure dspfirm dump exist.
-		if (access("romfs:/song/music.wav", F_OK) == 0) { // Ensure music.wav exist.
+		if (access("sdmc:/3ds/Universal-Updater/music.wav", F_OK) == 0) { // Ensure music.wav exist.
 			dspfirmFound = true;
 			ndspInit();
-			Music = std::make_unique<Sound>("romfs:/song/music.wav");
+			Music = std::make_unique<Sound>("sdmc:/3ds/Universal-Updater/music.wav");
 
 			Music->play();
 		}
@@ -88,13 +90,13 @@ bool touching(touchPosition touch, Structs::ButtonPos button) {
 }
 
 /*
-	Chargez la police personnalisée et utilisez-la à la place de SysFont, si elle est trouvée.
+	Load the custom font and use it instead of SysFont, if found.
 */
 void Init::LoadFont() {
 	if (config->customfont()) {
 		if (!needUnloadFont) {
-			if (access("sdmc:/3ds/GhosteShop/font.bcfnt", F_OK) == 0) {
-				Gui::loadFont(font, "sdmc:/3ds/GhosteShop/font.bcfnt");
+			if (access("sdmc:/3ds/Universal-Updater/font.bcfnt", F_OK) == 0) {
+				Gui::loadFont(font, "sdmc:/3ds/Universal-Updater/font.bcfnt");
 				needUnloadFont = true;
 			}
 		}
@@ -102,7 +104,7 @@ void Init::LoadFont() {
 }
 
 /*
-	Déchargez la police personnalisée et revenez à SysFont.
+	Unload the custom font and switch back to SysFont.
 */
 void Init::UnloadFont() {
 	if (needUnloadFont) {
@@ -113,60 +115,72 @@ void Init::UnloadFont() {
 }
 
 /*
-	Initialiser Ghost eShop.
+	Initialize Ghost eShop.
 */
 Result Init::Initialize() {
 	gfxInitDefault();
 	romfsInit();
-	Gui::init();
 
 	cfguInit();
+	ptmuInit();
 	amInit();
 	acInit();
 
+	/* Create Directories, if missing. */
+	mkdir("sdmc:/3ds", 0777);
+	mkdir("sdmc:/3ds/Universal-Updater", 0777);
+	mkdir("sdmc:/3ds/Universal-Updater/stores", 0777);
+	mkdir("sdmc:/3ds/Universal-Updater/shortcuts", 0777);
+	mkdir("sdmc:/3ds/Universal-Updater/GhosteShop", 0777);
+
+	config = std::make_unique<Config>();
+	UIThemes = std::make_unique<Theme>();
+	UIThemes->LoadTheme(config->theme());
+	Themes = UIThemes->ThemeNames();
+
+	CFG_Region region = CFG_REGION_USA;
+	if(config->language() == "cn-SI") {
+		region = CFG_REGION_CHN;
+	} else if(config->language() == "cn-TR") {
+		region = CFG_REGION_TWN;
+	} else if(config->language() == "kr") {
+		region = CFG_REGION_KOR;
+	}
+	Gui::init(region);
+
 	APT_GetAppCpuTimeLimit(&old_time_limit);
-	APT_SetAppCpuTimeLimit(30); // Nécessaire pour que le scanner QR fonctionne.
+	APT_SetAppCpuTimeLimit(30); // Needed for QR Scanner to work.
 	getCurrentUsage();
 	aptSetSleepAllowed(false);
 	hidSetRepeatParameters(20, 8);
 
-	/* Créer des répertoires, s’il manque. */
-	mkdir("sdmc:/3ds", 0777);
-	mkdir("sdmc:/3ds/GhosteShop", 0777);
-	mkdir("sdmc:/3ds/GhosteShop/stores", 0777);
-	mkdir("sdmc:/3ds/GhosteShop/shortcuts", 0777);
-
-	config = std::make_unique<Config>();
 	Lang::load(config->language());
 
 	Gui::loadSheet("romfs:/gfx/sprites.t3x", sprites);
 	LoadFont();
 
-	osSetSpeedupEnable(true); // Activer l’accélération pour les utilisateurs de new3DS.
+	osSetSpeedupEnable(true); // Enable speed-up for New 3DS users.
 
 	/* Check here for updates. */
 	if (config->updatecheck()) UpdateAction();
 
-	if (exiting) return -1; // En cas de succès de la mise à jour.
+	if (exiting) return -1; // In case the update was successful.
 
 	Gui::setScreen(std::make_unique<MainScreen>(), false, false);
 	InitMusic();
-
-	/* Initialize Queue System LightLock. */
-	LightLock_Init(&QueueSystem::lock);
 
 	return 0;
 }
 
 /*
-	MainLoop de Ghost eShop.
+	MainLoop of Ghost eShop.
 */
 Result Init::MainLoop() {
 	bool fullExit = false;
 
 	if (Initialize() == -1) fullExit = true;
 
-	/* Boucle tant que le statut n’est pas fullExit. */
+	/* Loop as long as the status is not fullExit. */
 	while (aptMainLoop() && !fullExit) {
 		hidScanInput();
 		hHeld = hidKeysHeld();
@@ -178,13 +192,13 @@ Result Init::MainLoop() {
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 		C2D_TargetClear(Top, C2D_Color32(0, 0, 0, 0));
 		C2D_TargetClear(Bottom, C2D_Color32(0, 0, 0, 0));
-
 		Gui::DrawScreen(false);
-		if (!exiting) Gui::ScreenLogic(hDown, hHeld, touch, true, false);
 		C3D_FrameEnd(0);
 
+		if (!exiting) Gui::ScreenLogic(hDown, hHeld, touch, true, false);
+
 		if (exiting) {
-			if (hDown & KEY_START) fullExit = true; // En option, plus vite.
+			if (hDown & KEY_START) fullExit = true; // Make it optionally faster.
 
 			if (fadeAlpha < 255) {
 				fadeAlpha += 4;
@@ -193,13 +207,13 @@ Result Init::MainLoop() {
 		}
 	}
 
-	/* Quitter tous les services et quitter l’application. */
+	/* Exit all services and exit the app. */
 	Exit();
 	return 0;
 }
 
 /*
-	Fermer Ghost eShop.
+	Exit Ghost eShop.
 */
 Result Init::Exit() {
 	Gui::exit();
@@ -209,10 +223,11 @@ Result Init::Exit() {
 	gfxExit();
 	cfguExit();
 	config->save();
+	ptmuExit();
 	acExit();
 	amExit();
 
-    if (old_time_limit != UINT32_MAX) APT_SetAppCpuTimeLimit(old_time_limit); // Rétablir l’ancienne limite.
+    if (old_time_limit != UINT32_MAX) APT_SetAppCpuTimeLimit(old_time_limit); // Restore old limit.
 	aptSetSleepAllowed(true);
 
 	romfsExit();

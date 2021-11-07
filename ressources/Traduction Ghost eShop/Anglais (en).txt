@@ -1,0 +1,295 @@
+Eden for the 3D banner
+
+Put 3DSX files in folder
+
+If they are enabled, 3DSX files will be put in a folder with the same name than the last set folder
+
+%s canceled!
+
+%s failed!
+
+Action required!
+
+%s succeeded!
+
+Active Theme
+
+Invalid argument.\nPlease check the xml file for proper arguments.
+
+Ascending
+
+Author
+
+Auto-Update Settings
+
+Auto-update settings...
+	
+Auto-update eShop
+	
+With this, the last used eShop will be updated automatically when launching Ghost eShop.
+	
+Auto-update Ghost eShop
+	
+When this option is enabled, Ghost eShop will check for updates every time it's opens.
+	
+Available Downloads
+	
+Would you like to boot this title?
+	
+Anonyku for broadcast on YouTube
+	
+Cancel
+	
+Category
+	
+Change 3DSX path
+	
+Change archive path
+	
+Change firm path
+	
+Change NDS path
+	
+Change shortcut path
+	
+Checking for eShop updates...
+	
+Checking for Ghost eShop updates...
+	
+Citra & Nintendo for the icons
+
+Press \uE000 to confirm, \uE001 to cancel.
+	
+Please Connect to WiFi.
+	
+Confirm
+	
+Console
+	
+- All Translators & Contributors
+	
+Copying... %s / %s (%.2f%%)
+	
+Copy Error!
+	
+Would you like to create a shortcut?
+	
+Credits
+	
+Current version: 
+	
+Currently extracting:
+	
+Use Custom Font
+	
+If enabled, 'sdmc:/3ds/GhosteShop/font.bcfnt' will be used instead of the system font, if found.
+
+Delete Error!
+	
+Are you sure you want to delete this Directory?
+
+Deleting unneeded file...
+
+Deleting...
+
+Descending
+	
+Direction
+	
+Directory Settings
+	
+Directory settings...
+	
+Done!
+	
+Download Error!
+	
+Download Failed!
+	
+Speed: %lld KiB/s
+	
+Downloading... %s / %s (%.2f%%)
+	
+Downloading compatible font...
+	
+Downloading Spritesheet...
+	
+Downloading Spritesheet %i of %i...
+	
+Downloading GhosteShop.eshop...
+	
+Downloading Ghost eShop...
+	
+Downloading eShop...
+	
+Enter the shortcut description.
+	
+Enter what you like to search.
+	
+Enter the shortcut filename (without extension).
+	
+Enter the shortcut title.
+	
+Enter the URL of the eShop.
+	
+Entries
+	
+Use eShop BG
+	
+When enabled, the eShop's provided BG will be shown instead of the solid BG color for the top screen.
+	
+This eShop is invalid and cannot be\nloaded with Ghost eShop.\nMaybe check if there are any Syntax errors?
+	
+Your version of Ghost eShop is\ntoo old to use this eShop.\nPlease update to the latest version.",
+	
+This eShop is outdated and cannot be used\nwith this version of Ghost eShop.\nPlease ask the creator to update it.
+	
+Would you like to execute this entry?
+	
+Exit Ghost eShop
+	
+Extracting... %s / %s (%.2f%%)
+	
+Extract error!
+	
+This Feature may have side effects while the Queue is running.\nAre you sure you want to continue?
+	
+Fetching old metadata...
+	
+Fetching recommended eShop...
+	
+file extracted.
+	
+Seems like a '/' is included in file name, which is not supported.\nPlease change 'sheet' of filename
+	
+File: %d / %d
+	
+files extracted.
+	
+Filter to:
+	
+Full credits can be found on GitHub
+	
+Grid
+	
+GUI Settings
+	
+GUI settings...
+	
+Include in results:
+	
+Installing... %s / %s (%.2f%%)
+	
+Installing Ghost eShop...
+	
+Invalid eShop
+	
+Press any key to continue.
+	
+Language
+	
+Last updated
+
+License
+	
+List
+	
+Loading Screenshot...
+	
+Loading Spritesheet %i of %i...
+	
+MediaType NAND
+	
+MediaType SD
+	
+Move Error!
+
+No Additional Content Available
+	
+No downloads available
+	
+No License
+	
+No Screenshots available
+	
+Not Implemented Yet
+	
+Copying
+	
+Deleting
+	
+Downloading
+	
+Extracting
+	
+Installing
+	
+Moving
+	
+Waiting
+	
+Queue
+	
+Queue position
+	
+Step: %d / %d
+	
+Recommended eShop
+	
+Revision
+	
+Screenshot %d / %d
+	
+Screenshot could not be loaded.
+	
+Press  to change and  to zoom
+	
+Search and Filters
+	
+Select a Theme
+	
+Select a directory
+	
+Choose the language
+	
+Select eShop
+	
+Select a eShop
+	
+Add Selection to Queue
+	
+Settings
+	
+Seems like a '/' is included, which is not supported.\nPlease change 'sheet' to filename only.
+
+Shortcut created!
+	
+Size
+	
+Sort By
+
+Sorting
+	
+Press START to select the current folder
+	
+Store Info
+	
+Syntax Error!
+	
+Title
+	
+Top Style
+	
+Update Available!
+	
+Update done! Please re-open Ghost eShop.
+	
+Updating Spritesheet...
+	
+Updating Spritesheet %i of %i...
+	
+Updating eShop...
+	
+Version
+
+Full credits and changelog can be found on the wiki

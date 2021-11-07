@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@ public:
 	std::string GetVersion() const { return this->Version; };
 	std::string GetConsole() const { return this->Console; };
 	std::string GetLastUpdated() const { return this->LastUpdated; };
-	std::string GetSize() const { return this->Size; };
 	std::string GetAdditionalcontent() const { return this->Additional; };
 	int GetMarks() const { return this->Marks; };
 
@@ -67,7 +66,7 @@ public:
 	};
 
 private:
-	std::string Title, Author, Description, Category, Version, Console, LastUpdated, Size, MarkString, Additional, ReleaseNotes;
+	std::string Title, Author, Description, Category, Version, Console, LastUpdated, MarkString, Additional, ReleaseNotes;
 	C2D_Image Icon;
 	int SheetIndex, EntryIndex, Marks;
 	std::vector<std::string> FullCategory, FullConsole, Sizes, Screenshots, ScreenshotNames;

@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 *         reasonable ways as different from the original version.
 */
 
+#include "common.hpp"
+#include "files.hpp"
 #include "storeUtils.hpp"
 #include "structs.hpp"
 
@@ -32,42 +34,46 @@ static const Structs::ButtonPos btn = { 45, 215, 24, 24 };
 static const Structs::ButtonPos sshot = { 75, 215, 24, 24 };
 static const Structs::ButtonPos notes = { 105, 215, 24, 24 };
 extern bool checkWifiStatus();
+extern bool QueueRuns;
 
 /*
-	Dessinez la partie Entry Info.
-	const std::unique_ptr<Store> &store : Const Référence à la classe Store.
-	const std::unique_ptr<StoreEntry> &entry : Const Référence au StoreEntry actuel.
+	Draw the Entry Info part.
+
+	const std::unique_ptr<StoreEntry> &entry: Const Reference to the current StoreEntry.
 */
-void StoreUtils::DrawEntryInfo(const std::unique_ptr<Store> &store, const std::unique_ptr<StoreEntry> &entry) {
-	if (store && entry) { // Assurez-vous que l’enregistrement et la saisie ne sont pas un nullptr.
-		Gui::Draw_Rect(40, 0, 280, 36, ENTRY_BAR_COLOR);
-		Gui::Draw_Rect(40, 36, 280, 1, ENTRY_BAR_OUTL_COLOR);
+void StoreUtils::DrawEntryInfo(const std::unique_ptr<StoreEntry> &entry) {
+	if (StoreUtils::store && entry) { // Ensure, store & entry is not a nullptr.
+		Gui::Draw_Rect(40, 0, 280, 36, UIThemes->EntryBar());
+		Gui::Draw_Rect(40, 36, 280, 1, UIThemes->EntryOutline());
 
-		Gui::DrawStringCentered(17, 0, 0.6, TEXT_COLOR, entry->GetTitle(), 273, 0, font);
-		Gui::DrawStringCentered(17, 20, 0.4, TEXT_COLOR, entry->GetAuthor(), 273, 0, font);
-		Gui::DrawStringCentered(17, 50, 0.4, TEXT_COLOR, entry->GetDescription(), 248, 0, font, C2D_WordWrap);
+		Gui::DrawStringCentered(17, 0, 0.6, UIThemes->TextColor(), entry->GetTitle(), 273, 0, font);
+		Gui::DrawStringCentered(17, 20, 0.4, UIThemes->TextColor(), entry->GetAuthor(), 273, 0, font);
+		Gui::DrawStringCentered(17, 50, 0.4, UIThemes->TextColor(), entry->GetDescription(), 248, 0, font, C2D_WordWrap);
 
-		Gui::DrawString(61, 130, 0.45, TEXT_COLOR, Lang::get("VERSION") + ": " + entry->GetVersion(), 248, 0, font);
-		Gui::DrawString(61, 145, 0.45, TEXT_COLOR, Lang::get("CATEGORY") + ": " + entry->GetCategory(), 248, 0, font);
-		Gui::DrawString(61, 160, 0.45, TEXT_COLOR, Lang::get("CONSOLE") + ": " + entry->GetConsole(), 248, 0, font);
-		Gui::DrawString(61, 175, 0.45, TEXT_COLOR, Lang::get("SIZE") + ": " + entry->GetSize(), 248, 0, font);
-		Gui::DrawString(61, 195, 0.45, TEXT_COLOR, entry->GetAdditionalcontent(), 248, 0, font);
+		Gui::DrawString(53, 130, 0.45, UIThemes->TextColor(), Lang::get("VERSION") + ": " + entry->GetVersion(), 248, 0, font);
+		Gui::DrawString(53, 145, 0.45, UIThemes->TextColor(), Lang::get("CATEGORY") + ": " + entry->GetCategory(), 248, 0, font);
+		Gui::DrawString(53, 160, 0.45, UIThemes->TextColor(), Lang::get("CONSOLE") + ": " + entry->GetConsole(), 248, 0, font);
+		Gui::DrawString(53, 190, 0.45, UIThemes->TextColor(), entry->GetAdditionalcontent(), 248, 0, font);
 
 		GFX::DrawBox(btn.x, btn.y, btn.w, btn.h, false);
-		if (!entry->GetScreenshots().empty()) GFX::DrawSprite(sprites_screenshot_idx, sshot.x, sshot.y);
-		if (entry->GetReleaseNotes() != "") GFX::DrawSprite(sprites_notes_idx, notes.x, notes.y);
-		Gui::DrawString(btn.x + 5, btn.y + 2, 0.6f, TEXT_COLOR, "★", 0, 0, font);
+		if (!entry->GetScreenshots().empty()) GFX::DrawIcon(sprites_screenshot_idx, sshot.x, sshot.y, UIThemes->TextColor());
+		if (entry->GetReleaseNotes() != "") GFX::DrawIcon(sprites_notes_idx, notes.x, notes.y, UIThemes->TextColor());
+		Gui::DrawString(btn.x + 5, btn.y + 2, 0.6f, UIThemes->TextColor(), "★", 0, 0, font);
 	}
 }
 
 /*
-	La poignée EntryInfo.
-	Ici vous pouvez..
-	- Accédez à la liste de téléchargement en appuyant sur « A ».
-	- Montrez le MarkMenu avec START.
-	bool &showMark : Référence à showMark.. pour afficher le menu mark.
-	bool &fetch : Référence à fetch, pour que nous sachions, si nous avons besoin de fetch,
-	quand nous accédons à la liste de téléchargement.
+	The EntryInfo handle.
+	Here you can..
+
+	- Go to the download list, by pressing `A`.
+	- Show the MarkMenu with START.
+
+	bool &showMark: Reference to showMark.. to show the mark menu.
+	bool &fetch: Reference to fetch, so we know, if we need to fetch, when accessing download list.
+	bool &sFetch: Reference to the screenshot fetch.
+	int &mode: Reference to the store mode.
+	const std::unique_ptr<StoreEntry> &entry: The store Entry.
 */
 void StoreUtils::EntryHandle(bool &showMark, bool &fetch, bool &sFetch, int &mode, const std::unique_ptr<StoreEntry> &entry) {
 	if (entry) {
@@ -76,8 +82,15 @@ void StoreUtils::EntryHandle(bool &showMark, bool &fetch, bool &sFetch, int &mod
 		if ((hDown & KEY_Y) || (hDown & KEY_TOUCH && touching(touch, sshot))) {
 			if (!entry->GetScreenshots().empty()) {
 				if (checkWifiStatus()) {
-					sFetch = true;
-					mode = 6;
+					if (QueueRuns) {
+						if (!Msg::promptMsg(Lang::get("FEATURE_SIDE_EFFECTS"))) return;
+						sFetch = true;
+						mode = 6;
+
+					} else {
+						sFetch = true;
+						mode = 6;
+					}
 				}
 			}
 		}

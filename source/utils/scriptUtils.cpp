@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 extern bool showProgressBar;
 extern ProgressBar progressbarType;
 extern char progressBarMsg[128];
-extern int filesExtracted;
+extern int filesExtracted, extractFilesCount;
 
 extern void downloadFailed();
 static Thread thread;
@@ -48,29 +48,36 @@ bool ScriptUtils::matchPattern(const std::string &pattern, const std::string &te
 }
 
 /* Remove a File. */
-Result ScriptUtils::removeFile(const std::string &file, const std::string &message) {
+Result ScriptUtils::removeFile(const std::string &file, const std::string &message, bool isARG) {
 	std::string out;
 	out = std::regex_replace(file, std::regex("%ARCHIVE_DEFAULT%"), config->archPath());
+	out = std::regex_replace(out, std::regex("%3DSX%/(.*)\\.(.*)"), config->_3dsxPath() + (config->_3dsxInFolder() ? "/$1/$1.$2" : "/$1.$2"));
 	out = std::regex_replace(out, std::regex("%3DSX%"), config->_3dsxPath());
 	out = std::regex_replace(out, std::regex("%NDS%"), config->ndsPath());
+	out = std::regex_replace(out, std::regex("%FIRM%"), config->firmPath());
 
 	Result ret = NONE;
 	if (access(out.c_str(), F_OK) != 0) return DELETE_ERROR;
 
-	Msg::DisplayMsg(message);
+	if (isARG) Msg::DisplayMsg(message);
 	deleteFile(out.c_str());
 	return ret;
 }
 
 /* Boot a title. */
-void ScriptUtils::bootTitle(const std::string &TitleID, bool isNAND, const std::string &message) {
+void ScriptUtils::bootTitle(const std::string &TitleID, bool isNAND, const std::string &message, bool isARG) {
 	std::string MSG = Lang::get("BOOT_TITLE") + "\n\n";
 	if (isNAND)	MSG += Lang::get("MEDIATYPE_NAND") + "\n" + TitleID;
 	else MSG += Lang::get("MEDIATYPE_SD") + "\n" + TitleID;
 
 	const u64 ID = std::stoull(TitleID, 0, 16);
-	if (Msg::promptMsg(MSG)) {
-		Msg::DisplayMsg(message);
+	if (isARG) {
+		if (Msg::promptMsg(MSG)) {
+			Msg::DisplayMsg(message);
+			Title::Launch(ID, isNAND ? MEDIATYPE_NAND : MEDIATYPE_SD);
+		}
+
+	} else {
 		Title::Launch(ID, isNAND ? MEDIATYPE_NAND : MEDIATYPE_SD);
 	}
 }
@@ -90,11 +97,16 @@ Result ScriptUtils::copyFile(const std::string &source, const std::string &desti
 
 	std::string _source, _dest;
 	_source = std::regex_replace(source, std::regex("%ARCHIVE_DEFAULT%"), config->archPath());
+	_source = std::regex_replace(_source, std::regex("%3DSX%/(.*)\\.(.*)"), config->_3dsxPath() + (config->_3dsxInFolder() ? "/$1/$1.$2" : "/$1.$2"));
 	_source = std::regex_replace(_source, std::regex("%3DSX%"), config->_3dsxPath());
 	_source = std::regex_replace(_source, std::regex("%NDS%"), config->ndsPath());
+	_source = std::regex_replace(_source, std::regex("%FIRM%"), config->firmPath());
+
 	_dest = std::regex_replace(destination, std::regex("%ARCHIVE_DEFAULT%"), config->archPath());
+	_dest = std::regex_replace(_dest, std::regex("%3DSX%/(.*)\\.(.*)"), config->_3dsxPath() + (config->_3dsxInFolder() ? "/$1/$1.$2" : "/$1.$2"));
 	_dest = std::regex_replace(_dest, std::regex("%3DSX%"), config->_3dsxPath());
 	_dest = std::regex_replace(_dest, std::regex("%NDS%"), config->ndsPath());
+	_dest = std::regex_replace(_dest, std::regex("%FIRM%"), config->firmPath());
 
 	if (isARG) {
 		snprintf(progressBarMsg, sizeof(progressBarMsg), message.c_str());
@@ -122,23 +134,25 @@ Result ScriptUtils::copyFile(const std::string &source, const std::string &desti
 	return ret;
 }
 
-/*
-	Rename / Move a file.
-*/
-Result ScriptUtils::renameFile(const std::string &oldName, const std::string &newName, const std::string &message) {
-
+/* Rename / Move a file. */
+Result ScriptUtils::renameFile(const std::string &oldName, const std::string &newName, const std::string &message, bool isARG) {
 	Result ret = NONE;
 	if (access(oldName.c_str(), F_OK) != 0) return MOVE_ERROR;
 
 	std::string old, _new;
 	old = std::regex_replace(oldName, std::regex("%ARCHIVE_DEFAULT%"), config->archPath());
+	old = std::regex_replace(old, std::regex("%3DSX%/(.*)\\.(.*)"), config->_3dsxPath() + (config->_3dsxInFolder() ? "/$1/$1.$2" : "/$1.$2"));
 	old = std::regex_replace(old, std::regex("%3DSX%"), config->_3dsxPath());
 	old = std::regex_replace(old, std::regex("%NDS%"), config->ndsPath());
+	old = std::regex_replace(old, std::regex("%FIRM%"), config->firmPath());
+
 	_new = std::regex_replace(newName, std::regex("%ARCHIVE_DEFAULT%"), config->archPath());
+	_new = std::regex_replace(_new, std::regex("%3DSX%/(.*)\\.(.*)"), config->_3dsxPath() + (config->_3dsxInFolder() ? "/$1/$1.$2" : "/$1.$2"));
 	_new = std::regex_replace(_new, std::regex("%3DSX%"), config->_3dsxPath());
 	_new = std::regex_replace(_new, std::regex("%NDS%"), config->ndsPath());
+	_new = std::regex_replace(_new, std::regex("%FIRM%"), config->firmPath());
 
-	Msg::DisplayMsg(message);
+	if (isARG) Msg::DisplayMsg(message);
 
 	/* TODO: Kinda avoid that? */
 	makeDirs(_new.c_str());
@@ -146,14 +160,14 @@ Result ScriptUtils::renameFile(const std::string &oldName, const std::string &ne
 	return ret;
 }
 
-/*
-	Download from GitHub Release.
-*/
+/* Download from GitHub Release. */
 Result ScriptUtils::downloadRelease(const std::string &repo, const std::string &file, const std::string &output, bool includePrereleases, const std::string &message, bool isARG) {
 	std::string out;
-	out = std::regex_replace(output, std::regex("%3DSX%"), config->_3dsxPath());
+	out = std::regex_replace(output, std::regex("%3DSX%/(.*)\\.(.*)"), config->_3dsxPath() + (config->_3dsxInFolder() ? "/$1/$1.$2" : "/$1.$2"));
+	out = std::regex_replace(out, std::regex("%3DSX%"), config->_3dsxPath());
 	out = std::regex_replace(out, std::regex("%NDS%"), config->ndsPath());
 	out = std::regex_replace(out, std::regex("%ARCHIVE_DEFAULT%"), config->archPath());
+	out = std::regex_replace(out, std::regex("%FIRM%"), config->firmPath());
 
 	Result ret = NONE;
 
@@ -168,12 +182,13 @@ Result ScriptUtils::downloadRelease(const std::string &repo, const std::string &
 	}
 
 	if (downloadFromRelease("https://github.com/" + repo, file, out, includePrereleases) != 0) {
-		if (isARG) showProgressBar = false;
-
-		downloadFailed();
 		ret = FAILED_DOWNLOAD;
 
 		if (isARG) {
+			showProgressBar = false;
+
+			downloadFailed();
+
 			threadJoin(thread, U64_MAX);
 			threadFree(thread);
 		}
@@ -189,14 +204,14 @@ Result ScriptUtils::downloadRelease(const std::string &repo, const std::string &
 	return ret;
 }
 
-/*
-	Download a file.
-*/
+/* Download a file. */
 Result ScriptUtils::downloadFile(const std::string &file, const std::string &output, const std::string &message, bool isARG) {
 	std::string out;
-	out = std::regex_replace(output, std::regex("%3DSX%"), config->_3dsxPath());
+	out = std::regex_replace(output, std::regex("%3DSX%/(.*)\\.(.*)"), config->_3dsxPath() + (config->_3dsxInFolder() ? "/$1/$1.$2" : "/$1.$2"));
+	out = std::regex_replace(out, std::regex("%3DSX%"), config->_3dsxPath());
 	out = std::regex_replace(out, std::regex("%NDS%"), config->ndsPath());
 	out = std::regex_replace(out, std::regex("%ARCHIVE_DEFAULT%"), config->archPath());
+	out = std::regex_replace(out, std::regex("%FIRM%"), config->firmPath());
 
 	Result ret = NONE;
 
@@ -211,12 +226,13 @@ Result ScriptUtils::downloadFile(const std::string &file, const std::string &out
 	}
 
 	if (downloadToFile(file, out) != 0) {
-		if (isARG) showProgressBar = false;
-
-		downloadFailed();
 		ret = FAILED_DOWNLOAD;
 
 		if (isARG) {
+			showProgressBar = false;
+
+			downloadFailed();
+
 			threadJoin(thread, U64_MAX);
 			threadFree(thread);
 		}
@@ -233,14 +249,14 @@ Result ScriptUtils::downloadFile(const std::string &file, const std::string &out
 	return ret;
 }
 
-/*
-	Install CIA files.
-*/
+/* Install CIA files. */
 void ScriptUtils::installFile(const std::string &file, bool updatingSelf, const std::string &message, bool isARG) {
 	std::string in;
 	in = std::regex_replace(file, std::regex("%ARCHIVE_DEFAULT%"), config->archPath());
+	in = std::regex_replace(in, std::regex("%3DSX%/(.*)\\.(.*)"), config->_3dsxPath() + (config->_3dsxInFolder() ? "/$1/$1.$2" : "/$1.$2"));
 	in = std::regex_replace(in, std::regex("%3DSX%"), config->_3dsxPath());
 	in = std::regex_replace(in, std::regex("%NDS%"), config->ndsPath());
+	in = std::regex_replace(in, std::regex("%FIRM%"), config->firmPath());
 
 	if (isARG) {
 		snprintf(progressBarMsg, sizeof(progressBarMsg), message.c_str());
@@ -261,17 +277,23 @@ void ScriptUtils::installFile(const std::string &file, bool updatingSelf, const 
 	}
 }
 
-/*
-	Extract files.
-*/
-void ScriptUtils::extractFile(const std::string &file, const std::string &input, const std::string &output, const std::string &message, bool isARG) {
+/* Extract files. */
+Result ScriptUtils::extractFile(const std::string &file, const std::string &input, const std::string &output, const std::string &message, bool isARG) {
+	extractFilesCount = 0;
+	Result ret = NONE;
+
 	std::string out, in;
 	in = std::regex_replace(file, std::regex("%ARCHIVE_DEFAULT%"), config->archPath());
+	in = std::regex_replace(in, std::regex("%3DSX%/(.*)\\.(.*)"), config->_3dsxPath() + (config->_3dsxInFolder() ? "/$1/$1.$2" : "/$1.$2"));
 	in = std::regex_replace(in, std::regex("%3DSX%"), config->_3dsxPath());
 	in = std::regex_replace(in, std::regex("%NDS%"), config->ndsPath());
+	in = std::regex_replace(in, std::regex("%FIRM%"), config->firmPath());
+
 	out = std::regex_replace(output, std::regex("%ARCHIVE_DEFAULT%"), config->archPath());
+	out = std::regex_replace(out, std::regex("%3DSX%/(.*)\\.(.*)"), config->_3dsxPath() + (config->_3dsxInFolder() ? "/$1/$1.$2" : "/$1.$2"));
 	out = std::regex_replace(out, std::regex("%3DSX%"), config->_3dsxPath());
 	out = std::regex_replace(out, std::regex("%NDS%"), config->ndsPath());
+	out = std::regex_replace(out, std::regex("%FIRM%"), config->firmPath());
 
 	if (isARG) {
 		snprintf(progressBarMsg, sizeof(progressBarMsg), message.c_str());
@@ -286,13 +308,17 @@ void ScriptUtils::extractFile(const std::string &file, const std::string &input,
 	filesExtracted = 0;
 
 	getExtractedSize(in, input);
-	extractArchive(in, input, out);
+	if(extractArchive(in, input, out) != EXTRACT_ERROR_NONE) {
+		ret = EXTRACT_ERROR;
+	}
 
 	if (isARG) {
 		showProgressBar = false;
 		threadJoin(thread, U64_MAX);
 		threadFree(thread);
 	}
+
+	return ret;
 }
 
 /*
@@ -347,7 +373,7 @@ Result ScriptUtils::runFunctions(nlohmann::json storeJson, int selection, const 
 					message = Script[i]["message"];
 				}
 
-				if (!missing) ret = ScriptUtils::removeFile(file, message);
+				if (!missing) ret = ScriptUtils::removeFile(file, message, true);
 				else ret = SYNTAX_ERROR;
 
 			} else if (type == "downloadFile") {
@@ -423,7 +449,7 @@ Result ScriptUtils::runFunctions(nlohmann::json storeJson, int selection, const 
 					message = Script[i]["message"];
 				}
 
-				if (!missing) ScriptUtils::extractFile(file, input, output, message, true);
+				if (!missing) ret = ScriptUtils::extractFile(file, input, output, message, true);
 				else ret = SYNTAX_ERROR;
 
 			} else if (type == "installCia") {
@@ -517,7 +543,7 @@ Result ScriptUtils::runFunctions(nlohmann::json storeJson, int selection, const 
 					Message = Script[i]["message"];
 				}
 
-				if (!missing) ret = ScriptUtils::copyFile(source, destination, Message);
+				if (!missing) ret = ScriptUtils::copyFile(source, destination, Message, true);
 				else ret = SYNTAX_ERROR;
 
 			} else if (type == "move") {
@@ -538,7 +564,7 @@ Result ScriptUtils::runFunctions(nlohmann::json storeJson, int selection, const 
 					Message = Script[i]["message"];
 				}
 
-				if (!missing) ret = ScriptUtils::renameFile(oldFile, newFile, Message);
+				if (!missing) ret = ScriptUtils::renameFile(oldFile, newFile, Message, true);
 				else ret = SYNTAX_ERROR;
 
 			} else if (type == "skip") {
@@ -561,5 +587,6 @@ Result ScriptUtils::runFunctions(nlohmann::json storeJson, int selection, const 
 	else if (ret == COPY_ERROR) Msg::waitMsg(Lang::get("COPY_ERROR"));
 	else if (ret == MOVE_ERROR) Msg::waitMsg(Lang::get("MOVE_ERROR"));
 	else if (ret == DELETE_ERROR) Msg::waitMsg(Lang::get("DELETE_ERROR"));
+	else if (ret == EXTRACT_ERROR) Msg::waitMsg(Lang::get("EXTRACT_ERROR"));
 	return ret;
 }

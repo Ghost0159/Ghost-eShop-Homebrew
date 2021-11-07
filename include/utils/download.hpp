@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include "common.hpp"
 
 #define APP_TITLE "Ghost eShop"
-#define VERSION_STRING "12.0"
+#define VERSION_STRING "13.0.0"
 
 enum DownloadError {
 	DL_ERROR_NONE = 0,
@@ -38,7 +38,7 @@ enum DownloadError {
 	DL_ERROR_ALLOC,
 	DL_ERROR_STATUSCODE,
 	DL_ERROR_GIT,
-	DL_CANCEL, // Aucune idée si c’est nécessaire.
+	DL_CANCEL, // No clue if that's needed tho.
 };
 
 struct StoreList {
@@ -58,28 +58,28 @@ Result downloadToFile(const std::string &url, const std::string &path);
 Result downloadFromRelease(const std::string &url, const std::string &asset, const std::string &path, bool includePrereleases);
 
 /*
-	Vérifiez l’état du Wi-Fi.
-	@return True si le Wi-Fi est connecté ; false si non.
+	Check Wi-Fi status.
+	@return True if Wi-Fi is connected; false if not.
 */
 bool checkWifiStatus(void);
 
 /*
-	Afficher "Veuillez vous connecter au Wi-Fi" pour 2s.
+	Display "Please connect to Wi-Fi" for 2s.
 */
 void notConnectedMsg(void);
 
 /*
-	Affiche "Not Implemented Yet" pour 2s.
+	Display "Not Implemented Yet" for 2s.
 */
 void notImplemented(void);
 
 /*
-	Afficher le msg done.
+	Display the done msg.
 */
 void doneMsg(void);
 
 bool IsUpdateAvailable(const std::string &URL, int revCurrent);
-bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool isDownload = false, bool isUDB = false);
+bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool isDownload = false, bool isEDB = false);
 bool DownloadSpriteSheet(const std::string &URL, const std::string &file);
 GEUpdate IsGEUpdateAvailable();
 void UpdateAction();

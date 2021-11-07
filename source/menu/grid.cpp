@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 *         reasonable ways as different from the original version.
 */
 
+#include "common.hpp"
 #include "storeUtils.hpp"
 #include "structs.hpp"
 
@@ -47,37 +48,32 @@ static const std::vector<Structs::ButtonPos> GridBoxes = {
 	{ 325, 165, 50, 50 }
 };
 
-/*
-	Dessinez la grille supérieure.
-	const std::unique_ptr<Store> &store : Const Référence à la classe Store.
-	const std::vector<std::unique_ptr<StoreEntry>> &entries : Const Référence à StoreEntries.
-*/
-void StoreUtils::DrawGrid(const std::unique_ptr<Store> &store, const std::vector<std::unique_ptr<StoreEntry>> &entries) {
-	if (store) { // Assurez-vous que le magasin n’est pas un nullptr.
+/* Draw the Top Grid. */
+void StoreUtils::DrawGrid() {
+	if (StoreUtils::store) { // Ensure, store is not a nullptr.
 
-		if (config->usebg() && store->customBG()) {
-			C2D_DrawImageAt(store->GetStoreImg(), 0, 26, 0.5f, nullptr);
+		if (config->usebg() && StoreUtils::store->customBG()) {
+			C2D_DrawImageAt(StoreUtils::store->GetStoreImg(), 0, 26, 0.5f, nullptr);
 
 		} else {
-			Gui::Draw_Rect(0, 26, 400, 214, BG_COLOR);
+			Gui::Draw_Rect(0, 26, 400, 214, UIThemes->BGColor());
 		}
 
-		for (int i = 0, i2 = 0 + (store->GetScreenIndx() * 5); i2 < 15 + (store->GetScreenIndx() * 5) && i2 < (int)entries.size(); i2++, i++) {
-
+		for (int i = 0, i2 = 0 + (StoreUtils::store->GetScreenIndx() * 5); i2 < 15 + (StoreUtils::store->GetScreenIndx() * 5) && i2 < (int)StoreUtils::entries.size(); i2++, i++) {
 			/* Boxes. */
-			if (i == store->GetBox()) GFX::DrawBox(GridBoxes[i].x, GridBoxes[i].y, 50, 50, true);
+			if (i == StoreUtils::store->GetBox()) GFX::DrawBox(GridBoxes[i].x, GridBoxes[i].y, 50, 50, true);
 
-			/* Assurez-vous que les entrées sont plus grandes que l’index. */
-			if ((int)entries.size() > i2) {
-				if (entries[i2]) { // Assurez-vous que l’entrée n’est pas nullptr.
-					const C2D_Image tempImg = entries[i2]->GetIcon();
-					const uint8_t offsetW = (48 - tempImg.subtex->width) / 2; // Centre W.
-					const uint8_t offsetH = (48 - tempImg.subtex->height) / 2; // Centre H.
+			/* Ensure, entries is larger than the index. */
+			if ((int)StoreUtils::entries.size() > i2) {
+				if (StoreUtils::entries[i2]) { // Ensure, the Entry is not nullptr.
+					const C2D_Image tempImg = StoreUtils::entries[i2]->GetIcon();
+					const uint8_t offsetW = (48 - tempImg.subtex->width) / 2; // Center W.
+					const uint8_t offsetH = (48 - tempImg.subtex->height) / 2; // Center H.
 
 					C2D_DrawImageAt(tempImg, GridBoxes[i].x + 1 + offsetW, GridBoxes[i].y + 1 + offsetH, 0.5);
 
-					/* Mettre à jour la marque disponible. */
-					if (entries[i2]->GetUpdateAvl()) GFX::DrawSprite(sprites_update_app_idx, GridBoxes[i].x + 32, GridBoxes[i].y + 32);
+					/* Update Available mark. */
+					if (StoreUtils::entries[i2]->GetUpdateAvl()) GFX::DrawSprite(sprites_update_app_idx, GridBoxes[i].x + 32, GridBoxes[i].y + 32);
 				}
 			}
 		}
@@ -86,83 +82,83 @@ void StoreUtils::DrawGrid(const std::unique_ptr<Store> &store, const std::vector
 
 
 /*
-	Poignée logique de grille supérieure.
-	Ici vous pouvez..
-	- Faire défiler la grille à l’aide du pavé en D.
-	std::unique_ptrStore> &store : Référence à la classe Store.
-	std::vectorstd::unique_ptrStoreEntry>> &entries : Référence à StoreEntries.
-	const int &currentMode : Référence au mode actuel.
-	int &lastMode : Référence au dernier mode.
-	bool &fetch : Référence à fetch.
-	int &smallDelay : Référence au petit délai.
-*/
-void StoreUtils::GridLogic(std::unique_ptr<Store> &store, std::vector<std::unique_ptr<StoreEntry>> &entries, int &currentMode, int &lastMode, bool &fetch, int &smallDelay) {
-	if (store) { // Assurez-vous que le magasin n’est pas un nullptr.
-		if (hRepeat & KEY_DOWN) {
-			if (store->GetBox() > 9) {
-				if (store->GetEntry() + 5 < (int)entries.size() - 1) {
-					store->SetEntry(store->GetEntry() + 5);
+	Top Grid Logic Handle.
+	Here you can..
 
-					if (entries.size() > 15) store->SetScreenIndx((store->GetEntry() / 5) - 2);
+	- Scroll through the Grid with the D-Pad.
+
+	const int &currentMode: Reference to the current Mode.
+	int &lastMode: Reference to the last mode.
+	bool &fetch: Reference to fetch.
+	int &smallDelay: Reference to the small delay.
+*/
+void StoreUtils::GridLogic(int &currentMode, int &lastMode, bool &fetch, int &smallDelay) {
+	if (StoreUtils::store) { // Ensure, store is not a nullptr.
+		if (hRepeat & KEY_DOWN) {
+			if (StoreUtils::store->GetBox() > 9) {
+				if (StoreUtils::store->GetEntry() + 5 < (int)StoreUtils::entries.size() - 1) {
+					StoreUtils::store->SetEntry(StoreUtils::store->GetEntry() + 5);
+
+					if (StoreUtils::entries.size() > 15) StoreUtils::store->SetScreenIndx((StoreUtils::store->GetEntry() / 5) - 2);
 
 				} else {
-					if (store->GetEntry() < (int)entries.size() - 1) {
-						store->SetEntry(entries.size() - 1);
-						store->SetBox(10 + (store->GetEntry() % 5));
+					if (StoreUtils::store->GetEntry() < (int)StoreUtils::entries.size() - 1) {
+						StoreUtils::store->SetEntry(StoreUtils::entries.size() - 1);
+						StoreUtils::store->SetBox(10 + (StoreUtils::store->GetEntry() % 5));
 
-						if (entries.size() > 15) store->SetScreenIndx((store->GetEntry() / 5) - 2);
+						if (StoreUtils::entries.size() > 15) StoreUtils::store->SetScreenIndx((StoreUtils::store->GetEntry() / 5) - 2);
 					}
 				}
 
 			} else {
-				if (store->GetEntry() + 5 < (int)entries.size()) {
-					store->SetBox(store->GetBox() + 5);
-					store->SetEntry(store->GetEntry() + 5);
+				if (StoreUtils::store->GetEntry() + 5 < (int)StoreUtils::entries.size()) {
+					StoreUtils::store->SetBox(StoreUtils::store->GetBox() + 5);
+					StoreUtils::store->SetEntry(StoreUtils::store->GetEntry() + 5);
 				}
 			}
 		}
 
 		if (hRepeat & KEY_RIGHT) {
-			if (store->GetEntry() < (int)entries.size() - 1) {
-				if (store->GetBox() < 14) {
-					store->SetBox(store->GetBox() + 1);
-					store->SetEntry(store->GetEntry() + 1);
+			if (StoreUtils::store->GetEntry() < (int)StoreUtils::entries.size() - 1) {
+				if (StoreUtils::store->GetBox() < 14) {
+					StoreUtils::store->SetBox(StoreUtils::store->GetBox() + 1);
+					StoreUtils::store->SetEntry(StoreUtils::store->GetEntry() + 1);
 
 				} else {
-					store->SetBox(10);
-					store->SetEntry(store->GetEntry() + 1);
+					StoreUtils::store->SetBox(10);
+					StoreUtils::store->SetEntry(StoreUtils::store->GetEntry() + 1);
 
-					store->SetScreenIndx((store->GetEntry() / 5) - 2);
+					StoreUtils::store->SetScreenIndx((StoreUtils::store->GetEntry() / 5) - 2);
 				}
 			}
 		}
 
 		if (hRepeat & KEY_LEFT) {
-			if (store->GetEntry() > 0) {
-				if (store->GetBox() > 0) {
-					store->SetBox(store->GetBox() - 1);
-					store->SetEntry(store->GetEntry() - 1);
+			if (StoreUtils::store->GetEntry() > 0) {
+				if (StoreUtils::store->GetBox() > 0) {
+					StoreUtils::store->SetBox(StoreUtils::store->GetBox() - 1);
+					StoreUtils::store->SetEntry(StoreUtils::store->GetEntry() - 1);
 
 				} else {
-					store->SetBox(4);
-					store->SetEntry(store->GetEntry() - 1);
+					StoreUtils::store->SetBox(4);
+					StoreUtils::store->SetEntry(StoreUtils::store->GetEntry() - 1);
 
-					store->SetScreenIndx((store->GetEntry() / 5));
+					StoreUtils::store->SetScreenIndx((StoreUtils::store->GetEntry() / 5));
 				}
 			}
 		}
 
 		if (hRepeat & KEY_UP) {
-			if (store->GetBox() < 5) {
-				if (store->GetEntry() > 4) {
-					store->SetEntry(store->GetEntry() - 5);
+			if (StoreUtils::store->GetBox() < 5) {
+				if (StoreUtils::store->GetEntry() > 4) {
+					StoreUtils::store->SetEntry(StoreUtils::store->GetEntry() - 5);
 
-					store->SetScreenIndx((store->GetEntry() / 5));
+					StoreUtils::store->SetScreenIndx((StoreUtils::store->GetEntry() / 5));
 				}
 
 			} else {
-				store->SetBox(store->GetBox() - 5);
-				store->SetEntry(store->GetEntry() - 5);
+				StoreUtils::store->SetBox(StoreUtils::store->GetBox() - 5);
+				StoreUtils::store->SetEntry(StoreUtils::store->GetEntry() - 5);
 			}
 		}
 

@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -30,10 +30,11 @@
 #include <unistd.h>
 
 /*
-	Le constructeur de l’analyseur d’arguments.
-	const std::string &file : Const Référence au fichier.
-	const std::string &entry : Const Référence au nom du titre de l’entrée.
-	int dlIndex : L’index de téléchargement.
+	The constructor of the Argument Parser.
+
+	const std::string &file: Const Reference to the file.
+	const std::string &entry: Const Reference to the Entry Title name.
+	int dlIndex: The Download index.
 */
 ArgumentParser::ArgumentParser(const std::string &file, const std::string &entry, int dlIndex) {
 	if (dlIndex != -1 && file != "") {
@@ -46,7 +47,7 @@ ArgumentParser::ArgumentParser(const std::string &file, const std::string &entry
 }
 
 /*
-	Préparez eShop et obtenez un état valide.
+	Prepare eShop and get valid state.
 */
 void ArgumentParser::Load() {
 	if (access((std::string(_STORE_PATH) + this->file).c_str(), F_OK) != 0) return;
@@ -71,7 +72,7 @@ void ArgumentParser::Load() {
 }
 
 /*
-	Exécutez l’entrée de l’argument, si elle est valide.
+	Execute the Argument's entry, if valid.
 */
 void ArgumentParser::Execute() {
 	if (this->isValid) {

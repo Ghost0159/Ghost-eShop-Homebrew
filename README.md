@@ -1,11 +1,11 @@
 <div align="center"><a href="https://ghosteshop.com"><img src="http://ghosteshop.com/icon.png" height="64px"></a></div>
  
 # Ghost-Eshop-Alternative-3DS
-An Alternative eShop for Nintendo 3DS<br>This is a clone of [Universal-Updater](https://github.com/Universal-Team/Universal-Updater/)
+An Alternative eShop for Nintendo 3DS
 
 # Download
 ### Requirement
--Latest version available [here](https://ghosteshop.com)
+-Latest version available [here](http://github.com/ghost-eshop/Ghost-Eshop-Alternative-3DS/releases)
 
 -An hacked 3ds
 
@@ -42,5 +42,3 @@ On GIT:
 
 And run ```make.bat```
 </details></details>
-
- [![Discord](https://discordapp.com/api/guilds/633965704424718336/widget.png?style=banner3&time)](https://discord.gg/9Rqvh9F)

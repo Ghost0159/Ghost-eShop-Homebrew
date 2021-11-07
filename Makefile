@@ -3,40 +3,40 @@
 #---------------------------------------------------------------------------------
 
 ifeq ($(strip $(DEVKITARM)),)
-$(error "Veuillez régler DEVKITARM dans votre environnement. export DEVKITARM = <chemin vers> devkitARM")
+$(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>devkitARM")
 endif
 
 TOPDIR ?= $(CURDIR)
 include $(DEVKITARM)/3ds_rules
 
-# ------------------------------------------------- --------------------------------
-# TARGET est le nom de la sortie
-# BUILD est le répertoire dans lequel les fichiers objets et les fichiers intermédiaires seront placés
-# SOURCES est une liste de répertoires contenant le code source
-# DATA est une liste de répertoires contenant des fichiers de données
-# INCLUDES est une liste de répertoires contenant des fichiers d'en-tête
-# GRAPHICS est une liste de répertoires contenant des fichiers graphiques
-# GFXBUILD est le répertoire dans lequel les fichiers graphiques convertis seront placés
-# S'il est défini sur $ (BUILD), il sera lié statiquement dans le fichier converti
-# fichiers comme s'il s'agissait de fichiers de données.
+#---------------------------------------------------------------------------------
+# TARGET is the name of the output
+# BUILD is the directory where object files & intermediate files will be placed
+# SOURCES is a list of directories containing source code
+# DATA is a list of directories containing data files
+# INCLUDES is a list of directories containing header files
+# GRAPHICS is a list of directories containing graphics files
+# GFXBUILD is the directory where converted graphics files will be placed
+#   If set to $(BUILD), it will statically link in the converted
+#   files as if they were data files.
 #
-# NO_SMDH: s'il est défini sur quelque chose, aucun fichier SMDH n'est généré.
-# ROMFS est le répertoire qui contient le RomFS, relatif au Makefile (facultatif)
-# APP_TITLE est le nom de l'application stockée dans le fichier SMDH (facultatif)
-# APP_DESCRIPTION est la description de l'application stockée dans le fichier SMDH (facultatif)
-# APP_AUTHOR est l'auteur de l'application stockée dans le fichier SMDH (facultatif)
-# ICON est le nom de fichier de l'icône (.png), relatif au dossier du projet.
-# S'il n'est pas défini, il tente d'utiliser l'un des éléments suivants (dans cet ordre):
-# - <Nom du projet> .png
-# - icon.png
-# - <dossier libctru> /default_icon.png
+# NO_SMDH: if set to anything, no SMDH file is generated.
+# ROMFS is the directory which contains the RomFS, relative to the Makefile (Optional)
+# APP_TITLE is the name of the app stored in the SMDH file (Optional)
+# APP_DESCRIPTION is the description of the app stored in the SMDH file (Optional)
+# APP_AUTHOR is the author of the app stored in the SMDH file (Optional)
+# ICON is the filename of the icon (.png), relative to the project folder.
+#   If not set, it attempts to use one of the following (in this order):
+#     - <Project name>.png
+#     - icon.png
+#     - <libctru folder>/default_icon.png
 
 #---------------------------------------------------------------------------------
-# Outils externes
+# External tools
 #---------------------------------------------------------------------------------
 ifeq ($(OS),Windows_NT)
-MAKEROM 	?= ../makerom.exe
-BANNERTOOL 	?= ../bannertool.exe
+MAKEROM 	?= makerom.exe
+BANNERTOOL 	?= bannertool.exe
 
 else
 MAKEROM 	?= makerom
@@ -46,11 +46,22 @@ endif
 
 CURRENT_VERSION := $(shell git describe --abbrev=0 --tags)
 
-# Si sur un commit taggé, utilisez le tag au lieu du commit
+# If on a tagged commit, use just the tag
 ifneq ($(shell echo $(shell git tag -l --points-at HEAD) | head -c 1),)
 GIT_VER := $(shell git tag -l --points-at HEAD)
 else
-GIT_VER := $(shell git describe --abbrev=0 --tags)-$(shell git rev-parse --short HEAD)
+GIT_VER := $(shell git describe --abbrev=0 --tags)-$(shell git rev-parse --short=7 HEAD)
+endif
+
+# Ensure version.hpp exists
+ifeq (,$(wildcard include/version.hpp))
+$(shell mkdir -p include)
+$(shell touch include/version.hpp)
+endif
+
+# Print new version if changed
+ifeq (,$(findstring $(GIT_VER), $(shell cat include/version.hpp)))
+$(shell printf "#ifndef VERSION_HPP\n#define VERSION_HPP\n\n#define VER_NUMBER \"$(GIT_VER)\"\n\n#endif\n" > include/version.hpp)
 endif
 
 #---------------------------------------------------------------------------------
@@ -77,36 +88,35 @@ endif
 #---------------------------------------------------------------------------------
 TARGET		:=	GhostEshop
 BUILD		:=	build
-UNIVCORE	:= 	Universal-Core
+UNIVCORE	:=	Universal-Core
 SOURCES		:=	$(UNIVCORE) source source/download source/gui source/lang source/menu source/overlays \
-										source/qr source/screens source/store source/utils
+							source/qr source/screens source/store source/utils
 DATA		:=	data
 INCLUDES	:=	$(UNIVCORE) include include/download include/gui include/lang include/overlays include/qr include/screens \
-												include/store include/utils
+							include/store include/utils
 GRAPHICS	:=	assets/gfx
 ROMFS		:=	romfs
 GFXBUILD	:=	$(ROMFS)/gfx
-APP_AUTHOR	:=	Ghost Eshop Team's
+APP_AUTHOR	:=	Ghost eShop Team
 APP_DESCRIPTION :=	An Alternative eShop for Nintendo 3DS
 ICON		:=	app/icon.png
-BNR_IMAGE	:=  app/banner.png
+BNR_IMAGE	:=	app/banner.png
 BNR_AUDIO	:=	app/BannerAudio.wav
 RSF_FILE	:=	app/build-cia.rsf
 
 #---------------------------------------------------------------------------------
-# options de génération de code
+# options for code generation
 #---------------------------------------------------------------------------------
 ARCH	:=	-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
 
 CFLAGS	:=	-g -Wall -Wno-psabi -O2 -mword-relocations \
-			-DV_STRING=\"$(GIT_VER)\" \
 			-DC_V=\"$(CURRENT_VERSION)\" \
 			-fomit-frame-pointer -ffunction-sections \
 			$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS -D_GNU_SOURCE=1
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17 $(CITRA)
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
@@ -114,15 +124,15 @@ LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 LIBS	:= -lcurl -lmbedtls -lmbedx509 -lmbedcrypto -larchive -lbz2 -llzma -lm -lz -lcitro2d -lcitro3d -lctru -lstdc++
 
 #---------------------------------------------------------------------------------
-# liste de répertoires contenant des bibliothèques, ce doit être le niveau supérieur contenant
-# include et lib
+# list of directories containing libraries, this must be the top level containing
+# include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(CTRULIB)
+LIBDIRS	:= $(CURDIR)/libs $(PORTLIBS) $(CTRULIB)
 
 
 #---------------------------------------------------------------------------------
-# pas vraiment besoin de modifier quoi que ce soit au-delà de ce point, sauf si vous devez ajouter des
-# règles pour différentes extensions de fichiers
+# no real need to edit anything past this point unless you need to add additional
+# rules for different file extensions
 #---------------------------------------------------------------------------------
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
@@ -145,7 +155,7 @@ GFXFILES	:=	$(foreach dir,$(GRAPHICS),$(notdir $(wildcard $(dir)/*.t3s)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 
 #---------------------------------------------------------------------------------
-# utiliser CXX pour lier des projets C ++, CC pour le C standard
+# use CXX for linking C++ projects, CC for standard C
 #---------------------------------------------------------------------------------
 ifeq ($(strip $(CPPFILES)),)
 #---------------------------------------------------------------------------------
@@ -210,11 +220,15 @@ ifneq ($(ROMFS),)
 	export _3DSXFLAGS += --romfs=$(CURDIR)/$(ROMFS)
 endif
 
-.PHONY: all clean
+.PHONY: all citra clean cppcheck
 
 #---------------------------------------------------------------------------------
 all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+
+#---------------------------------------------------------------------------------
+citra: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile CITRA=-DCITRA
 
 #------------------------------------------------------------------------------
 clean:
@@ -245,21 +259,21 @@ $(BUILD):
 else
 
 #---------------------------------------------------------------------------------
-# cibles principales
+# main targets
 #---------------------------------------------------------------------------------
 all: $(OUTPUT).cia $(OUTPUT).elf $(OUTPUT).3dsx
 
 $(OUTPUT).elf	:	$(OFILES)
 
 $(OUTPUT).cia	:	$(OUTPUT).elf $(OUTPUT).smdh
-	$(BANNERTOOL) makebanner -i "../app/banner.png" -a "../app/BannerAudio.wav" -o "../app/banner.bin"
+	@$(BANNERTOOL) makebanner -i "../app/banner.png" -a "../app/BannerAudio.wav" -o "../app/banner.bin"
 
-	$(BANNERTOOL) makesmdh -i "../app/icon.png" -s "$(TARGET)" -l "$(APP_DESCRIPTION)" -p "$(APP_AUTHOR)" -o "../app/icon.bin" \
+	@$(BANNERTOOL) makesmdh -i "../app/icon.png" -s "$(TARGET)" -l "$(APP_DESCRIPTION)" -p "$(APP_AUTHOR)" -o "../app/icon.bin" \
 		--flags visible,ratingrequired,recordusage --cero 153 --esrb 153 --usk 153 --pegigen 153 --pegiptr 153 --pegibbfc 153 --cob 153 --grb 153 --cgsrr 153
 
-	$(MAKEROM) -f cia -target t -exefslogo -o "../$(TARGET).cia" -elf "../$(TARGET).elf" -rsf "../app/build-cia.rsf" -banner "../app/banner.bin" -icon "../app/icon.bin" -logo "../app/logo.bcma.lz" -DAPP_ROMFS="$(TOPDIR)/$(ROMFS)" -major $(VERSION_MAJOR) -minor $(VERSION_MINOR) -DAPP_VERSION_MAJOR="$(VERSION_MAJOR)"
+	@$(MAKEROM) -f cia -target t -exefslogo -o "../$(TARGET).cia" -elf "../$(TARGET).elf" -rsf "../app/build-cia.rsf" -banner "../app/banner.bin" -icon "../app/icon.bin" -logo "../app/logo.bcma.lz" -DAPP_ROMFS="$(TOPDIR)/$(ROMFS)" -major $(VERSION_MAJOR) -minor $(VERSION_MINOR) -DAPP_VERSION_MAJOR="$(VERSION_MAJOR)"
 #---------------------------------------------------------------------------------
-# vous avez besoin d'une règle comme celle-ci pour chaque extension que vous utilisez comme données binaires
+# you need a rule like this for each extension you use as binary data
 #---------------------------------------------------------------------------------
 %.bin.o	%_bin.h :	%.bin
 #---------------------------------------------------------------------------------
@@ -275,7 +289,7 @@ $(OUTPUT).cia	:	$(OUTPUT).elf $(OUTPUT).smdh
 	@$(bin2o)
 
 #---------------------------------------------------------------------------------
-# règles d'assemblage de shaders GPU
+# rules for assembling GPU shaders
 #---------------------------------------------------------------------------------
 define shader-as
 	$(eval CURBIN := $*.shbin)
@@ -311,3 +325,8 @@ endef
 #---------------------------------------------------------------------------------------
 endif
 #---------------------------------------------------------------------------------------
+
+cppcheck:
+	@rm -f cppcheck.log
+	@cppcheck . --enable=all $(INCLUDE) -UJSON_CATCH_USER -U_Check_return_ -U_MSC_VER -U_Ret_notnull_ -U__INTEL_COMPILER -U__PGI -U__SUNPRO_CC -UJSON_INTERNAL_CATCH_USER -UJSON_THROW_USER -UJSON_TRY_USER -U__IBMCPP__ -U__SUNPRO_CC -D__GNUC__=9 -D__GNUC_MINOR__=1 -DNULL=nullptr --force 2> cppcheck.log
+	@echo cppcheck.log file created...

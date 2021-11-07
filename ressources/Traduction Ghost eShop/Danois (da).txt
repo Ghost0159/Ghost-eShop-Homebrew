@@ -1,0 +1,295 @@
+Eden til 3D-banneret
+
+Læg 3DSX-filer i mappen
+
+Hvis de er aktiveret, vil 3DSX-filer blive lagt i en mappe med samme navn som den sidst indstillede mappe
+
+%s annulleret!
+
+%s mislykkedes!
+
+Action required!
+
+%s lykkedes!
+
+Aktivt tema
+
+Ugyldigt argument.\nKontroller xml-filen for korrekte argumenter.
+
+Stigende
+
+Forfatter
+
+Indstillinger for automatisk opdatering
+
+Indstillinger for automatisk opdatering...
+	
+Automatisk opdatering af eShop
+	
+Med denne indstilling opdateres den sidst anvendte eShop automatisk, når Ghost eShop startes.
+	
+Auto-opdatering af Ghost eShop
+	
+Når denne indstilling er aktiveret, vil Ghost eShop kontrollere for opdateringer, hver gang den åbnes.
+	
+Tilgængelige downloads
+	
+Vil du gerne starte denne titel op?
+	
+Anonyku til udsendelse på YouTube
+	
+Annuller
+	
+Kategori
+	
+Ændre 3DSX-sti
+	
+Ændre arkivstien
+	
+Skift firma-sti
+	
+Ændre NDS-sti
+	
+Ændre genvejssti
+	
+Kontrol af eShop-opdateringer...
+	
+Kontrol af Ghost eShop-opdateringer...
+	
+Citra & Nintendo for ikonerne
+
+Tryk på \uE000 for at bekræfte, \uE001 for at annullere.
+	
+Opret venligst forbindelse til WiFi.
+	
+Bekræft
+	
+Konsol
+	
+- Alle oversættere og bidragydere
+	
+Kopiering... %s / %s (%.2f%%%)
+	
+Copy Error!
+	
+Vil du gerne oprette en genvej?
+	
+Credits
+	
+Nuværende version: 
+	
+I øjeblikket udtrækkes:
+	
+Bruge brugerdefineret skrifttype
+	
+Hvis den er aktiveret, vil 'sdmc:/3ds/GhosteShop/font.bcfnt' blive brugt i stedet for systemskrifttypen, hvis den findes.
+
+Slet fejl!
+	
+Er du sikker på, at du ønsker at slette denne mappe?
+
+Sletning af unødvendig fil...
+
+Sletning...
+
+Nedadgående
+	
+Retning
+	
+Indstillinger for mapper
+	
+Registerindstillinger...
+	
+Færdig!
+	
+Download Fejl!
+	
+Download mislykkedes!
+	
+Hastighed: %lld KiB/s
+	
+Downloading... %s / %s (%.2f%%%)
+	
+Henter kompatibel skrifttype...
+	
+Download af spritesheet...
+	
+Download af spritesheet %i af %i...
+	
+Download af GhosteShop.eshop...
+	
+Downloading Ghost eShop...
+	
+Downloading eShop...
+	
+Indtast beskrivelsen af genvejen.
+	
+Indtast, hvad du gerne vil søge.
+	
+Indtast filnavnet for genvejen (uden udvidelse).
+	
+Indtast genvejstitlen.
+	
+Indtast eShoppens URL-adresse.
+	
+Indtastninger
+	
+Brug eShop BG
+	
+Når denne indstilling er aktiveret, vises eShop's medfølgende BG i stedet for den ensfarvede BG-farve for den øverste skærm.
+	
+Denne eShop er ugyldig og kan ikke indlæses med Ghost eShop.\nKontroller måske, om der er nogen syntaksfejl?
+	
+Din version af Ghost eShop er for gammel til at bruge denne eShop.\nPåfør venligst en opdatering til den nyeste version.",
+	
+Denne eShop er forældet og kan ikke bruges\nmed denne version af Ghost eShop.\nBede venligst skaberen om at opdatere den.
+	
+Vil du gerne udføre denne post?
+	
+Afslut Ghost eShop
+	
+Udpakning... %s / %s (%.2f%%%)
+	
+Udpakningsfejl!
+	
+Denne funktion kan have bivirkninger, mens køen kører.\nEr du sikker på, at du vil fortsætte?
+	
+Hentning af gamle metadata...
+	
+Hentning af anbefalet eShop...
+	
+fil udtrukket.
+	
+Det ser ud til, at der er inkluderet et '/' i filnavnet, hvilket ikke understøttes.\nVis venligst at ændre 'sheet' i filnavnet
+	
+Fil: %d / %d
+	
+filer udtrukket.
+	
+Filtrer til:
+	
+Fuldstændige kreditter kan findes på GitHub
+	
+Grid
+	
+GUI-indstillinger
+	
+GUI-indstillinger...
+	
+Medtag i resultaterne:
+	
+Installing... %s / %s (%.2f%%%)
+	
+Installation af Ghost eShop...
+	
+Ugyldig eShop
+	
+Tryk på en vilkårlig tast for at fortsætte.
+	
+Sprog
+	
+Sidst opdateret
+
+Licens
+	
+Liste
+	
+Indlæser skærmbillede...
+	
+Indlæser spritesheet %i af %i...
+	
+MediaType NAND
+	
+MediaType SD
+	
+Flyt fejl!
+
+Intet yderligere indhold tilgængeligt
+	
+Ingen downloads tilgængelige
+	
+Ingen licens
+	
+Ingen skærmbilleder tilgængelige
+	
+Ikke implementeret endnu
+	
+Kopiering
+	
+Sletning
+	
+Downloading
+	
+Udtrække
+	
+Installation af
+	
+Flytning
+	
+Venter
+	
+Kø
+	
+Placering i køen
+	
+Trin: %d / %d
+	
+Anbefalet eShop
+	
+Revision
+	
+Skærmbillede %d / %d
+	
+Skærmbilledet kunne ikke indlæses.
+	
+Tryk på for at ændre og for at zoome
+	
+Søg og filtre
+	
+Vælg et tema
+	
+Vælg en mappe
+	
+Vælg sprog
+	
+Vælg eShop
+	
+Vælg en eShop
+	
+Tilføj valg til køen
+	
+Indstillinger
+	
+Det ser ud til, at der er inkluderet et '/', hvilket ikke understøttes.\nByt venligst 'ark' til kun filnavn.
+
+Genvej oprettet!
+	
+Størrelse
+	
+Sortere efter
+
+Sortering
+	
+Tryk på START for at vælge den aktuelle mappe
+	
+Opbevar oplysninger
+	
+Syntaksfejl!
+	
+Titel
+	
+Øverste stil
+	
+Opdatering tilgængelig!
+	
+Opdatering udført! Åbn Ghost eShop igen.
+	
+Opdatering af spritesheet...
+	
+Opdatering af spritesheet %i af %i...
+	
+Opdatering af eShop...
+	
+Version
+
+Fuldstændige credits og changelog kan findes på wiki'en

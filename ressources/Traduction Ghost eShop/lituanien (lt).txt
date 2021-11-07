@@ -1,0 +1,295 @@
+Edenas už 3D banerį
+
+Įdėkite 3DSX failus į aplanką
+
+Jei jie įjungti, 3DSX failai bus įdėti į aplanką tokiu pačiu pavadinimu kaip ir paskutinis nustatytas aplankas
+
+%s atšaukta!
+
+%s nepavyko!
+
+Reikia imtis veiksmų!
+
+%s pavyko!
+
+Aktyvi tema
+
+Netinkamas argumentas.\nPrašome patikrinti, ar xml faile yra tinkamų argumentų.
+
+Kylantis
+
+Autorius
+
+Automatinio atnaujinimo nustatymai
+
+Automatinio atnaujinimo nustatymai...
+	
+Automatinis eShop atnaujinimas
+	
+Naudojant šią parinktį, paleidus "Ghost eShop" bus automatiškai atnaujinama paskutinė naudota e. parduotuvė.
+	
+Automatinis "Ghost eShop" atnaujinimas
+	
+Kai ši parinktis įjungta, "Ghost eShop" tikrins, ar nėra atnaujinimų kiekvieną kartą ją atidarant.
+	
+Galimi atsisiuntimai
+	
+Ar norėtumėte įsidiegti šį pavadinimą?
+	
+Anonyku transliuoti per "YouTube
+	
+Atšaukti
+	
+Kategorija
+	
+Keisti 3DSX kelią
+	
+Keisti archyvo kelią
+	
+Keisti firmos kelią
+	
+Keisti NDS kelią
+	
+Keisti nuorodų kelią
+	
+"eShop" atnaujinimų tikrinimas...
+	
+"Ghost eShop" atnaujinimų tikrinimas...
+	
+"Citra" ir "Nintendo" piktogramos
+
+Paspauskite \uE000, kad patvirtintumėte, \uE001, kad atšauktumėte.
+	
+Prašome prisijungti prie "WiFi".
+	
+Patvirtinkite
+	
+Konsolė
+	
+- Visi vertėjai ir bendradarbiai
+	
+Kopijuojama... %s / %s (%.2f%%)
+	
+Kopijavimo klaida!
+	
+Ar norėtumėte sukurti nuorodą?
+	
+Kreditai
+	
+Dabartinė versija: 
+	
+Šiuo metu išgaunama:
+	
+Naudoti pasirinktinį šriftą
+	
+Jei įjungta, vietoj sisteminio šrifto bus naudojamas 'sdmc:/3ds/GhosteShop/font.bcfnt', jei jis bus rastas.
+
+Ištrinti klaidą!
+	
+Ar tikrai norite ištrinti šį katalogą?
+
+Nereikalingo failo ištrynimas...
+
+Ištrinti...
+
+Mažėjantis
+	
+Kryptis
+	
+Katalogo nustatymai
+	
+Katalogo nustatymai...
+	
+Atlikta!
+	
+Atsisiuntimo klaida!
+	
+Atsisiųsti nepavyko!
+	
+Greitis: %lld KiB/s
+	
+Atsisiuntimas... %s / %s (%.2f%%)
+	
+Atsisiunčiamas suderinamas šriftas...
+	
+Atsisiunčiamas Spritesheet...
+	
+Atsisiunčiamas %i iš %i Spritesheet %i...
+	
+Atsisiuntimas GhosteShop.eshop...
+	
+Atsisiuntimas Ghost.eShop...
+	
+Atsisiuntimas eShop...
+	
+Įveskite spartųjį aprašymą.
+	
+Įveskite, ko norite ieškoti.
+	
+Įveskite trumpojo failo pavadinimą (be plėtinio).
+	
+Įveskite trumpojo klavišo pavadinimą.
+	
+Įveskite e. parduotuvės URL adresą.
+	
+Įrašai
+	
+Naudoti e. parduotuvę BG
+	
+Kai įjungta, vietoj vientisos viršutinio ekrano BG spalvos bus rodoma eShop pateikta BG spalva.
+	
+This eShop is invalid and cannot be\nloaded with Ghost eShop.\nMaybe check if there are any Syntax errors?
+	
+Jūsų "Ghost eShop" versija yra per sena, kad galėtumėte naudoti šią eShop.\nPrašome atnaujinti iki naujausios versijos.",
+	
+Ši elektroninė parduotuvė yra pasenusi ir negali būti naudojama su šia "Ghost eShop" versija.\nPrašome paprašyti kūrėjo ją atnaujinti.
+	
+Ar norėtumėte įvykdyti šį įrašą?
+	
+Išeiti iš "Ghost eShop
+	
+Ištraukimas... %s / %s (%.2f%%)
+	
+Ištraukimo klaida!
+	
+Ši funkcija gali turėti šalutinį poveikį, kol veikia eilė.\nAr tikrai norite tęsti?
+	
+Senų metaduomenų gavimas...
+	
+Rekomenduojamos "eShop" parduotuvės gavimas...
+	
+failas ištrauktas.
+	
+Atrodo, kad į failo pavadinimą įtrauktas "/", kuris nepalaikomas.\nPrašome pakeisti failo pavadinimo "lapą".
+	
+Failas: %d / %d
+	
+ištraukti failai.
+	
+Filtruoti į: "Failai":
+	
+Visus kreditus galite rasti "GitHub
+	
+Tinklelis
+	
+GUI nustatymai
+	
+GUI nustatymai...
+	
+Įtraukti į rezultatus:
+	
+%s / %s (%.2f%%)
+	
+Diegimas Ghost eShop...
+	
+Invalid eShop
+	
+Paspauskite bet kurį klavišą, kad tęstumėte.
+	
+Kalba
+	
+Paskutinį kartą atnaujinta
+
+Licencija
+	
+Sąrašas
+	
+Įkeliama ekrano nuotrauka...
+	
+Įkeliamas %i iš %i Spritesheet %i...
+	
+Žiniasklaidos tipas NAND
+	
+Laikmenos tipas SD
+	
+Perkėlimo klaida!
+
+Nėra papildomo turinio
+	
+Atsisiuntimų nėra
+	
+Nėra licencijos
+	
+Nėra ekrano nuotraukų
+	
+Dar neįgyvendinta
+	
+Kopijavimas
+	
+Ištrynimas
+	
+Atsisiuntimas
+	
+Ištraukimas
+	
+Įdiegimas
+	
+Perkėlimas
+	
+Laukimas
+	
+Eilės
+	
+Eilės padėtis
+	
+Žingsnis: %d / %d
+	
+Rekomenduojama e. parduotuvė
+	
+Peržiūra
+	
+Ekrano nuotrauka %d / %d
+	
+Ekrano nuotraukos nepavyko įkelti.
+	
+Paspauskite , kad pakeistumėte ir priartintumėte
+	
+Paieška ir filtrai
+	
+Pasirinkite temą
+	
+Pasirinkite katalogą
+	
+Pasirinkite kalbą
+	
+Pasirinkite elektroninę parduotuvę
+	
+Pasirinkite elektroninę parduotuvę
+	
+Įtraukti pasirinkimą į eilę
+	
+Nustatymai
+	
+Atrodo, kad įtrauktas "/", kuris nepalaikomas.\nPrašome pakeisti "sheet" tik į failo pavadinimą.
+
+Sukurta sparčioji jungtis!
+	
+Dydis
+	
+Rūšiuoti pagal
+
+Rūšiavimas
+	
+Paspauskite START, kad pasirinktumėte dabartinį aplanką
+	
+Parduotuvės informacija
+	
+Sintaksės klaida!
+	
+Pavadinimas
+	
+Viršutinis stilius
+	
+Atnaujinimas prieinamas!
+	
+Atnaujinimas atliktas! Prašome iš naujo atidaryti "Ghost eShop".
+	
+Spritesheet atnaujinimas...
+	
+Atnaujinamas %i iš %i Spritesheet %i...
+	
+Atnaujinti eShop...
+	
+Versija
+
+Visus kreditus ir pakeitimų sąrašą galite rasti wiki

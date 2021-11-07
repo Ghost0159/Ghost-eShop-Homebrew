@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 *         reasonable ways as different from the original version.
 */
 
+#include "animation.hpp"
+#include "common.hpp"
 #include "download.hpp"
 #include "fileBrowse.hpp"
 #include "files.hpp"
@@ -52,19 +54,25 @@ static const std::vector<Structs::ButtonPos> mainButtons = {
 };
 
 /*
-	Supprimez un Shop.. y compris les Spritesheets, le cas échéant.
-	const std::string &file : Le fichier de eShop.
+	Delete a store.. including the Spritesheets, if found.
+
+	const std::string &file: The file of the eShop.
 */
 static void DeleteStore(const std::string &file) {
+	nlohmann::json storeJson;
 	FILE *temp = fopen((std::string(_STORE_PATH) + file).c_str(), "rt");
-	nlohmann::json storeJson = nlohmann::json::parse(temp, nullptr, false);
-	fclose(temp);
+	if (temp) {
+		storeJson = nlohmann::json::parse(temp, nullptr, false);
+		fclose(temp);
+	}
+	if (storeJson.is_discarded())
+		storeJson = {};
 
-	/* Vérifiez, si Spritesheet existe sur eShop. */
+	/* Check, if Spritesheet exist on eShop. */
 	if (storeJson["storeInfo"].contains("sheet") && storeJson["storeInfo"]["sheet"].is_array()) {
 		const std::vector<std::string> sht = storeJson["storeInfo"]["sheet"].get<std::vector<std::string>>();
 
-		/* Parce que c’est un tableau, supprimez tous les Spritesheets qui existent. */
+		/* Cause it's an array, delete all Spritesheets which exist. */
 		for (int i = 0; i < (int)sht.size(); i++) {
 			if (sht[i] != "") {
 				if (!(StringUtils::lower_case(sht[i]).find(StringUtils::lower_case("/")) != std::string::npos)) {
@@ -75,7 +83,7 @@ static void DeleteStore(const std::string &file) {
 			}
 		}
 
-	/* Sinon, si c’est juste une chaîne.. vérifier et supprimer simplement Spritesheet. */
+	/* Else, if it's just a string.. check and delete single Spritesheet. */
 	} else if (storeJson["storeInfo"].contains("sheet") && storeJson["storeInfo"]["sheet"].is_string()) {
 		const std::string fl = storeJson["storeInfo"]["sheet"];
 
@@ -88,11 +96,11 @@ static void DeleteStore(const std::string &file) {
 		}
 	}
 
-	deleteFile((std::string(_STORE_PATH) + file).c_str()); // Supprimez maintenant l'eShop.
+	deleteFile((std::string(_STORE_PATH) + file).c_str()); // Now delete eShop.
 }
 
 /*
-	Download a Store.. including the SpriteSheets, if found.
+	Download a store.. including the SpriteSheets, if found.
 */
 static bool DownloadStore() {
 	bool doSheet = false;
@@ -102,43 +110,46 @@ static bool DownloadStore() {
 	if (URL != "") doSheet = DownloadEshop(URL, -1, file, true);
 
 	if (doSheet) {
+		nlohmann::json storeJson;
 		FILE *temp = fopen(file.c_str(), "rt");
-		nlohmann::json storeJson = nlohmann::json::parse(temp, nullptr, false);
-		fclose(temp);
+		if (temp) {
+			storeJson = nlohmann::json::parse(temp, nullptr, false);
+			fclose(temp);
+		}
+		if (storeJson.is_discarded())
+			storeJson = { };
 
-		if (doSheet) {
-			if (storeJson["storeInfo"].contains("sheetURL") && storeJson["storeInfo"]["sheetURL"].is_array()) {
-				if (storeJson["storeInfo"].contains("sheet") && storeJson["storeInfo"]["sheet"].is_array()) {
-					const std::vector<std::string> locs = storeJson["storeInfo"]["sheetURL"].get<std::vector<std::string>>();
-					const std::vector<std::string> sht = storeJson["storeInfo"]["sheet"].get<std::vector<std::string>>();
+		if (storeJson["storeInfo"].contains("sheetURL") && storeJson["storeInfo"]["sheetURL"].is_array()) {
+			if (storeJson["storeInfo"].contains("sheet") && storeJson["storeInfo"]["sheet"].is_array()) {
+				const std::vector<std::string> locs = storeJson["storeInfo"]["sheetURL"].get<std::vector<std::string>>();
+				const std::vector<std::string> sht = storeJson["storeInfo"]["sheet"].get<std::vector<std::string>>();
 
-					if (locs.size() == sht.size()) {
-						for (int i = 0; i < (int)sht.size(); i++) {
-							if (!(sht[i].find("/") != std::string::npos)) {
-								char msg[150];
-								snprintf(msg, sizeof(msg), Lang::get("DOWNLOADING_SPRITE_SHEET2").c_str(), i + 1, sht.size());
-								Msg::DisplayMsg(msg);
-								DownloadSpriteSheet(locs[i], sht[i]);
+				if (locs.size() == sht.size()) {
+					for (int i = 0; i < (int)sht.size(); i++) {
+						if (!(sht[i].find("/") != std::string::npos)) {
+							char msg[150];
+							snprintf(msg, sizeof(msg), Lang::get("DOWNLOADING_SPRITE_SHEET2").c_str(), i + 1, sht.size());
+							Msg::DisplayMsg(msg);
+							DownloadSpriteSheet(locs[i], sht[i]);
 
-							} else {
-								Msg::waitMsg(Lang::get("SHEET_SLASH"));
-							}
+						} else {
+							Msg::waitMsg(Lang::get("SHEET_SLASH"));
 						}
 					}
 				}
+			}
 
-			} else if (storeJson["storeInfo"].contains("sheetURL") && storeJson["storeInfo"]["sheetURL"].is_string()) {
-				if (storeJson["storeInfo"].contains("sheet") && storeJson["storeInfo"]["sheet"].is_string()) {
-					const std::string fl = storeJson["storeInfo"]["sheetURL"];
-					const std::string fl2 = storeJson["storeInfo"]["sheet"];
+		} else if (storeJson["storeInfo"].contains("sheetURL") && storeJson["storeInfo"]["sheetURL"].is_string()) {
+			if (storeJson["storeInfo"].contains("sheet") && storeJson["storeInfo"]["sheet"].is_string()) {
+				const std::string fl = storeJson["storeInfo"]["sheetURL"];
+				const std::string fl2 = storeJson["storeInfo"]["sheet"];
 
-					if (!(fl2.find("/") != std::string::npos)) {
-						Msg::DisplayMsg(Lang::get("DOWNLOADING_SPRITE_SHEET"));
-						DownloadSpriteSheet(fl, fl2);
+				if (!(fl2.find("/") != std::string::npos)) {
+					Msg::DisplayMsg(Lang::get("DOWNLOADING_SPRITE_SHEET"));
+					DownloadSpriteSheet(fl, fl2);
 
-					} else {
-						Msg::waitMsg(Lang::get("SHEET_SLASH"));
-					}
+				} else {
+					Msg::waitMsg(Lang::get("SHEET_SLASH"));
 				}
 			}
 		}
@@ -155,43 +166,46 @@ static bool UpdateStore(const std::string &URL) {
 	if (URL != "") doSheet = DownloadEshop(URL, -1, file, false);
 
 	if (doSheet) {
+		nlohmann::json storeJson;
 		FILE *temp = fopen(file.c_str(), "rt");
-		nlohmann::json storeJson = nlohmann::json::parse(temp, nullptr, false);
-		fclose(temp);
+		if (temp) {
+			storeJson = nlohmann::json::parse(temp, nullptr, false);
+			fclose(temp);
+		}
+		if (storeJson.is_discarded())
+			storeJson = { };
 
-		if (doSheet) {
-			if (storeJson["storeInfo"].contains("sheetURL") && storeJson["storeInfo"]["sheetURL"].is_array()) {
-				if (storeJson["storeInfo"].contains("sheet") && storeJson["storeInfo"]["sheet"].is_array()) {
-					const std::vector<std::string> locs = storeJson["storeInfo"]["sheetURL"].get<std::vector<std::string>>();
-					const std::vector<std::string> sht = storeJson["storeInfo"]["sheet"].get<std::vector<std::string>>();
+		if (storeJson["storeInfo"].contains("sheetURL") && storeJson["storeInfo"]["sheetURL"].is_array()) {
+			if (storeJson["storeInfo"].contains("sheet") && storeJson["storeInfo"]["sheet"].is_array()) {
+				const std::vector<std::string> locs = storeJson["storeInfo"]["sheetURL"].get<std::vector<std::string>>();
+				const std::vector<std::string> sht = storeJson["storeInfo"]["sheet"].get<std::vector<std::string>>();
 
-					if (locs.size() == sht.size()) {
-						for (int i = 0; i < (int)sht.size(); i++) {
-							if (!(sht[i].find("/") != std::string::npos)) {
-								char msg[150];
-								snprintf(msg, sizeof(msg), Lang::get("DOWNLOADING_SPRITE_SHEET2").c_str(), i + 1, sht.size());
-								Msg::DisplayMsg(msg);
-								DownloadSpriteSheet(locs[i], sht[i]);
+				if (locs.size() == sht.size()) {
+					for (int i = 0; i < (int)sht.size(); i++) {
+						if (!(sht[i].find("/") != std::string::npos)) {
+							char msg[150];
+							snprintf(msg, sizeof(msg), Lang::get("DOWNLOADING_SPRITE_SHEET2").c_str(), i + 1, sht.size());
+							Msg::DisplayMsg(msg);
+							DownloadSpriteSheet(locs[i], sht[i]);
 
-							} else {
-								Msg::waitMsg(Lang::get("SHEET_SLASH"));
-							}
+						} else {
+							Msg::waitMsg(Lang::get("SHEET_SLASH"));
 						}
 					}
 				}
+			}
 
-			} else if (storeJson["storeInfo"].contains("sheetURL") && storeJson["storeInfo"]["sheetURL"].is_string()) {
-				if (storeJson["storeInfo"].contains("sheet") && storeJson["storeInfo"]["sheet"].is_string()) {
-					const std::string fl = storeJson["storeInfo"]["sheetURL"];
-					const std::string fl2 = storeJson["storeInfo"]["sheet"];
+		} else if (storeJson["storeInfo"].contains("sheetURL") && storeJson["storeInfo"]["sheetURL"].is_string()) {
+			if (storeJson["storeInfo"].contains("sheet") && storeJson["storeInfo"]["sheet"].is_string()) {
+				const std::string fl = storeJson["storeInfo"]["sheetURL"];
+				const std::string fl2 = storeJson["storeInfo"]["sheet"];
 
-					if (!(fl2.find("/") != std::string::npos)) {
-						Msg::DisplayMsg(Lang::get("DOWNLOADING_SPRITE_SHEET"));
-						DownloadSpriteSheet(fl, fl2);
+				if (!(fl2.find("/") != std::string::npos)) {
+					Msg::DisplayMsg(Lang::get("DOWNLOADING_SPRITE_SHEET"));
+					DownloadSpriteSheet(fl, fl2);
 
-					} else {
-						Msg::waitMsg(Lang::get("SHEET_SLASH"));
-					}
+				} else {
+					Msg::waitMsg(Lang::get("SHEET_SLASH"));
 				}
 			}
 		}
@@ -203,15 +217,13 @@ static bool UpdateStore(const std::string &URL) {
 /*
 	This is the eShop Manage Handle.
 	Here you can..
+
 	- Delete a eShop.
 	- Download / Add a eShop.
 	- Check for Updates for a eShop.
 	- Switch the eShop.
-	std::unique_ptr<Store> &store: Reference to the Store class.
-	std::vector<std::unique_ptr<StoreEntry>> &entries: Reference to the Store Entries.
-	std::unique_ptr<Meta> &meta: Reference to the Meta class.
 */
-void Overlays::SelectStore(std::unique_ptr<Store> &store, std::vector<std::unique_ptr<StoreEntry>> &entries, std::unique_ptr<Meta> &meta) {
+void Overlays::SelectStore() {
 	bool doOut = false;
 	int selection = 0, sPos = 0;
 
@@ -223,11 +235,11 @@ void Overlays::SelectStore(std::unique_ptr<Store> &store, std::vector<std::uniqu
 		C2D_TargetClear(Top, TRANSPARENT);
 		C2D_TargetClear(Bottom, TRANSPARENT);
 
-		if (store && config->usebg() && store->customBG()) {
+		if (StoreUtils::store && config->usebg() && StoreUtils::store->customBG()) {
 			Gui::ScreenDraw(Top);
-			Gui::Draw_Rect(0, 0, 400, 25, BAR_COLOR);
-			Gui::Draw_Rect(0, 25, 400, 1, BAR_OUTL_COLOR);
-			C2D_DrawImageAt(store->GetStoreImg(), 0, 26, 0.5f, nullptr);
+			Gui::Draw_Rect(0, 0, 400, 25, UIThemes->BarColor());
+			Gui::Draw_Rect(0, 25, 400, 1, UIThemes->BarOutline());
+			C2D_DrawImageAt(StoreUtils::store->GetStoreImg(), 0, 26, 0.5f, nullptr);
 
 		} else {
 			GFX::DrawTop();
@@ -235,43 +247,44 @@ void Overlays::SelectStore(std::unique_ptr<Store> &store, std::vector<std::uniqu
 
 		if (info.size() > 0) {
 			if (info[selection].StoreSize != -1) {
-				Gui::DrawStringCentered(0, 1, 0.7f, TEXT_COLOR, info[selection].Title, 390, 0, font);
-				Gui::DrawStringCentered(0, 30, 0.6f, TEXT_COLOR, info[selection].Author, 380, 0, font);
-				Gui::DrawStringCentered(0, 70, 0.5f, TEXT_COLOR, info[selection].Description, 380, 130, font, C2D_WordWrap);
+				Gui::DrawStringCentered(0, 1, 0.7f, UIThemes->TextColor(), info[selection].Title, 390, 0, font);
+				Gui::DrawStringCentered(0, 30, 0.6f, UIThemes->TextColor(), info[selection].Author, 380, 0, font);
+				Gui::DrawStringCentered(0, 70, 0.5f, UIThemes->TextColor(), info[selection].Description, 380, 130, font, C2D_WordWrap);
 
 			} else {
-				Gui::DrawStringCentered(0, 1, 0.7f, TEXT_COLOR, Lang::get("INVALID_ESHOP"), 390, 0, font);
+				Gui::DrawStringCentered(0, 1, 0.7f, UIThemes->TextColor(), Lang::get("INVALID_ESHOP"), 390, 0, font);
 			}
 
-			Gui::DrawString(10, 200, 0.4, TEXT_COLOR, "- " + Lang::get("ENTRIES") + ": " + std::to_string(info[selection].StoreSize), 150, 0, font);
-			Gui::DrawString(10, 210, 0.4, TEXT_COLOR, "- " + Lang::get("VERSION") + ": " + std::to_string(info[selection].Version), 150, 0, font);
-			Gui::DrawString(10, 220, 0.4, TEXT_COLOR, "- " + Lang::get("REVISION") + ": " + std::to_string(info[selection].Revision), 150, 0, font);
+			Gui::DrawString(10, 200, 0.4, UIThemes->TextColor(), "- " + Lang::get("ENTRIES") + ": " + std::to_string(info[selection].StoreSize), 150, 0, font);
+			Gui::DrawString(10, 210, 0.4, UIThemes->TextColor(), "- " + Lang::get("VERSION") + ": " + std::to_string(info[selection].Version), 150, 0, font);
+			Gui::DrawString(10, 220, 0.4, UIThemes->TextColor(), "- " + Lang::get("REVISION") + ": " + std::to_string(info[selection].Revision), 150, 0, font);
 
+			Animation::QueueEntryDone();
 			GFX::DrawBottom();
 
-			Gui::Draw_Rect(0, 0, 320, 25, ENTRY_BAR_COLOR);
-			Gui::Draw_Rect(0, 25, 320, 1, ENTRY_BAR_OUTL_COLOR);
-			GFX::DrawSprite(sprites_arrow_idx, mainButtons[9].x, mainButtons[9].y);
-			Gui::DrawStringCentered(0, 2, 0.6, TEXT_COLOR, Lang::get("SELECT_ESHOP_2"), 310, 0, font);
+			Gui::Draw_Rect(0, 0, 320, 25, UIThemes->BarColor());
+			Gui::Draw_Rect(0, 25, 320, 1, UIThemes->BarOutline());
+			GFX::DrawIcon(sprites_arrow_idx, mainButtons[9].x, mainButtons[9].y, UIThemes->TextColor());
+			Gui::DrawStringCentered(0, 2, 0.6, UIThemes->TextColor(), Lang::get("SELECT_ESHOP_2"), 310, 0, font);
 
 			for(int i = 0; i < 6 && i < (int)info.size(); i++) {
-				if (sPos + i == selection) GFX::DrawBox(mainButtons[i].x, mainButtons[i].y, mainButtons[i].w, mainButtons[i].h, false);
-
-				Gui::DrawStringCentered(10 - 160 + (300 / 2), mainButtons[i].y + 4, 0.45f, TEXT_COLOR, info[sPos + i].FileName, 295, 0, font);
+				if (sPos + i == selection) Gui::Draw_Rect(mainButtons[i].x, mainButtons[i].y, mainButtons[i].w, mainButtons[i].h, UIThemes->MarkSelected());
+				Gui::DrawStringCentered(10 - 160 + (300 / 2), mainButtons[i].y + 4, 0.45f, UIThemes->TextColor(), info[sPos + i].FileName, 295, 0, font);
 			}
+		} else {
+			GFX::DrawBottom(); // Otherwise we'd draw on top.
 		}
 
-		if (info.size() <= 0) GFX::DrawBottom(); // Otherwise we'd draw on top.
-
-		GFX::DrawSprite(sprites_delete_idx, mainButtons[6].x, mainButtons[6].y);
-		GFX::DrawSprite(sprites_update_idx, mainButtons[7].x, mainButtons[7].y);
-		GFX::DrawSprite(sprites_add_idx, mainButtons[8].x, mainButtons[8].y);
+		GFX::DrawIcon(sprites_delete_idx, mainButtons[6].x, mainButtons[6].y, UIThemes->TextColor());
+		GFX::DrawIcon(sprites_update_idx, mainButtons[7].x, mainButtons[7].y, UIThemes->TextColor());
+		GFX::DrawIcon(sprites_add_idx, mainButtons[8].x, mainButtons[8].y, UIThemes->TextColor());
 		C3D_FrameEnd(0);
 
 		hidScanInput();
 		touchPosition touch;
 		hidTouchRead(&touch);
 		u32 hRepeat = hidKeysDownRepeat();
+		Animation::HandleQueueEntryDone();
 
 		if (info.size() > 0) {
 			if (hRepeat & KEY_DOWN) {
@@ -303,9 +316,9 @@ void Overlays::SelectStore(std::unique_ptr<Store> &store, std::vector<std::uniqu
 						else if (info[selection].Version > _ESHOP_VERSION) Msg::waitMsg(Lang::get("ESHOP_TOO_NEW"));
 						else {
 							config->lastStore(info[selection].FileName);
-							store = std::make_unique<Store>(_STORE_PATH + info[selection].FileName, info[selection].FileName);
-							StoreUtils::ResetAll(store, meta, entries);
-							StoreUtils::SortEntries(false, SortType::LAST_UPDATED, entries);
+							StoreUtils::store = std::make_unique<Store>(_STORE_PATH + info[selection].FileName, info[selection].FileName);
+							StoreUtils::ResetAll();
+							StoreUtils::SortEntries(false, SortType::LAST_UPDATED);
 							doOut = true;
 						}
 
@@ -325,9 +338,9 @@ void Overlays::SelectStore(std::unique_ptr<Store> &store, std::vector<std::uniqu
 								else if (info[i + sPos].Version > _ESHOP_VERSION) Msg::waitMsg(Lang::get("ESHOP_TOO_NEW"));
 								else {
 									config->lastStore(info[i + sPos].FileName);
-									store = std::make_unique<Store>(_STORE_PATH + info[i + sPos].FileName, info[i + sPos].FileName);
-									StoreUtils::ResetAll(store, meta, entries);
-									StoreUtils::SortEntries(false, SortType::LAST_UPDATED, entries);
+									StoreUtils::store = std::make_unique<Store>(_STORE_PATH + info[i + sPos].FileName, info[i + sPos].FileName);
+									StoreUtils::ResetAll();
+									StoreUtils::SortEntries(false, SortType::LAST_UPDATED);
 									doOut = true;
 								}
 
@@ -339,7 +352,7 @@ void Overlays::SelectStore(std::unique_ptr<Store> &store, std::vector<std::uniqu
 				}
 			}
 
-			/* Supprimer l'eShop */
+			/* Delete eShop. */
 			if ((hidKeysDown() & KEY_X) || (hidKeysDown() & KEY_TOUCH && touching(touch, mainButtons[6]))) {
 				if (info[selection].FileName != "") {
 					DeleteStore(info[selection].FileName);
@@ -348,7 +361,7 @@ void Overlays::SelectStore(std::unique_ptr<Store> &store, std::vector<std::uniqu
 				}
 			}
 
-			/* Télécharger le dernier eShop */
+			/* Download latest eShop. */
 			if ((hidKeysDown() & KEY_START) || (hidKeysDown() & KEY_TOUCH && touching(touch, mainButtons[7]))) {
 				if (checkWifiStatus()) {
 					if (info[selection].URL != "") {
@@ -367,7 +380,7 @@ void Overlays::SelectStore(std::unique_ptr<Store> &store, std::vector<std::uniqu
 			else if (selection > sPos + 6 - 1) sPos = selection - 6 + 1;
 		}
 
-		/* Téléchargement de l'eShop depuis URL. */
+		/* eShop QR Code / URL Download. */
 		if ((hidKeysDown() & KEY_Y) || (hidKeysDown() & KEY_TOUCH && touching(touch, mainButtons[8]))) {
 			if (checkWifiStatus()) {
 				if (DownloadStore()) {

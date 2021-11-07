@@ -1,0 +1,295 @@
+Eden dla bannera 3D
+
+Umieść pliki 3DSX w folderze
+
+Jeżeli są włączone, pliki 3DSX zostaną umieszczone w folderze o takiej samej nazwie jak ostatnio ustawiony folder
+
+%s anulowane!
+
+%s nie powiodło się!
+
+Wymagana akcja!
+
+%s udało się!
+
+Aktywny motyw
+
+Nieprawidłowy argument.\nProszę sprawdzić plik xml pod kątem poprawności argumentów.
+
+Rosnący
+
+Autor
+
+Ustawienia automatycznej aktualizacji
+
+Ustawienia automatycznej aktualizacji...
+	
+Automatyczna aktualizacja eShopu
+	
+Dzięki temu przy uruchamianiu Ghost eShop zostanie automatycznie zaktualizowany ostatnio używany eShop.
+	
+Auto-update Ghost eShop (Automatyczna aktualizacja Ghost eShop)
+	
+Gdy ta opcja jest włączona, Ghost eShop będzie sprawdzał dostępność aktualizacji przy każdym uruchomieniu.
+	
+Dostępne pliki do pobrania
+	
+Czy chciałbyś pobrać ten tytuł?
+	
+Anonyku do transmisji w serwisie YouTube
+	
+Anuluj
+	
+Kategoria
+	
+Zmień ścieżkę 3DSX
+	
+Zmień ścieżkę do archiwum
+	
+Zmień ścieżkę dla firmy
+	
+Zmień ścieżkę NDS
+	
+Zmiana ścieżki skrótu
+	
+Sprawdzanie aktualizacji eShopu...
+	
+Sprawdzanie aktualizacji Ghost eShop...
+	
+Citra & Nintendo za ikony
+
+Naciśnij \uE000, aby potwierdzić, \uE001, aby anulować.
+	
+Proszę połączyć się z WiFi.
+	
+Potwierdź
+	
+Konsola
+	
+- Wszyscy tłumacze i współpracownicy
+	
+Kopiowanie... %s / %s (%.2f%%)
+	
+Błąd kopiowania!
+	
+Czy chcesz utworzyć skrót?
+	
+Credits
+	
+Aktualna wersja: 
+	
+Obecnie wyodrębnianie:
+	
+Użyj Własnej Czcionki
+	
+Jeśli włączone, 'sdmc:/3ds/GhosteShop/font.bcfnt' zostanie użyta zamiast czcionki systemowej, jeśli zostanie znaleziona.
+
+Błąd usuwania!
+	
+Czy na pewno chcesz usunąć ten katalog?
+
+Usuwanie niepotrzebnego pliku...
+
+Usuwanie...
+
+Zjeżdżanie
+	
+Kierunek
+	
+Ustawienia katalogu
+	
+Ustawienia katalogu...
+	
+Gotowe!
+	
+Błąd pobierania!
+	
+Pobieranie nie powiodło się!
+	
+Prędkość: %lld KiB/s
+	
+Pobieranie... %s / %s (%.2f%%)
+	
+Pobieranie kompatybilnej czcionki...
+	
+Pobieranie arkusza spritesheet...
+	
+Pobieranie arkusza spritesheet %i z %i...
+	
+Pobieranie GhosteShop.eshop...
+	
+Pobieranie Ghost eShop...
+	
+Pobieranie eShopu...
+	
+Wprowadź opis skrótu.
+	
+Wpisz, co chcesz wyszukać.
+	
+Wprowadź nazwę pliku skrótu (bez rozszerzenia).
+	
+Wprowadź tytuł skrótu.
+	
+Wprowadź adres URL sklepu eShop.
+	
+Wpisy
+	
+Użyj BG z eShopu
+	
+Po włączeniu tej opcji, zamiast jednolitego koloru BG dla górnego ekranu, będzie wyświetlany BG sklepu.
+	
+Ten eShop jest nieprawidłowy i nie można go załadować do Ghost eShop. Może sprawdź, czy nie ma błędów składni?
+	
+Twoja wersja programu Ghost eShop jest zbyt stara, by używać tego eShopu. Proszę zaktualizować ją do najnowszej wersji,
+	
+Ten eShop jest przestarzały i nie może być używany z tą wersją Ghost eShop.\NProszę poprosić twórcę o aktualizację.
+	
+Czy chcesz usunąć ten wpis?
+	
+Wyjdź z programu Ghost eShop
+	
+Wyodrębnianie... %s / %s (%.2f%%)
+	
+Błąd ekstrakcji!
+	
+Ta funkcja może mieć skutki uboczne podczas działania kolejki. Czy na pewno chcesz kontynuować?
+	
+Pobieranie starych metadanych...
+	
+Pobieranie rekomendowanego eShopu...
+	
+Plik został wyodrębniony.
+	
+Wygląda na to, że w nazwie pliku znajduje się znak '/', co nie jest obsługiwane. Proszę zmienić 'arkusz' w nazwie pliku.
+	
+Plik: %d / %d
+	
+pliki wyodrębnione.
+	
+Filtr do:
+	
+Pełne przypisy można znaleźć na GitHubie
+	
+Siatka
+	
+Ustawienia GUI
+	
+Ustawienia GUI...
+	
+Uwzględnij w wynikach:
+	
+Instalowanie... %s / %s (%.2f%%)
+	
+Instalacja Ghost eShop...
+	
+Niewłaściwy eShop
+	
+Naciśnij dowolny klawisz, aby kontynuować.
+	
+Język
+	
+Ostatnia aktualizacja
+
+Licencja
+	
+Lista
+	
+Ładowanie zrzutu ekranu...
+	
+Ładowanie arkusza sprite'ów %i z %i...
+	
+MediaType NAND
+	
+MediaType SD
+	
+Błąd przenoszenia!
+
+Brak dostępnej dodatkowej zawartości
+	
+Brak dostępnych plików do pobrania
+	
+Brak licencji
+	
+Brak dostępnych zrzutów ekranu
+	
+Jeszcze nie wdrożone
+	
+Kopiowanie
+	
+Usuwanie
+	
+Pobieranie
+	
+Wyodrębnianie
+	
+Instalowanie
+	
+Przenoszenie
+	
+Oczekiwanie
+	
+Kolejka
+	
+Pozycja w kolejce
+	
+Krok: %d / %d
+	
+Zalecany eShop
+	
+Aktualizacja
+	
+Zrzut ekranu %d / %d
+	
+Zrzut ekranu nie może zostać załadowany.
+	
+Naciśnij, aby zmienić i powiększyć
+	
+Wyszukiwanie i filtry
+	
+Wybierz motyw
+	
+Wybierz katalog
+	
+Wybierz język
+	
+Wybierz eShop
+	
+Wybierz eShop
+	
+Dodaj wybór do kolejki
+	
+Ustawienia
+	
+Wygląda na to, że dołączony jest znak '/', który nie jest obsługiwany. Proszę zmienić 'arkusz' tylko na nazwę pliku.
+
+Skrót utworzony!
+	
+Rozmiar
+	
+Sortuj według
+
+Sortowanie
+	
+Naciśnij START, aby wybrać bieżący folder
+	
+Store Info
+	
+Błąd składni!
+	
+Tytuł
+	
+Styl górny
+	
+Aktualizacja dostępna!
+	
+Aktualizacja zakończona! Proszę ponownie otworzyć Ghost eShop.
+	
+Aktualizacja arkusza sprite'ów...
+	
+Aktualizowanie arkusza sprite'ów %i z %i...
+	
+Aktualizacja eShopu...
+	
+Wersja
+
+Pełne napisy i changelog można znaleźć na wiki

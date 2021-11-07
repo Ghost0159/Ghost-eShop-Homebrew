@@ -1,0 +1,295 @@
+Eden per il banner 3D
+
+Mettere i file 3DSX nella cartella
+
+Se sono abilitati, i file 3DSX saranno messi in una cartella con lo stesso nome dell'ultima cartella impostata
+
+%s annullato!
+
+%s fallito!
+
+Azione richiesta!
+
+%s riuscita!
+
+Tema attivo
+
+Argomento non valido.\nControlla il file xml per gli argomenti corretti.
+
+Ascendente
+
+Autore
+
+Impostazioni di auto-aggiornamento
+
+Impostazioni di auto-aggiornamento...
+	
+Auto-aggiornamento eShop
+	
+Con questo, l'ultimo eShop utilizzato verrà aggiornato automaticamente all'avvio di Ghost eShop.
+	
+Aggiorna automaticamente Ghost eShop
+	
+Quando questa opzione è attivata, Ghost eShop controllerà la presenza di aggiornamenti ad ogni apertura.
+	
+Download disponibili
+	
+Vuoi avviare questo titolo?
+	
+Anonyku per la trasmissione su YouTube
+	
+Annulla
+	
+Categoria
+	
+Cambia percorso 3DSX
+	
+Cambia il percorso dell'archivio
+	
+Cambia il percorso dell'archivio
+	
+Cambiare il percorso NDS
+	
+Cambia il percorso delle scorciatoie
+	
+Controllo degli aggiornamenti dell'eShop...
+	
+Controllo degli aggiornamenti dell'eShop di Ghost...
+	
+Citra & Nintendo per le icone
+
+Premi \uE000 per confermare, \uE001 per annullare.
+	
+Si prega di connettersi al WiFi.
+	
+Confermare
+	
+Console
+	
+- Tutti i traduttori e collaboratori
+	
+Copia... %s / %s (%.2f%%)
+	
+Errore di copia!
+	
+Vuoi creare un collegamento?
+	
+Crediti
+	
+Versione corrente: 
+	
+Attualmente in fase di estrazione:
+	
+Use Custom Font
+	
+Se abilitato, 'sdmc:/3ds/GhosteShop/font.bcfnt' sarà usato al posto del font di sistema, se trovato.
+
+Errore di cancellazione!
+	
+Sei sicuro di voler cancellare questa directory?
+
+Eliminazione di file non necessari...
+
+Eliminazione...
+
+Discendente
+	
+Direzione
+	
+Impostazioni della directory
+	
+Impostazioni della directory...
+	
+Fatto!
+	
+Errore di download!
+	
+Download fallito!
+	
+Velocità: %lld KiB/s
+	
+Download... %s / %s (%.2f%%)
+	
+Download di font compatibili...
+	
+Scaricare lo spritesheet...
+	
+Download di Spritesheet %i di %i...
+	
+Download di GhosteShop.eshop...
+	
+Download di Ghost eShop...
+	
+Scaricare eShop...
+	
+Inserisci la descrizione della scorciatoia.
+	
+Inserisci quello che vuoi cercare.
+	
+Inserisci il nome del file della scorciatoia (senza estensione).
+	
+Inserisci il titolo della scorciatoia.
+	
+Inserisci l'URL dell'eShop.
+	
+Voci
+	
+Usa BG dell'eShop
+	
+Se abilitato, la BG fornita dall'eShop verrà mostrata al posto del colore solido BG per lo schermo superiore.
+	
+Questo eShop non è valido e non può essere caricato con Ghost eShop.
+	
+La tua versione di Ghost eShop è troppo vecchia per utilizzare questo eShop,
+	
+Questo eShop non è aggiornato e non può essere utilizzato con questa versione di Ghost eShop.
+	
+Vuoi eseguire questa voce?
+	
+Esci da Ghost eShop
+	
+Estrazione... %s / %s (%.2f%%)
+	
+Errore di estrazione!
+	
+Questa funzione può avere effetti collaterali mentre la coda è in esecuzione.\nSei sicuro di voler continuare?
+	
+Recupero dei vecchi metadati...
+	
+Recupero dell'eShop consigliato...
+	
+file estratto.
+	
+Sembra che un '/' sia incluso nel nome del file, che non è supportato.\nSi prega di cambiare il 'foglio' del nome del file
+	
+File: %d / %d
+	
+file estratti.
+	
+Filtrare a:
+	
+I crediti completi possono essere trovati su GitHub
+	
+Griglia
+	
+Impostazioni GUI
+	
+Impostazioni GUI...
+	
+Includere nei risultati:
+	
+Installazione di... %s / %s (%.2f%%)
+	
+Installazione di Ghost eShop...
+	
+eShop non valido
+	
+Premere un tasto qualsiasi per continuare.
+	
+Lingua
+	
+Ultimo aggiornamento
+
+Licenza
+	
+Lista
+	
+Caricamento dello screenshot...
+	
+Caricamento foglio spritesheet %i di %i...
+	
+Tipo di supporto NAND
+	
+MediaType SD
+	
+Errore di spostamento!
+
+Nessun contenuto aggiuntivo disponibile
+	
+Nessun download disponibile
+	
+Nessuna licenza
+	
+Nessuno screenshot disponibile
+	
+Non ancora implementato
+	
+Copiare
+	
+Eliminazione di
+	
+Scaricare
+	
+Estrarre
+	
+Installare
+	
+Spostare
+	
+In attesa
+	
+Coda
+	
+Posizione della coda
+	
+Passo: %d / %d
+	
+Negozio elettronico raccomandato
+	
+Revisione
+	
+Screenshot %d / %d
+	
+Lo screenshot non può essere caricato.
+	
+Premi per cambiare e per zoomare
+	
+Ricerca e filtri
+	
+Seleziona un tema
+	
+Seleziona una directory
+	
+Seleziona la lingua
+	
+Seleziona l'eShop
+	
+Seleziona un eShop
+	
+Aggiungi la selezione alla coda
+	
+Impostazioni
+	
+Sembra che sia incluso un '/', che non è supportato.\nSi prega di cambiare 'foglio' in solo nome del file.
+
+Collegamento creato!
+	
+Dimensione
+	
+Ordina per
+
+Ordinamento
+	
+Premi START per selezionare la cartella corrente
+	
+Memorizza informazioni
+	
+Errore di sintassi!
+	
+Titolo
+	
+Stile superiore
+	
+Aggiornamento disponibile!
+	
+Aggiornamento fatto! Riaprire Ghost eShop.
+	
+Aggiornamento dello spritesheet...
+	
+Aggiornamento foglio di sprittura %i di %i...
+	
+Aggiornamento dell'eShop...
+	
+Versione
+
+I crediti completi e il changelog possono essere trovati sul wiki

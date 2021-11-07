@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 */
 
 #include "files.hpp"
+#include <sys/stat.h>
+#include <sys/statvfs.h>
 
 FS_Path getPathInfo(const char *path, FS_ArchiveID *archive) {
 	*archive = ARCHIVE_SDMC;
@@ -36,8 +38,8 @@ FS_Path getPathInfo(const char *path, FS_ArchiveID *archive) {
 
 	} else if (*path != '/') {
 		/*
-			Si le chemin est local (ne pas commencer par une barre oblique),
-			il doit être ajouté au répertoire de travail pour être valide.
+			if the path is local (doesnt start with a slash),
+			it needs to be appended to the working dir to be valid.
 		*/
 		char *actualPath = NULL;
 		asprintf(&actualPath, "%s%s", "/", path);
@@ -45,7 +47,7 @@ FS_Path getPathInfo(const char *path, FS_ArchiveID *archive) {
 		free(actualPath);
 	}
 
-	/* Si la valeur filePath est définie ci-dessus, définissez-la. */
+	/* if the filePath wasnt set above, set it. */
 	if (filePath.size == 0) filePath = fsMakePath(PATH_ASCII, path + prefixlen);
 
 	return filePath;
@@ -84,7 +86,7 @@ Result openFile(Handle *fileHandle, const char *path, bool write) {
 	Result ret = 0;
 	ret = makeDirs(strdup(path));
 	ret = FSUSER_OpenFileDirectly(fileHandle, archive, fsMakePath(PATH_EMPTY, ""), filePath, flags, 0);
-	if (write)	ret = FSFILE_SetSize(*fileHandle, 0); // Tronquer le fichier pour supprimer le contenu précédent avant l’écriture.
+	if (write)	ret = FSFILE_SetSize(*fileHandle, 0); // truncate the file to remove previous contents before writing.
 
 	return ret;
 }
@@ -127,4 +129,13 @@ Result removeDirRecursive(const char *path) {
 	FSUSER_CloseArchive(archive);
 
 	return ret;
+}
+
+/* Code borrowed from GodMode9i:
+	https://github.com/DS-Homebrew/GodMode9i/blob/d68ac105e68b4a1fc2c706a08c7a394255c325c2/arm9/source/driveOperations.cpp#L166-L170
+*/
+u64 getAvailableSpace() {
+	struct statvfs st;
+	statvfs("sdmc:/", &st);
+	return (u64)st.f_bsize * (u64)st.f_bavail;
 }

@@ -1,0 +1,295 @@
+Eden para o banner 3D
+
+Colocar os arquivos 3DSX em pasta
+
+Se estiverem habilitados, os arquivos 3DSX serão colocados em uma pasta com o mesmo nome que a pasta do último conjunto
+
+%s cancelado!
+
+%s falharam!
+
+Ação necessária!
+
+%s bem-sucedidas!
+
+Tema ativo
+
+Argumento inválido.\nPlease check the xml file for proper arguments.
+
+Ascendente
+
+Autor
+
+Ajustes de Atualização Automática
+
+Configurações de atualização automática...
+	
+Atualização automática da eShop
+	
+Com isto, a última eShop usada será atualizada automaticamente ao lançar a Ghost eShop.
+	
+Atualização automática da eShop Fantasma
+	
+Quando esta opção for ativada, a Ghost eShop verificará se há atualizações cada vez que ela for aberta.
+	
+Downloads disponíveis
+	
+Você gostaria de lançar este título?
+	
+Anonyku para transmissão no YouTube
+	
+Cancelar
+	
+Categoria
+	
+Alterar o caminho 3DSX
+	
+Mudar o caminho do arquivo
+	
+Mudar o caminho firme
+	
+Alterar o caminho NDS
+	
+Mudar o caminho do atalho
+	
+Verificação de atualizações da eShop...
+	
+Verificando por atualizações da eShop Fantasma...
+	
+Citra & Nintendo para os ícones
+
+Pressione \uE000 para confirmar, \uE001 para cancelar.
+	
+Por favor, conecte-se ao WiFi.
+	
+Confirme
+	
+Console
+	
+- Todos os Tradutores e Colaboradores
+	
+Cópia... %s / %s (%.2f%%)
+	
+Erro de cópia!
+	
+Você gostaria de criar um atalho?
+	
+Créditos
+	
+Versão atual: 
+	
+Extração atual:
+	
+Usar fonte personalizada
+	
+Se ativado, será usado 'sdmc:/3ds/GhosteShop/font.bcfnt' em vez da fonte do sistema, se encontrada.
+
+Eliminar erro!
+	
+Você tem certeza de que deseja excluir este Diretório?
+
+Excluindo arquivo desnecessário...
+
+Excluindo...
+
+Descendente
+	
+Direção
+	
+Configurações de Diretório
+	
+Configurações de diretórios...
+	
+Feito!
+	
+Download Error!
+	
+Download Failed!
+	
+Velocidade: %lld KiB/s
+	
+Downloads... %s / %s (%.2f%%)
+	
+Download de fonte compatível...
+	
+Fazendo o download de Spritesheet...
+	
+Download de Spritesheet %i de %i...
+	
+Descarregando GhosteShop.eshop...
+	
+Descarregando Ghost eShop...
+	
+Fazendo o download do eShop...
+	
+Digite a descrição do atalho.
+	
+Digite o que você gosta de pesquisar.
+	
+Digite o nome do arquivo do atalho (sem extensão).
+	
+Digite o título do atalho.
+	
+Digite a URL da eShop.
+	
+Digite
+	
+Use eShop BG
+	
+Quando ativado, o BG da eShop fornecido será mostrado ao invés da cor sólida do BG para a tela superior.
+	
+Esta eShop é inválida e não pode ser carregada com a Ghost eShop.\nMaybe verificar se há algum erro de sintaxe?
+	
+Sua versão da Ghost eShop é muito antiga para usar esta eShop.\iPlease update to the latest version",
+	
+Esta eShop está desatualizada e não pode ser usada com esta versão da Ghost eShop.nPor favor, peça ao criador para atualizá-la.
+	
+Você gostaria de executar esta entrada?
+	
+eShop Fantasma de Saída
+	
+Extração... %s / %s (%.2f%%)
+	
+Extrair erro!
+	
+Este recurso pode ter efeitos colaterais enquanto a fila está funcionando.
+	
+Buscando velhos metadados...
+	
+Buscando a eShop recomendada...
+	
+arquivo extraído.
+	
+Parece que um '/' está incluído no nome do arquivo, o qual não é suportado.\nPlease change 'sheet' of filename
+	
+Arquivo: %d / %d
+	
+arquivos extraídos.
+	
+Filtrar para:
+	
+Os créditos completos podem ser encontrados no GitHub
+	
+Grade
+	
+Configurações GUI
+	
+Configurações GUI...
+	
+Incluir nos resultados:
+	
+Instalar... %s / %s (%.2f%)
+	
+Instalando a eShop Fantasma...
+	
+eShop inválido
+	
+Pressione qualquer tecla para continuar.
+	
+Idioma
+	
+Última atualização
+
+Licença
+	
+Lista
+	
+Tela de Carregamento...
+	
+Carregando a folha de Sprites %i de %i...
+	
+MediaType NAND
+	
+MediaType SD
+	
+Erro de movimento!
+
+Não há conteúdo adicional disponível
+	
+Não há downloads disponíveis
+	
+Sem licença
+	
+Não há screenshots disponíveis
+	
+Ainda não Implementado
+	
+Copiando
+	
+Excluindo
+	
+Descarregamento
+	
+Extraindo
+	
+Instalando
+	
+Mudança
+	
+Aguardando
+	
+Fila
+	
+Posição na fila
+	
+Etapa: %d / %d
+	
+Loja virtual recomendada
+	
+Revisão
+	
+Captura de tela %d / %d
+	
+A imagem da tela não pôde ser carregada.
+	
+Pressione para mudar e para ampliar
+	
+Busca e Filtros
+	
+Selecione um tema
+	
+Selecione um diretório
+	
+Escolha o idioma
+	
+Selecione eShop
+	
+Selecione uma eShop
+	
+Adicionar seleção à fila
+	
+Configurações
+	
+Parece que um '/' está incluído, o que não é suportado.\nPlease change 'sheet' to filename only.
+
+Atalho criado!
+	
+Tamanho
+	
+Ordenar por
+
+Ordenação
+	
+Pressione START para selecionar a pasta atual
+	
+Informações sobre a loja
+	
+Erro sintático!
+	
+Título
+	
+Estilo superior
+	
+Atualização disponível!
+	
+Atualização feita! Favor reabrir a eShop Fantasma.
+	
+Atualizando o Spritesheet...
+	
+Atualização do Spritesheet %i de %i...
+	
+Atualizando a eShop...
+	
+Versão
+
+Créditos completos e changelog podem ser encontrados no wiki

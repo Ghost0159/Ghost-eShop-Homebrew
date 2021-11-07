@@ -1,0 +1,295 @@
+3D横幅的伊甸园
+
+将3DSX文件放入文件夹
+
+如果它们被启用，3DSX文件将被放在一个与最后设置的文件夹相同的文件夹中。
+
+%s canceled!
+
+%s failed!
+
+需要采取行动!
+
+%s succeeded!
+
+活动主题
+
+Invalid argument./n请检查xml文件中的正确参数。
+
+升序
+
+作者
+
+自动更新设置
+
+自动更新设置...
+	
+自动更新网店
+	
+使用此功能，在启动Ghost eShop时，将自动更新最后使用的eShop。
+	
+自动更新Ghost eShop
+	
+当此选项被启用时，Ghost eShop将在每次打开时检查更新。
+	
+可用的下载
+	
+你想启动这个标题吗？
+	
+在YouTube上播放的Anonyku
+	
+取消
+	
+类别
+	
+更改3DSX路径
+	
+改变存档路径
+	
+更改公司路径
+	
+改变NDS路径
+	
+更改快捷方式路径
+	
+检查eShop的更新...
+	
+检查Ghost eShop的更新...
+	
+Citra & Nintendo for the icons
+
+Press \uE000 to confirm, \uE001 to cancel.
+	
+请连接到WiFi。
+	
+确认
+	
+控制台
+	
+- 所有翻译者和贡献者
+	
+正在复制... %s / %s (%.2f%%)
+	
+复制错误!
+	
+你想创建一个快捷方式吗？
+	
+积分
+	
+当前版本。
+	
+目前正在提取。
+	
+使用自定义字体
+	
+如果启用，将使用'sdmc:/3ds/GhosteShop/font.bcfnt'代替系统字体，如果找到的话。
+
+删除错误!
+	
+您确定要删除此目录吗？
+
+删除不需要的文件...
+
+删除...
+
+下降
+	
+方向
+	
+目录设置
+	
+目录设置...
+	
+完成了!
+	
+下载错误!
+	
+下载失败!
+	
+速度：%lld KiB/s
+	
+下载... %s / %s (%.2f%%)
+	
+正在下载兼容字体...
+	
+下载电子表格...
+	
+下载Spritesheet %i of %i...
+	
+下载GhosteShop.eshop...
+	
+下载Ghost eShop...
+	
+下载eShop...
+	
+输入快捷方式的描述。
+	
+输入你喜欢的搜索内容。
+	
+输入快捷方式的文件名（不带扩展名）。
+	
+输入快捷方式的标题。
+	
+输入eShop的URL。
+	
+条目
+	
+使用网上商城的BG
+	
+启用后，将显示eShop提供的BG，而不是顶部屏幕的纯BG颜色。
+	
+This eShop is invalid and cannot beloaded with Ghost eShop.（此网上商店无效，不能用Ghost eShop加载）也许可以检查是否存在任何语法错误？
+	
+Your version of Ghost eShop is （too old to use this eShop.）请更新到最新版本。
+	
+This eShop is outdated and cannot be used\nwith this version of Ghost eShop.\nPlease ask the creator to update it.
+	
+您想执行此条目吗？
+	
+退出Ghost eShop
+	
+正在提取... %s / %s (%.2f%%)
+	
+提取错误!
+	
+This Feature may have side effects while the Queue is running./n您确定要继续吗？
+	
+取出旧的元数据...
+	
+取出推荐的eShop...
+	
+文件已提取。
+	
+Seems like a '/' is included in file name, which is not supported.（请改变文件名的'sheet'。
+	
+文件：%d /%d
+	
+文件已被提取。
+	
+过滤到。
+	
+完整的信用可以在GitHub上找到
+	
+网格
+	
+GUI设置
+	
+GUI设置...
+	
+包括在结果中。
+	
+安装... %s / %s (%.2f%%)
+	
+安装Ghost eShop...
+	
+无效的网店
+	
+按任何键继续。
+	
+语言
+	
+最后更新
+
+许可证
+	
+列表
+	
+正在加载屏幕截图...
+	
+正在加载 %i 的 Spritesheet %i...
+	
+媒体类型 NAND
+	
+媒体类型SD
+	
+移动错误!
+
+无其他内容可用
+	
+没有可用的下载
+	
+没有许可证
+	
+没有可用的截图
+	
+尚未实施
+	
+复制
+	
+删除
+	
+下载
+	
+提取
+	
+安装
+	
+移动
+	
+等待
+	
+排队
+	
+队列位置
+	
+步骤: %d / %d
+	
+推荐电子商店
+	
+修订版
+	
+屏幕截图 %d / %d
+	
+无法加载屏幕截图。
+	
+按下改变和放大
+	
+搜索和过滤
+	
+选择一个主题
+	
+选择一个目录
+	
+选择语言
+	
+选择电子商店
+	
+选择一个网上商店
+	
+将选择添加到队列中
+	
+设置
+	
+Seems like a '/' is included, which is not supported./nPlease change 'sheet' to filename only.
+
+快捷方式已创建!
+	
+尺寸
+	
+排序方式
+
+排序方式
+	
+按START键选择当前文件夹
+	
+存储信息
+	
+语法错误!
+	
+标题
+	
+顶部风格
+	
+更新可用!
+	
+更新完成! 请重新打开Ghost eShop。
+	
+更新 Spritesheet...
+	
+更新Spritesheet %i of %i...
+	
+更新eShop...
+	
+版本
+
+完整的功劳和变更记录可以在维基上找到

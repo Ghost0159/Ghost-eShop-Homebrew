@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -30,35 +30,45 @@
 #include <dirent.h>
 #include <string>
 
-#define ARG_AMOUNT 4 // Dans le cas où plus d’args, modifiez ceci. Il doit être le montant ARG + 1, en raison de 3DSX Path.
+#define ARG_AMOUNT 4 // In case for more args, change this. It must be ARG amount + 1, because of 3DSX Path.
 std::string _3dsxPath = "";
 
-/*
-	ARG Init.
-*/
+/* ARG Init. */
 static void InitForARG() {
 	gfxInitDefault();
 	romfsInit();
+
 	cfguInit();
-	Gui::init();
 	amInit();
 	acInit();
 
-	/* Créer des répertoires, s’il manque. */
+	/* Create Directories, if missing. */
 	mkdir("sdmc:/3ds", 0777);
-	mkdir("sdmc:/3ds/GhosteShop", 0777);
-	mkdir("sdmc:/3ds/GhosteShop/stores", 0777);
-	mkdir("sdmc:/3ds/GhosteShop/shortcuts", 0777);
+	mkdir("sdmc:/3ds/Universal-Updater", 0777);
+	mkdir("sdmc:/3ds/Universal-Updater/stores", 0777);
+	mkdir("sdmc:/3ds/Universal-Updater/shortcuts", 0777);
+	mkdir("sdmc:/3ds/Universal-Updater/GhosteShop", 0777);
 
 	config = std::make_unique<Config>();
+	UIThemes = std::make_unique<Theme>();
+	UIThemes->LoadTheme(config->theme());
+
+	CFG_Region region = CFG_REGION_USA;
+	if(config->language() == "cn-SI") {
+		region = CFG_REGION_CHN;
+	} else if(config->language() == "cn-TR") {
+		region = CFG_REGION_TWN;
+	} else if(config->language() == "kr") {
+		region = CFG_REGION_KOR;
+	}
+	Gui::init(region);
+
 	Lang::load(config->language());
 	Init::LoadFont();
-	osSetSpeedupEnable(true); // Activer l’accélération pour les utilisateurs de new3DS.
+	osSetSpeedupEnable(true); // Enable speed-up for New 3DS users.
 }
 
-/*
-	ARG Exit.
-*/
+/* ARG Exit. */
 static Result ExitForARG() {
 	Gui::exit();
 	Init::UnloadFont();
@@ -74,7 +84,7 @@ static Result ExitForARG() {
 int main(int argc, char *argv[]) {
 	if (argc > 0) _3dsxPath = argv[0];
 
-	/* 4 --> Mode argument. */
+	/* 4 --> Argument mode. */
 	if (argc == ARG_AMOUNT) {
 		InitForARG();
 
@@ -84,7 +94,7 @@ int main(int argc, char *argv[]) {
 
 		std::unique_ptr<ArgumentParser> arg = std::make_unique<ArgumentParser>(file, entry, dlIndex);
 
-		if (arg->GetValid()) arg->Execute(); // Exécuter, si valide.
+		if (arg->GetValid()) arg->Execute(); // Execute, if valid.
 		else Msg::waitMsg(Lang::get("ARGUMENT_INVALID"));
 		return ExitForARG();
 	}

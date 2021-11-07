@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -27,10 +27,11 @@
 #include "storeEntry.hpp"
 
 /*
-	Chercher des informations sur le constructeur.
-	const std::unique_ptrStore> &store : Const Référence à la classe Store.
-	const std::unique_ptrMeta> &meta : Const Référence à la classe Meta.
-	int index : Index de l’entrée.
+	Fetch informations on constructor.
+
+	const std::unique_ptr<Store> &store: Const Reference to the store class.
+	const std::unique_ptr<Meta> &meta: Const Reference to the meta class.
+	int index: Index of the entry.
 */
 StoreEntry::StoreEntry(const std::unique_ptr<Store> &store, const std::unique_ptr<Meta> &meta, int index) {
 	this->Title = store->GetTitleEntry(index);
@@ -42,7 +43,6 @@ StoreEntry::StoreEntry(const std::unique_ptr<Store> &store, const std::unique_pt
 	this->Version = store->GetVersionEntry(index);
 	this->Console = StringUtils::FetchStringsFromVector(store->GetConsoleEntry(index));
 	this->LastUpdated = store->GetLastUpdatedEntry(index);
-	this->Size = store->GetSizeEntry(index);
 	this->Additional = store->GetAdditionalcontentEntry(index);
 	this->MarkString = StringUtils::GetMarkString(meta->GetMarks(store->GetEshopTitle(), this->Title));
 

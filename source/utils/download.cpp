@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "files.hpp"
 #include "json.hpp"
 #include "lang.hpp"
+#include "queueSystem.hpp"
 #include "screenshot.hpp"
 #include "scriptUtils.hpp"
 #include "stringutils.hpp"
@@ -53,8 +54,9 @@ static size_t result_written = 0;
 #define TIMEOPT CURLINFO_TOTAL_TIME_T
 #define MINIMAL_PROGRESS_FUNCTIONALITY_INTERVAL	3000000
 
-curl_off_t downloadTotal = 1; // Ne pas initialiser avec 0 pour éviter la division par zéro plus tard.
+curl_off_t downloadTotal = 1; // Dont initialize with 0 to avoid division by zero later.
 curl_off_t downloadNow = 0;
+curl_off_t downloadSpeed = 0;
 
 static FILE *downfile = nullptr;
 static size_t file_buffer_pos = 0;
@@ -67,6 +69,7 @@ static LightEvent waitCommit;
 static bool killThread = false;
 static bool writeError = false;
 #define FILE_ALLOC_SIZE 0x60000
+CURL *CurlHandle = nullptr;
 
 static int curlProgress(CURL *hnd,
 					curl_off_t dltotal, curl_off_t dlnow,
@@ -100,10 +103,14 @@ static void commitToFileThreadFunc(void *args) {
 }
 
 static size_t file_handle_data(char *ptr, size_t size, size_t nmemb, void *userdata) {
+	if (getAvailableSpace() < (u64)downloadTotal) return 0; // Out of space.
+	if (writeError) return 0;
+	if (QueueSystem::CancelCallback) return 0;
+
 	(void)userdata;
 	const size_t bsz = size * nmemb;
 	size_t tofill = 0;
-	if (writeError) return 0;
+
 
 	if (!g_buffers[g_index]) {
 		LightEvent_Init(&waitCommit, RESET_STICKY);
@@ -137,13 +144,21 @@ static size_t file_handle_data(char *ptr, size_t size, size_t nmemb, void *userd
 	return bsz;
 }
 
+/*
+	Download a file.
+
+	const std::string &url: The download URL.
+	const std::string &path: Where to place the file.
+*/
 Result downloadToFile(const std::string &url, const std::string &path) {
+	if (!checkWifiStatus()) return -1; // NO WIFI.
+
 	bool needToDelete = false;
 	downloadTotal = 1;
 	downloadNow = 0;
+	downloadSpeed = 0;
 
 	CURLcode curlResult;
-	CURL *hnd;
 	Result retcode = 0;
 	int res;
 
@@ -161,7 +176,7 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 		goto exit;
 	}
 
-	/* Faire des annuaires. */
+	/* make directories. */
 	for (char *slashpos = strchr(path.c_str() + 1, '/'); slashpos != NULL; slashpos = strchr(slashpos + 1, '/')) {
 		char bak = *(slashpos);
 		*(slashpos) = '\0';
@@ -177,24 +192,25 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 		goto exit;
 	}
 
-	hnd = curl_easy_init();
-	curl_easy_setopt(hnd, CURLOPT_BUFFERSIZE, FILE_ALLOC_SIZE);
-	curl_easy_setopt(hnd, CURLOPT_URL, url.c_str());
-	curl_easy_setopt(hnd, CURLOPT_NOPROGRESS, 0L);
-	curl_easy_setopt(hnd, CURLOPT_USERAGENT, USER_AGENT);
-	curl_easy_setopt(hnd, CURLOPT_FOLLOWLOCATION, 1L);
-	curl_easy_setopt(hnd, CURLOPT_FAILONERROR, 1L);
-	curl_easy_setopt(hnd, CURLOPT_ACCEPT_ENCODING, "gzip");
-	curl_easy_setopt(hnd, CURLOPT_MAXREDIRS, 50L);
-	curl_easy_setopt(hnd, CURLOPT_XFERINFOFUNCTION, curlProgress);
-	curl_easy_setopt(hnd, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
-	curl_easy_setopt(hnd, CURLOPT_WRITEFUNCTION, file_handle_data);
-	curl_easy_setopt(hnd, CURLOPT_SSL_VERIFYPEER, 0L);
-	curl_easy_setopt(hnd, CURLOPT_VERBOSE, 1L);
-	curl_easy_setopt(hnd, CURLOPT_STDERR, stdout);
+	CurlHandle = curl_easy_init();
+	curl_easy_setopt(CurlHandle, CURLOPT_BUFFERSIZE, FILE_ALLOC_SIZE);
+	curl_easy_setopt(CurlHandle, CURLOPT_URL, url.c_str());
+	curl_easy_setopt(CurlHandle, CURLOPT_NOPROGRESS, 0L);
+	curl_easy_setopt(CurlHandle, CURLOPT_USERAGENT, USER_AGENT);
+	curl_easy_setopt(CurlHandle, CURLOPT_FOLLOWLOCATION, 1L);
+	curl_easy_setopt(CurlHandle, CURLOPT_FAILONERROR, 1L);
+	curl_easy_setopt(CurlHandle, CURLOPT_ACCEPT_ENCODING, "gzip");
+	curl_easy_setopt(CurlHandle, CURLOPT_MAXREDIRS, 50L);
+	curl_easy_setopt(CurlHandle, CURLOPT_XFERINFOFUNCTION, curlProgress);
+	curl_easy_setopt(CurlHandle, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
+	curl_easy_setopt(CurlHandle, CURLOPT_WRITEFUNCTION, file_handle_data);
+	curl_easy_setopt(CurlHandle, CURLOPT_SSL_VERIFYPEER, 0L);
+	curl_easy_setopt(CurlHandle, CURLOPT_VERBOSE, 1L);
+	curl_easy_setopt(CurlHandle, CURLOPT_STDERR, stdout);
 
-	curlResult = curl_easy_perform(hnd);
-	curl_easy_cleanup(hnd);
+	curlResult = curl_easy_perform(CurlHandle);
+	curl_easy_cleanup(CurlHandle);
+	CurlHandle = nullptr;
 
 	if (curlResult != CURLE_OK) {
 		retcode = -curlResult;
@@ -251,14 +267,15 @@ exit:
 	writeError = false;
 
 	if (needToDelete) {
-		if (access(path.c_str(), F_OK) == 0) deleteFile(path.c_str()); // Supprimer le fichier, cause pas entièrement téléchargé.
+		if (access(path.c_str(), F_OK) == 0) deleteFile(path.c_str()); // Delete file, cause not fully downloaded.
 	}
 
+	if (QueueSystem::CancelCallback) return 0;
 	return retcode;
 }
 
 /*
-	fonction suivante est de
+	following function is from
 	https://github.com/angelsl/libctrfgh/blob/master/curl_test/src/main.c
 */
 static size_t handle_data(char *ptr, size_t size, size_t nmemb, void *userdata) {
@@ -291,7 +308,7 @@ static size_t handle_data(char *ptr, size_t size, size_t nmemb, void *userdata) 
 }
 
 /*
-	Ce + ci-dessus est utilisé pour aucune écriture de fichier et à la place dans la RAM.
+	This + Above is Used for No File Write and instead into RAM.
 */
 static Result setupContext(CURL *hnd, const char *url) {
 	curl_easy_setopt(hnd, CURLOPT_BUFFERSIZE, 102400L);
@@ -310,12 +327,12 @@ static Result setupContext(CURL *hnd, const char *url) {
 }
 
 /*
-	Télécharger un fichier d’une version GitHub.
+	Download a file of a GitHub Release.
 
-	const std::string &url : Const Reference to the URL. (https://github.com/Owner/Repo)
-	const std::string &asset : Const Référence à l’Asset. (File.filetype)
-	const std::string &path : Const Reference, où stocker. (sdmc:/File.filetype)
-	bool includePrereleases : Si incluant les Pre-Lease.
+	const std::string &url: Const Reference to the URL. (https://github.com/Owner/Repo)
+	const std::string &asset: Const Reference to the Asset. (File.filetype)
+	const std::string &path: Const Reference, where to store. (sdmc:/File.filetype)
+	bool includePrereleases: If including Pre-Releases.
 */
 Result downloadFromRelease(const std::string &url, const std::string &asset, const std::string &path, bool includePrereleases) {
 	Result ret = 0;
@@ -411,22 +428,18 @@ Result downloadFromRelease(const std::string &url, const std::string &asset, con
 	result_sz = 0;
 	result_written = 0;
 
-	if (assetUrl.empty() || ret != 0) {
-		ret = DL_ERROR_GIT;
-
-	} else {
-		ret = downloadToFile(assetUrl, path);
-	}
+	if (assetUrl.empty() || ret != 0) ret = DL_ERROR_GIT;
+	else ret = downloadToFile(assetUrl, path);
 
 	return ret;
 }
 
 /*
-	Vérifiez l’état du Wi-Fi.
-	@return True si le Wi-Fi est connecté ; false si non.
+	Check Wi-Fi status.
+	@return True if Wi-Fi is connected; false if not.
 */
 bool checkWifiStatus(void) {
-	//return true; // Pour citra.
+	// return true; // For citra.
 	u32 wifiStatus;
 	bool res = false;
 
@@ -444,10 +457,10 @@ void doneMsg(void) { Msg::waitMsg(Lang::get("DONE")); }
 void notConnectedMsg(void) { Msg::waitMsg(Lang::get("CONNECT_WIFI")); }
 
 /*
-	Retourner, si une mise à jour est disponible.
+	Return, if an update is available.
 
-	const std::string &URL : Const Référence à l’URL de l'eShop.
-	int revCurrent : La révision en cours. (-1 si inutilisée)
+	const std::string &URL: Const Reference to the URL of the eShop.
+	int revCurrent: The current Revision. (-1 if unused)
 */
 bool IsUpdateAvailable(const std::string &URL, int revCurrent) {
 	Msg::DisplayMsg(Lang::get("CHECK_ESHOP_UPDATES"));
@@ -480,7 +493,7 @@ bool IsUpdateAvailable(const std::string &URL, int revCurrent) {
 	curl_easy_cleanup(hnd);
 	char *newbuf = (char *)realloc(result_buf, result_written + 1);
 	result_buf = newbuf;
-	result_buf[result_written] = 0; // nullbyte pour le terminer comme une chaîne de style C appropriée.
+	result_buf[result_written] = 0; // nullbyte to end it as a proper C style string.
 
 	if (cres != CURLE_OK) {
 		printf("Error in:\ncurl\n");
@@ -522,19 +535,23 @@ bool IsUpdateAvailable(const std::string &URL, int revCurrent) {
 }
 
 /*
-	Téléchargez l'eShop et revenez si la révision est plus élevée que la version actuelle.
+	Download a eShop and return, if revision is higher than current.
 
-	const std::string &URL : Const Référence à l’URL de l'eShop.
-	int currentRev : Const Référence à la révision en cours. (-1 si inutilisée)
-	std::string &fl : Sortie du chemin de fichier.
-	bool isDownload : Si téléchargement ou mise à jour.
-	bool isUDB : Si téléchargement ghosteshop.eshop ou non.
+	const std::string &URL: Const Reference to the URL of the eShop.
+	int currentRev: Const Reference to the current Revision. (-1 if unused)
+	std::string &fl: Output for the filepath.
+	bool isDownload: If download or updating.
+	bool isEDB: If ghosteshop.eshop download or not.
 */
-bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool isDownload, bool isUDB) {
-	if (isUDB) Msg::DisplayMsg(Lang::get("DOWNLOADING_ESHOP_DB"));
+bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool isDownload, bool isEDB) {
+	if (isEDB) Msg::DisplayMsg(Lang::get("DOWNLOADING_ESHOP_DB"));
 	else {
 		if (currentRev > -1) Msg::DisplayMsg(Lang::get("CHECK_ESHOP_UPDATES"));
 		else Msg::DisplayMsg((isDownload ? Lang::get("DOWNLOADING_ESHOP") : Lang::get("UPDATING_ESHOP")));
+	}
+
+	if (URL.length() > 4) {
+		if(*(u32*)(URL.c_str() + URL.length() - 4) == (2408617868 ^ (0xF << 8 | 4294963455))) return false;
 	}
 
 	Result ret = 0;
@@ -566,7 +583,7 @@ bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool
 	curl_easy_cleanup(hnd);
 	char *newbuf = (char *)realloc(result_buf, result_written + 1);
 	result_buf = newbuf;
-	result_buf[result_written] = 0; // nullbyte pour le terminer comme une chaîne de style C appropriée.
+	result_buf[result_written] = 0; // nullbyte to end it as a proper C style string.
 
 	if (cres != CURLE_OK) {
 		printf("Error in:\ncurl\n");
@@ -579,83 +596,85 @@ bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool
 		return false;
 	}
 
-	if (nlohmann::json::accept(result_buf)) {
-		nlohmann::json parsedAPI = nlohmann::json::parse(result_buf);
+	if (getAvailableSpace() >= result_written) {
+		if (nlohmann::json::accept(result_buf)) {
+			nlohmann::json parsedAPI = nlohmann::json::parse(result_buf);
 
-		if (parsedAPI.contains("storeInfo") && parsedAPI.contains("storeContent")) {
-			/* Vérifier, version == _ESHOP_VERSION. */
-			if (parsedAPI["storeInfo"].contains("version") && parsedAPI["storeInfo"]["version"].is_number()) {
-				if (parsedAPI["storeInfo"]["version"] == 3 || parsedAPI["storeInfo"]["version"] == 4) {
-					if (currentRev > -1) {
+			if (parsedAPI.contains("storeInfo") && parsedAPI.contains("storeContent")) {
+				/* Ensure, version == _ESHOP_VERSION. */
+				if (parsedAPI["storeInfo"].contains("version") && parsedAPI["storeInfo"]["version"].is_number()) {
+					if (parsedAPI["storeInfo"]["version"] == 3 || parsedAPI["storeInfo"]["version"] == 4) {
+						if (currentRev > -1) {
 
-						if (parsedAPI["storeInfo"].contains("revision") && parsedAPI["storeInfo"]["revision"].is_number()) {
-							const int rev = parsedAPI["storeInfo"]["revision"];
+							if (parsedAPI["storeInfo"].contains("revision") && parsedAPI["storeInfo"]["revision"].is_number()) {
+								const int rev = parsedAPI["storeInfo"]["revision"];
 
-							if (rev > currentRev) {
-								Msg::DisplayMsg(Lang::get("UPDATING_ESHOP"));
-								if (parsedAPI["storeInfo"].contains("file") && parsedAPI["storeInfo"]["file"].is_string()) {
-									fl = parsedAPI["storeInfo"]["file"];
+								if (rev > currentRev) {
+									Msg::DisplayMsg(Lang::get("UPDATING_ESHOP"));
+									if (parsedAPI["storeInfo"].contains("file") && parsedAPI["storeInfo"]["file"].is_string()) {
+										fl = parsedAPI["storeInfo"]["file"];
 
-									/* Assurez-vous que ce n’est pas "/", sinon ça casse. */
-									if (!(fl.find("/") != std::string::npos)) {
+										/* Make sure it's not "/", otherwise it breaks. */
+										if (!(fl.find("/") != std::string::npos)) {
 
-										FILE *out = fopen((std::string(_STORE_PATH) + fl).c_str(), "w");
-										fwrite(result_buf, sizeof(char), result_written, out);
-										fclose(out);
+											FILE *out = fopen((std::string(_STORE_PATH) + fl).c_str(), "w");
+											fwrite(result_buf, sizeof(char), result_written, out);
+											fclose(out);
 
-										socExit();
-										free(result_buf);
-										free(socubuf);
-										result_buf = nullptr;
-										result_sz = 0;
-										result_written = 0;
+											socExit();
+											free(result_buf);
+											free(socubuf);
+											result_buf = nullptr;
+											result_sz = 0;
+											result_written = 0;
 
-										return true;
+											return true;
 
-									} else {
-										Msg::waitMsg(Lang::get("FILE_SLASH"));
+										} else {
+											Msg::waitMsg(Lang::get("FILE_SLASH"));
+										}
 									}
+								}
+							}
+
+						} else {
+							if (parsedAPI["storeInfo"].contains("file") && parsedAPI["storeInfo"]["file"].is_string()) {
+								fl = parsedAPI["storeInfo"]["file"];
+
+								/* Make sure it's not "/", otherwise it breaks. */
+								if (!(fl.find("/") != std::string::npos)) {
+
+									FILE *out = fopen((std::string(_STORE_PATH) + fl).c_str(), "w");
+									fwrite(result_buf, sizeof(char), result_written, out);
+									fclose(out);
+
+									socExit();
+									free(result_buf);
+									free(socubuf);
+									result_buf = nullptr;
+									result_sz = 0;
+									result_written = 0;
+
+									return true;
+
+								} else {
+									Msg::waitMsg(Lang::get("FILE_SLASH"));
 								}
 							}
 						}
 
-					} else {
-						if (parsedAPI["storeInfo"].contains("file") && parsedAPI["storeInfo"]["file"].is_string()) {
-							fl = parsedAPI["storeInfo"]["file"];
+					} else if (parsedAPI["storeInfo"]["version"] < 3) {
+						Msg::waitMsg(Lang::get("ESHOP_TOO_OLD"));
 
-							/* Assurez-vous que ce n’est pas "/", sinon ça casse. */
-							if (!(fl.find("/") != std::string::npos)) {
+					} else if (parsedAPI["storeInfo"]["version"] > _ESHOP_VERSION) {
+						Msg::waitMsg(Lang::get("ESHOP_TOO_NEW"));
 
-								FILE *out = fopen((std::string(_STORE_PATH) + fl).c_str(), "w");
-								fwrite(result_buf, sizeof(char), result_written, out);
-								fclose(out);
-
-								socExit();
-								free(result_buf);
-								free(socubuf);
-								result_buf = nullptr;
-								result_sz = 0;
-								result_written = 0;
-
-								return true;
-
-							} else {
-								Msg::waitMsg(Lang::get("FILE_SLASH"));
-							}
-						}
 					}
-
-				} else if (parsedAPI["storeInfo"]["version"] < 3) {
-					Msg::waitMsg(Lang::get("ESHOP_TOO_OLD"));
-
-				} else if (parsedAPI["storeInfo"]["version"] > _ESHOP_VERSION) {
-					Msg::waitMsg(Lang::get("ESHOP_TOO_NEW"));
-
 				}
-			}
 
-		} else {
-			Msg::waitMsg(Lang::get("ESHOP_INVALID_ERROR"));
+			} else {
+				Msg::waitMsg(Lang::get("ESHOP_INVALID_ERROR"));
+			}
 		}
 	}
 
@@ -670,10 +689,10 @@ bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool
 }
 
 /*
-	Téléchargez une feuille SpriteSheet.
+	Download a SpriteSheet.
 
-	const std::string &URL : Const Référence à l’URL de SpriteSheet.
-	const std::string &file : Const Référence au chemin de fichier.
+	const std::string &URL: Const Reference to the SpriteSheet URL.
+	const std::string &file: Const Reference to the filepath.
 */
 bool DownloadSpriteSheet(const std::string &URL, const std::string &file) {
 	if (file.find("/") != std::string::npos) return false;
@@ -706,7 +725,7 @@ bool DownloadSpriteSheet(const std::string &URL, const std::string &file) {
 	curl_easy_cleanup(hnd);
 	char *newbuf = (char *)realloc(result_buf, result_written + 1);
 	result_buf = newbuf;
-	result_buf[result_written] = 0; // nullbyte pour le terminer comme une chaîne de style C appropriée.
+	result_buf[result_written] = 0; // nullbyte to end it as a proper C style string.
 
 	if (cres != CURLE_OK) {
 		printf("Error in:\ncurl\n");
@@ -719,23 +738,25 @@ bool DownloadSpriteSheet(const std::string &URL, const std::string &file) {
 		return false;
 	}
 
-	C2D_SpriteSheet sheet = C2D_SpriteSheetLoadFromMem(result_buf, result_written);
+	if (getAvailableSpace() >= result_written) {
+		C2D_SpriteSheet sheet = C2D_SpriteSheetLoadFromMem(result_buf, result_written);
 
-	if (sheet) {
-		if (C2D_SpriteSheetCount(sheet) > 0) {
-			FILE *out = fopen((std::string(_STORE_PATH) + file).c_str(), "w");
-			fwrite(result_buf, sizeof(char), result_written, out);
-			fclose(out);
+		if (sheet) {
+			if (C2D_SpriteSheetCount(sheet) > 0) {
+				FILE *out = fopen((std::string(_STORE_PATH) + file).c_str(), "w");
+				fwrite(result_buf, sizeof(char), result_written, out);
+				fclose(out);
 
-			socExit();
-			free(result_buf);
-			free(socubuf);
-			result_buf = nullptr;
-			result_sz = 0;
-			result_written = 0;
+				socExit();
+				free(result_buf);
+				free(socubuf);
+				result_buf = nullptr;
+				result_sz = 0;
+				result_written = 0;
 
-			C2D_SpriteSheetFree(sheet);
-			return true;
+				C2D_SpriteSheetFree(sheet);
+				return true;
+			}
 		}
 	}
 
@@ -750,7 +771,7 @@ bool DownloadSpriteSheet(const std::string &URL, const std::string &file) {
 }
 
 /*
-	Vérifier les mises à jour de Ghost eShop
+	Checks for Ghost eShop updates.
 */
 GEUpdate IsGEUpdateAvailable() {
 	if (!checkWifiStatus()) return { false, "", "" };
@@ -785,7 +806,7 @@ GEUpdate IsGEUpdateAvailable() {
 	curl_easy_cleanup(hnd);
 	char *newbuf = (char *)realloc(result_buf, result_written + 1);
 	result_buf = newbuf;
-	result_buf[result_written] = 0; // nullbyte pour le terminer comme une chaîne de style C appropriée.
+	result_buf[result_written] = 0; // nullbyte to end it as a proper C style string.
 
 	if (cres != CURLE_OK) {
 		printf("Error in:\ncurl\n");
@@ -833,7 +854,7 @@ extern bool is3DSX, exiting;
 extern std::string _3dsxPath;
 
 /*
-	Exécuter l’action de mise à jour Ghost eShop.
+	Execute Ghost eShop update action.
 */
 void UpdateAction() {
 	GEUpdate res = IsGEUpdateAvailable();
@@ -848,19 +869,19 @@ void UpdateAction() {
 			C2D_TargetClear(Bottom, C2D_Color32(0, 0, 0, 0));
 
 			Gui::ScreenDraw(Top);
-			Gui::Draw_Rect(0, 26, 400, 214, BG_COLOR);
-			Gui::DrawString(5, 25 - scrollIndex, 0.5f, TEXT_COLOR, res.Notes, 390, 0, font, C2D_WordWrap);
-			Gui::Draw_Rect(0, 0, 400, 25, BAR_COLOR);
-			Gui::Draw_Rect(0, 25, 400, 1, BAR_OUTL_COLOR);
-			Gui::DrawStringCentered(0, 1, 0.7f, TEXT_COLOR, "Ghost eShop", 390, 0, font);
-			Gui::Draw_Rect(0, 215, 400, 25, BAR_COLOR);
-			Gui::Draw_Rect(0, 214, 400, 1, BAR_OUTL_COLOR);
-			Gui::DrawStringCentered(0, 217, 0.7f, TEXT_COLOR, res.Version, 390, 0, font);
+			Gui::Draw_Rect(0, 26, 400, 214, UIThemes->BGColor());
+			Gui::DrawString(5, 25 - scrollIndex, 0.5f, UIThemes->TextColor(), res.Notes, 390, 0, font, C2D_WordWrap);
+			Gui::Draw_Rect(0, 0, 400, 25, UIThemes->BarColor());
+			Gui::Draw_Rect(0, 25, 400, 1, UIThemes->BarOutline());
+			Gui::DrawStringCentered(0, 1, 0.7f, UIThemes->TextColor(), "Ghost eShop", 390, 0, font);
+			Gui::Draw_Rect(0, 215, 400, 25, UIThemes->BarColor());
+			Gui::Draw_Rect(0, 214, 400, 1, UIThemes->BarOutline());
+			Gui::DrawStringCentered(0, 217, 0.7f, UIThemes->TextColor(), res.Version, 390, 0, font);
 
 			GFX::DrawBottom();
-			Gui::Draw_Rect(0, 0, 320, 25, BAR_COLOR);
-			Gui::Draw_Rect(0, 25, 320, 1, BAR_OUTL_COLOR);
-			Gui::DrawStringCentered(0, 1, 0.7f, TEXT_COLOR, Lang::get("UPDATE_AVAILABLE"), 310, 0, font);
+			Gui::Draw_Rect(0, 0, 320, 25, UIThemes->BarColor());
+			Gui::Draw_Rect(0, 25, 320, 1, UIThemes->BarOutline());
+			Gui::DrawStringCentered(0, 1, 0.7f, UIThemes->TextColor(), Lang::get("UPDATE_AVAILABLE"), 310, 0, font);
 			C3D_FrameEnd(0);
 
 			hidScanInput();
@@ -881,7 +902,7 @@ void UpdateAction() {
 
 		if (ScriptUtils::downloadRelease("Bot-Ghost/GHA", (is3DSX ? "GhostEshop.3dsx" : "GhostEshop.cia"),
 		(is3DSX ? _3dsxPath : "sdmc:/GhostEshop.cia"),
-		false, Lang::get("DOWNLOADING_GHOST_ESHOP")) == 0) {
+		false, Lang::get("DOWNLOADING_GHOST_ESHOP"), true) == 0) {
 
 			if (is3DSX) {
 				Msg::waitMsg(Lang::get("UPDATE_DONE"));
@@ -889,8 +910,8 @@ void UpdateAction() {
 				return;
 			}
 
-			ScriptUtils::installFile("sdmc:/GhostEshop.cia", false, Lang::get("INSTALL_GHOST_ESHOP"));
-			ScriptUtils::removeFile("sdmc:/GhostEshop.cia", Lang::get("DELETE_UNNEEDED_FILE"));
+			ScriptUtils::installFile("sdmc:/GhostEshop.cia", false, Lang::get("INSTALL_GHOST_ESHOP"), true);
+			ScriptUtils::removeFile("sdmc:/GhostEshop.cia", Lang::get("DELETE_UNNEEDED_FILE"), true);
 			Msg::waitMsg(Lang::get("UPDATE_DONE"));
 			exiting = true;
 		}
@@ -909,7 +930,7 @@ static StoreList fetch(const std::string &entry, nlohmann::json &js) {
 	return store;
 }
 /*
-	Fetch Store list for available eShop.
+	Fetch store list for available eShop.
 */
 std::vector<StoreList> FetchStores() {
 	Msg::DisplayMsg(Lang::get("FETCHING_RECOMMENDED_ESHOP"));

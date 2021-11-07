@@ -1,6 +1,6 @@
 /*
 *   This file is part of Universal-Updater
-*   Copyright (C) 2019-2020 Universal-Team
+*   Copyright (C) 2019-2021 Universal-Team
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -40,11 +40,11 @@ public:
 	void unloadSheets();
 	void update(const std::string &file);
 
-	/* Obtenir des informations sur l’eShop lui-même. */
+	/* Get Information of the eShop itself. */
 	std::string GetEshopTitle() const;
 	std::string GetEshopAuthor() const;
 
-	/* Obtenir des informations sur les entrées eShop. */
+	/* Get Information of the eShop entries. */
 	std::string GetTitleEntry(int index) const;
 	std::string GetAuthorEntry(int index) const;
 	std::string GetDescriptionEntry(int index) const;
@@ -52,7 +52,6 @@ public:
 	std::string GetVersionEntry(int index) const;
 	std::vector<std::string> GetConsoleEntry(int index) const;
 	std::string GetLastUpdatedEntry(int index) const;
-	std::string GetSizeEntry(int index) const;
 	std::string GetAdditionalcontentEntry(int index) const;
 	C2D_Image GetIconEntry(int index) const;
 	std::string GetFileSizes(int index, const std::string &entry) const;
@@ -82,11 +81,11 @@ public:
 	nlohmann::json &GetJson() { return this->storeJson; };
 	bool GetValid() const { return this->valid; };
 
-	/* Ces deux choses sont utilisées pour le support BG personnalisé. */
+	/* Both of these things are used for custom BG support. */
 	C2D_Image GetStoreImg() const { return this->storeBG; };
 	bool customBG() const { return this->hasCustomBG; };
 
-	/* Renvoie le nom du fichier eShop. */
+	/* Return filename of the eShop. */
 	std::string GetFileName() const { return this->fileName; };
 private:
 	void SetC2DBGImage();
