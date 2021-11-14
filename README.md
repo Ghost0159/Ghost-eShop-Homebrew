@@ -5,7 +5,7 @@ An Alternative eShop for Nintendo 3DS
 
 # Download
 ### Requirement
--Latest version available [here](http://github.com/ghost-eshop/Ghost-Eshop-Alternative-3DS/releases)
+-Latest version available [here](https://ghosteshop.com/)
 
 -An hacked 3ds
 
@@ -38,7 +38,7 @@ Install [Git](https://git-scm.com/downloads) if you haven't already
 *To download the source you will need to clone, this can be done by running.*
 
 On GIT:
-*`git clone --recursive https://github.com/ghost-eshop/Ghost-Eshop-Alternative-3DS`*
+*`git clone --recursive https://github.com/Ghost0159/Ghost-eShop-Homebrew`*
 
 And run ```make.bat```
 </details></details>
