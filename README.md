@@ -1,13 +1,13 @@
-<div align="center"><a href="https://ghosteshop.com"><img src="http://ghosteshop.com/icon.png" height="64px"></a></div>
+<div align="center"><a href="https://ghosteshop.com"><img src="https://github.com/Ghost0159/Ghost-eShop-Homebrew/raw/main/ressources/icon/icon_2-96x96.png" height="64px"></a></div>
  
 # Ghost-Eshop-Alternative-3DS
-An Alternative eShop for Nintendo 3DS
+An Alternative eShop for the Nintendo 3DS family of systems.
 
 # Download
-### Requirement
+### Requirements
 -Latest version available [here](https://ghosteshop.com/)
 
--An hacked 3ds
+-A Modded Nintendo 3DS(XL)/2DS(XL)
 
 -An SD Card with at least 500 MB to install games
 
@@ -22,9 +22,9 @@ ______________________
 #### Compilation:
 
 
-<details><summary><B>Setting up your enviromment</B></summary>
+<details><summary><B>Setting up your environment</B></summary>
  
-##### Setting up your enviromment:
+##### Setting up your environment:
 
 *To build Ghost-Eshop-Alternative-3ds from source, you will need to setup a system with devkitARM, libctru and 3ds-libarchive. Follow devkitPro's [Getting Started](https://devkitpro.org/wiki/Getting_Started) page to install pacman, then run `(sudo dkp-)pacman -S devkitARM libctru 3ds-curl 3ds-libarchive`*
 
