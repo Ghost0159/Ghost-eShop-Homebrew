@@ -1,7 +1,7 @@
 <div align="center"><a href="https://ghosteshop.com"><img src="https://github.com/Ghost0159/Ghost-eShop-Homebrew/raw/main/ressources/icon/icon_2-96x96.png" height="64px"></a></div>
  
 # Ghost-Eshop-Alternative-3DS
-An Alternative eShop for Nintendo 3DS
+An Alternative eShop for the Nintendo 3DS family of systems.
 
 # Download
 ### Requirements
@@ -22,7 +22,7 @@ ______________________
 #### Compilation:
 
 
-<details><summary><B>Setting up your enviromment</B></summary>
+<details><summary><B>Setting up your environment</B></summary>
  
 ##### Setting up your environment:
 
