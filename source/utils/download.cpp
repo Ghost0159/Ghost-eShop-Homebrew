@@ -151,126 +151,129 @@ static size_t file_handle_data(char *ptr, size_t size, size_t nmemb, void *userd
 	const std::string &path: Where to place the file.
 */
 Result downloadToFile(const std::string &url, const std::string &path) {
-	if (!checkWifiStatus()) return -1; // NO WIFI.
+	do {
+		if (!checkWifiStatus()) return -1; // NO WIFI.
 
-	bool needToDelete = false;
-	downloadTotal = 1;
-	downloadNow = 0;
-	downloadSpeed = 0;
+		bool needToDelete = false;
+		downloadTotal = 1;
+		downloadNow = 0;
+		downloadSpeed = 0;
 
-	CURLcode curlResult;
-	Result retcode = 0;
-	int res;
+		CURLcode curlResult;
+		Result retcode = 0;
+		int res;
 
-	printf("Downloading from:\n%s\nto:\n%s\n", url.c_str(), path.c_str());
+		printf("Downloading from:\n%s\nto:\n%s\n", url.c_str(), path.c_str());
 
-	void *socubuf = memalign(0x1000, 0x100000);
-	if (!socubuf) {
-		retcode = -1;
-		goto exit;
+		void *socubuf = memalign(0x1000, 0x100000);
+		if (!socubuf) {
+			retcode = -1;
+			goto exit;
+		}
+
+		res = socInit((u32 *)socubuf, 0x100000);
+		if (R_FAILED(res)) {
+			retcode = res;
+			goto exit;
+		}
+
+		/* make directories. */
+		for (char *slashpos = strchr(path.c_str() + 1, '/'); slashpos != NULL; slashpos = strchr(slashpos + 1, '/')) {
+			char bak = *(slashpos);
+			*(slashpos) = '\0';
+
+			mkdir(path.c_str(), 0777);
+
+			*(slashpos) = bak;
+		}
+
+		downfile = fopen(path.c_str(), "wb");
+		if (!downfile) {
+			retcode = -2;
+			goto exit;
+		}
+
+		CurlHandle = curl_easy_init();
+		curl_easy_setopt(CurlHandle, CURLOPT_BUFFERSIZE, FILE_ALLOC_SIZE);
+		curl_easy_setopt(CurlHandle, CURLOPT_URL, url.c_str());
+		curl_easy_setopt(CurlHandle, CURLOPT_NOPROGRESS, 0L);
+		curl_easy_setopt(CurlHandle, CURLOPT_USERAGENT, USER_AGENT);
+		curl_easy_setopt(CurlHandle, CURLOPT_FOLLOWLOCATION, 1L);
+		curl_easy_setopt(CurlHandle, CURLOPT_FAILONERROR, 1L);
+		curl_easy_setopt(CurlHandle, CURLOPT_ACCEPT_ENCODING, "gzip");
+		curl_easy_setopt(CurlHandle, CURLOPT_MAXREDIRS, 50L);
+		curl_easy_setopt(CurlHandle, CURLOPT_XFERINFOFUNCTION, curlProgress);
+		curl_easy_setopt(CurlHandle, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
+		curl_easy_setopt(CurlHandle, CURLOPT_WRITEFUNCTION, file_handle_data);
+		curl_easy_setopt(CurlHandle, CURLOPT_SSL_VERIFYPEER, 0L);
+		curl_easy_setopt(CurlHandle, CURLOPT_VERBOSE, 1L);
+		curl_easy_setopt(CurlHandle, CURLOPT_STDERR, stdout);
+
+		curlResult = curl_easy_perform(CurlHandle);
+		curl_easy_cleanup(CurlHandle);
+		CurlHandle = nullptr;
+
+		if (curlResult != CURLE_OK) {
+			retcode = -curlResult;
+			needToDelete = true;
+			goto exit;
+		}
+
+		LightEvent_Wait(&waitCommit);
+		LightEvent_Clear(&waitCommit);
+
+		file_toCommit_size = file_buffer_pos;
+		svcFlushProcessDataCache(CUR_PROCESS_HANDLE, (u32)g_buffers[g_index], file_toCommit_size);
+		g_index = !g_index;
+
+		if (!filecommit()) {
+			retcode = -3;
+			needToDelete = true;
+			goto exit;
+		}
+
+		fflush(downfile);
+
+	exit:
+		if (fsCommitThread) {
+			killThread = true;
+			LightEvent_Signal(&readyToCommit);
+			threadJoin(fsCommitThread, U64_MAX);
+			killThread = false;
+			fsCommitThread = nullptr;
+		}
+
+		socExit();
+
+		if (socubuf) free(socubuf);
+
+		if (downfile) {
+			fclose(downfile);
+			downfile = nullptr;
+		}
+
+		if (g_buffers[0]) {
+			free(g_buffers[0]);
+			g_buffers[0] = nullptr;
+		}
+
+		if (g_buffers[1]) {
+			free(g_buffers[1]);
+			g_buffers[1] = nullptr;
+		}
+
+		g_index = 0;
+		file_buffer_pos = 0;
+		file_toCommit_size = 0;
+		writeError = false;
+
+		if (needToDelete) {
+			if (access(path.c_str(), F_OK) == 0) deleteFile(path.c_str()); // Delete file, cause not fully downloaded.
+		}
+
+		if (QueueSystem::CancelCallback) return 0;
 	}
-
-	res = socInit((u32 *)socubuf, 0x100000);
-	if (R_FAILED(res)) {
-		retcode = res;
-		goto exit;
-	}
-
-	/* make directories. */
-	for (char *slashpos = strchr(path.c_str() + 1, '/'); slashpos != NULL; slashpos = strchr(slashpos + 1, '/')) {
-		char bak = *(slashpos);
-		*(slashpos) = '\0';
-
-		mkdir(path.c_str(), 0777);
-
-		*(slashpos) = bak;
-	}
-
-	downfile = fopen(path.c_str(), "wb");
-	if (!downfile) {
-		retcode = -2;
-		goto exit;
-	}
-
-	CurlHandle = curl_easy_init();
-	curl_easy_setopt(CurlHandle, CURLOPT_BUFFERSIZE, FILE_ALLOC_SIZE);
-	curl_easy_setopt(CurlHandle, CURLOPT_URL, url.c_str());
-	curl_easy_setopt(CurlHandle, CURLOPT_NOPROGRESS, 0L);
-	curl_easy_setopt(CurlHandle, CURLOPT_USERAGENT, USER_AGENT);
-	curl_easy_setopt(CurlHandle, CURLOPT_FOLLOWLOCATION, 1L);
-	curl_easy_setopt(CurlHandle, CURLOPT_FAILONERROR, 1L);
-	curl_easy_setopt(CurlHandle, CURLOPT_ACCEPT_ENCODING, "gzip");
-	curl_easy_setopt(CurlHandle, CURLOPT_MAXREDIRS, 50L);
-	curl_easy_setopt(CurlHandle, CURLOPT_XFERINFOFUNCTION, curlProgress);
-	curl_easy_setopt(CurlHandle, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
-	curl_easy_setopt(CurlHandle, CURLOPT_WRITEFUNCTION, file_handle_data);
-	curl_easy_setopt(CurlHandle, CURLOPT_SSL_VERIFYPEER, 0L);
-	curl_easy_setopt(CurlHandle, CURLOPT_VERBOSE, 1L);
-	curl_easy_setopt(CurlHandle, CURLOPT_STDERR, stdout);
-
-	curlResult = curl_easy_perform(CurlHandle);
-	curl_easy_cleanup(CurlHandle);
-	CurlHandle = nullptr;
-
-	if (curlResult != CURLE_OK) {
-		retcode = -curlResult;
-		needToDelete = true;
-		goto exit;
-	}
-
-	LightEvent_Wait(&waitCommit);
-	LightEvent_Clear(&waitCommit);
-
-	file_toCommit_size = file_buffer_pos;
-	svcFlushProcessDataCache(CUR_PROCESS_HANDLE, (u32)g_buffers[g_index], file_toCommit_size);
-	g_index = !g_index;
-
-	if (!filecommit()) {
-		retcode = -3;
-		needToDelete = true;
-		goto exit;
-	}
-
-	fflush(downfile);
-
-exit:
-	if (fsCommitThread) {
-		killThread = true;
-		LightEvent_Signal(&readyToCommit);
-		threadJoin(fsCommitThread, U64_MAX);
-		killThread = false;
-		fsCommitThread = nullptr;
-	}
-
-	socExit();
-
-	if (socubuf) free(socubuf);
-
-	if (downfile) {
-		fclose(downfile);
-		downfile = nullptr;
-	}
-
-	if (g_buffers[0]) {
-		free(g_buffers[0]);
-		g_buffers[0] = nullptr;
-	}
-
-	if (g_buffers[1]) {
-		free(g_buffers[1]);
-		g_buffers[1] = nullptr;
-	}
-
-	g_index = 0;
-	file_buffer_pos = 0;
-	file_toCommit_size = 0;
-	writeError = false;
-
-	if (needToDelete) {
-		if (access(path.c_str(), F_OK) == 0) deleteFile(path.c_str()); // Delete file, cause not fully downloaded.
-	}
-
-	if (QueueSystem::CancelCallback) return 0;
+	while(curlResult != CURLE_OK);
 	return retcode;
 }
 
