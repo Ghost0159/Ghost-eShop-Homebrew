@@ -151,6 +151,8 @@ static size_t file_handle_data(char *ptr, size_t size, size_t nmemb, void *userd
 	const std::string &path: Where to place the file.
 */
 Result downloadToFile(const std::string &url, const std::string &path) {
+	Result retcode = 0;
+	CURLcode curlResult;
 	do {
 		if (!checkWifiStatus()) return -1; // NO WIFI.
 
@@ -159,8 +161,7 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 		downloadNow = 0;
 		downloadSpeed = 0;
 
-		CURLcode curlResult;
-		Result retcode = 0;
+		retcode = 0;
 		int res;
 
 		printf("Downloading from:\n%s\nto:\n%s\n", url.c_str(), path.c_str());
