@@ -152,7 +152,7 @@ static size_t file_handle_data(char *ptr, size_t size, size_t nmemb, void *userd
 */
 Result downloadToFile(const std::string &url, const std::string &path) {
 	Result retcode = 0;
-	CURLcode curlResult = -1;
+	bool needToRetry = false;
 	do {
 		if (!checkWifiStatus()) return -1; // NO WIFI.
 
@@ -162,6 +162,8 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 		downloadSpeed = 0;
 
 		retcode = 0;
+		CURLcode curlResult;
+		needToRetry = false;
 		int res;
 
 		printf("Downloading from:\n%s\nto:\n%s\n", url.c_str(), path.c_str());
@@ -217,6 +219,7 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 		if (curlResult != CURLE_OK) {
 			retcode = -curlResult;
 			needToDelete = true;
+			needToRetry = true;
 			goto exit;
 		}
 
@@ -274,12 +277,12 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 
 		if (QueueSystem::CancelCallback) return 0;
 		
-		if (curlResult != CURLE_OK) {
+		if (needToRetry) {
 			printf("Download failed, retrying...\n");
 			svcSleepThread(10000);
 		}
 	}
-	while(curlResult != CURLE_OK);
+	while(needToRetry);
 	return retcode;
 }
 
