@@ -5,7 +5,7 @@ A free alternative eShop for the Nintendo 3DS family of systems.
 
 # Download
 ### Requirements
-- Latest versions available [here](https://ghosteshop.com/)
+- Latest versions are made available [here](https://ghosteshop.com/)
 
 - A Homebrewed Nintendo 3DS(XL)/2DS(XL)
 
