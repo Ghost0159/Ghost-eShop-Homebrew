@@ -26,7 +26,7 @@ ______________________
  
 ##### Setting up your environment:
 
-*To build Ghost-Eshop-Alternative-3ds from source, you will need to setup a system with devkitARM, libctru and 3ds-libarchive. Follow devkitPro's [Getting Started](https://devkitpro.org/wiki/Getting_Started) page to install pacman, then run `(sudo dkp-)pacman -S devkitARM libctru 3ds-curl 3ds-libarchive`*
+*To build Ghost-eShop-Homebrew from source, you will need to setup a system with devkitARM, libctru and 3ds-libarchive. Follow devkitPro's [Getting Started](https://devkitpro.org/wiki/Getting_Started) page to install pacman, then run `(sudo dkp-)pacman -S devkitARM libctru 3ds-curl 3ds-libarchive`*
 
 Install [Git](https://git-scm.com/downloads) if you haven't already
 </details>
