@@ -44,7 +44,7 @@ extern void DisplayChangelog();
 
 	Initialized meta, store and StoreEntry class and:
 
-	- Downloads ghosteshop.eshop.. in case nothing exist.
+	- Downloads ghosteshop.unistore.. in case nothing exist.
 */
 MainScreen::MainScreen() {
 	StoreUtils::meta = std::make_unique<Meta>();
@@ -82,6 +82,9 @@ MainScreen::MainScreen() {
 				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_3.t3x", "icon_3.t3x");
 				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_4.t3x", "icon_4.t3x");
 				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_5.t3x", "icon_5.t3x");
+				DownloadEshop("https://cdn.ghosteshop.com/script/ghosteshop-ds.unistore", -1, tmp, true, true);
+				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon-ds.t3x", "icon-ds.t3x");
+				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon-ds_1.t3x", "icon-ds_1.t3x");
 
 			} else {
 				notConnectedMsg();
@@ -94,12 +97,15 @@ MainScreen::MainScreen() {
 				if (checkWifiStatus()) {
 					std::string tmp = ""; // Just a temp.
 					DownloadEshop("https://cdn.ghosteshop.com/script/ghosteshop.unistore", -1, tmp, true, true);
-					DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon.t3x", "icon.t3x");
-					DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_1.t3x", "icon_1.t3x");
-					DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_2.t3x", "icon_2.t3x");
-					DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_3.t3x", "icon_3.t3x");
-					DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_4.t3x", "icon_4.t3x");
-					DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_5.t3x", "icon_5.t3x");
+				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon.t3x", "icon.t3x");
+				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_1.t3x", "icon_1.t3x");
+				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_2.t3x", "icon_2.t3x");
+				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_3.t3x", "icon_3.t3x");
+				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_4.t3x", "icon_4.t3x");
+				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon_5.t3x", "icon_5.t3x");
+				DownloadEshop("https://cdn.ghosteshop.com/script/ghosteshop-ds.unistore", -1, tmp, true, true);
+				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon-ds.t3x", "icon-ds.t3x");
+				DownloadSpriteSheet("https://cdn.ghosteshop.com/script/icon-ds_1.t3x", "icon-ds_1.t3x");
 
 				} else {
 					notConnectedMsg();
@@ -245,6 +251,7 @@ void MainScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 			this->installs.clear();
 			this->dwnldList.clear();
 			this->dwnldSizes.clear();
+			this->dwnldTypes.clear();
 
 			if (StoreUtils::store && StoreUtils::store->GetValid()) {
 				const std::vector<std::string> installedNames = StoreUtils::meta->GetInstalled(StoreUtils::store->GetEshopTitle(), StoreUtils::entries[StoreUtils::store->GetEntry()]->GetTitle());
@@ -254,6 +261,7 @@ void MainScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 				if ((int)StoreUtils::entries.size() > StoreUtils::store->GetEntry()) {
 					this->dwnldList = StoreUtils::store->GetDownloadList(StoreUtils::entries[StoreUtils::store->GetEntry()]->GetEntryIndex());
 					this->dwnldSizes = StoreUtils::entries[StoreUtils::store->GetEntry()]->GetSizes();
+					this->dwnldTypes = StoreUtils::entries[StoreUtils::store->GetEntry()]->GetTypes();
 
 					for (int i = 0; i < (int)this->dwnldList.size(); i++) {
 						bool good = false;
@@ -279,7 +287,7 @@ void MainScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 				break;
 
 			case 1:
-				if (StoreUtils::store && StoreUtils::store->GetValid() && StoreUtils::entries.size() > 0) StoreUtils::DownloadHandle(StoreUtils::entries[StoreUtils::store->GetEntry()], this->dwnldList, storeMode, this->lastMode, this->smallDelay, this->installs);
+				if (StoreUtils::store && StoreUtils::store->GetValid() && StoreUtils::entries.size() > 0) StoreUtils::DownloadHandle(StoreUtils::entries[StoreUtils::store->GetEntry()], this->dwnldList, storeMode, this->lastMode, this->smallDelay, this->installs, this->dwnldTypes);
 				break;
 
 			case 2:

@@ -55,6 +55,7 @@ public:
 	std::string GetAdditionalcontentEntry(int index) const;
 	C2D_Image GetIconEntry(int index) const;
 	std::string GetFileSizes(int index, const std::string &entry) const;
+	std::string GetFileTypes(int index, const std::string &entry) const;
 	std::vector<std::string> GetScreenshotList(int index) const;
 	std::vector<std::string> GetScreenshotNames(int index) const;
 	std::string GetReleaseNotes(int index) const;
@@ -85,7 +86,7 @@ public:
 	C2D_Image GetStoreImg() const { return this->storeBG; };
 	bool customBG() const { return this->hasCustomBG; };
 
-	/* Return filename of the eShop. */
+	/* Return filename of the UniStore. */
 	std::string GetFileName() const { return this->fileName; };
 private:
 	void SetC2DBGImage();

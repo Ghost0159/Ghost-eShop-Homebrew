@@ -61,7 +61,7 @@ namespace StoreUtils {
 
 	/* Download entries. */
 	void DrawDownList(const std::vector<std::string> &entries, bool fetch, const std::unique_ptr<StoreEntry> &entry, const std::vector<std::string> &sizes, const std::vector<bool> &installs);
-	void DownloadHandle(const std::unique_ptr<StoreEntry> &entry, const std::vector<std::string> &entries, int &currentMenu, const int &lastMode, int &smallDelay, std::vector<bool> &installs);
+	void DownloadHandle(const std::unique_ptr<StoreEntry> &entry, const std::vector<std::string> &entries, int &currentMenu, const int &lastMode, int &smallDelay, std::vector<bool> &installs, const std::vector<std::string> &types);
 
 	/* Queue System. */
 	void DrawQueueMenu(const int queueIndex);
@@ -91,6 +91,9 @@ namespace StoreUtils {
 	void SortHandle(bool &asc, SortType &st);
 
 	/* Release Notes. */
+	size_t FindSplitPoint(const std::string &str, const std::vector<std::string> splitters);
+	void ProcessReleaseNotes(std::string ReleaseNotes);
+
 	void DrawReleaseNotes(const int &scrollIndex, const std::unique_ptr<StoreEntry> &entry);
 	void ReleaseNotesLogic(int &scrollIndex, int &storeMode);
 

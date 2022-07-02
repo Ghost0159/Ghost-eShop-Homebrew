@@ -132,6 +132,11 @@ Result Init::Initialize() {
 	mkdir("sdmc:/3ds/Universal-Updater/stores", 0777);
 	mkdir("sdmc:/3ds/Universal-Updater/shortcuts", 0777);
 	mkdir("sdmc:/3ds/Universal-Updater/GhosteShop", 0777);
+	mkdir("sdmc:/roms/", 0777);
+	mkdir("sdmc:/roms/nds/", 0777);
+	mkdir("sdmc:/_nds/", 0777);
+	mkdir("sdmc:/_nds/TWiLightMenu/", 0777);
+	mkdir("sdmc:/_nds/TWiLightMenu/boxart/", 0777);
 
 	config = std::make_unique<Config>();
 	UIThemes = std::make_unique<Theme>();
@@ -196,9 +201,8 @@ Result Init::MainLoop() {
 		C3D_FrameEnd(0);
 
 		if (!exiting) Gui::ScreenLogic(hDown, hHeld, touch, true, false);
-
-		if (exiting) {
-			if (hDown & KEY_START) fullExit = true; // Make it optionally faster.
+		else {
+			if (hidKeysDown() & KEY_START) fullExit = true; // Make it optionally faster.
 
 			if (fadeAlpha < 255) {
 				fadeAlpha += 4;

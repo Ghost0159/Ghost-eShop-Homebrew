@@ -30,7 +30,7 @@
 #include "common.hpp"
 
 #define APP_TITLE "Ghost eShop"
-#define VERSION_STRING "13.0.0"
+#define VERSION_STRING "13.5"
 
 enum DownloadError {
 	DL_ERROR_NONE = 0,

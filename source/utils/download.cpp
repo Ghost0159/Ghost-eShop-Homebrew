@@ -146,7 +146,6 @@ static size_t file_handle_data(char *ptr, size_t size, size_t nmemb, void *userd
 
 /*
 	Download a file.
-
 	const std::string &url: The download URL.
 	const std::string &path: Where to place the file.
 */
@@ -154,128 +153,128 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 	Result retcode = 0;
 	bool needToRetry = false;
 	do {
-		if (!checkWifiStatus()) return -1; // NO WIFI.
+	if (!checkWifiStatus()) return -1; // NO WIFI.
 
-		bool needToDelete = false;
-		downloadTotal = 1;
-		downloadNow = 0;
-		downloadSpeed = 0;
+	bool needToDelete = false;
+	downloadTotal = 1;
+	downloadNow = 0;
+	downloadSpeed = 0;
 
 		retcode = 0;
-		CURLcode curlResult;
+	CURLcode curlResult;
 		needToRetry = false;
-		int res;
+	int res;
 
-		printf("Downloading from:\n%s\nto:\n%s\n", url.c_str(), path.c_str());
+	printf("Downloading from:\n%s\nto:\n%s\n", url.c_str(), path.c_str());
 
-		void *socubuf = memalign(0x1000, 0x100000);
-		if (!socubuf) {
-			retcode = -1;
-			goto exit;
-		}
+	void *socubuf = memalign(0x1000, 0x100000);
+	if (!socubuf) {
+		retcode = -1;
+		goto exit;
+	}
 
-		res = socInit((u32 *)socubuf, 0x100000);
-		if (R_FAILED(res)) {
-			retcode = res;
-			goto exit;
-		}
+	res = socInit((u32 *)socubuf, 0x100000);
+	if (R_FAILED(res)) {
+		retcode = res;
+		goto exit;
+	}
 
-		/* make directories. */
-		for (char *slashpos = strchr(path.c_str() + 1, '/'); slashpos != NULL; slashpos = strchr(slashpos + 1, '/')) {
-			char bak = *(slashpos);
-			*(slashpos) = '\0';
+	/* make directories. */
+	for (char *slashpos = strchr(path.c_str() + 1, '/'); slashpos != NULL; slashpos = strchr(slashpos + 1, '/')) {
+		char bak = *(slashpos);
+		*(slashpos) = '\0';
 
-			mkdir(path.c_str(), 0777);
+		mkdir(path.c_str(), 0777);
 
-			*(slashpos) = bak;
-		}
+		*(slashpos) = bak;
+	}
 
-		downfile = fopen(path.c_str(), "wb");
-		if (!downfile) {
-			retcode = -2;
-			goto exit;
-		}
+	downfile = fopen(path.c_str(), "wb");
+	if (!downfile) {
+		retcode = -2;
+		goto exit;
+	}
 
-		CurlHandle = curl_easy_init();
-		curl_easy_setopt(CurlHandle, CURLOPT_BUFFERSIZE, FILE_ALLOC_SIZE);
-		curl_easy_setopt(CurlHandle, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(CurlHandle, CURLOPT_NOPROGRESS, 0L);
-		curl_easy_setopt(CurlHandle, CURLOPT_USERAGENT, USER_AGENT);
-		curl_easy_setopt(CurlHandle, CURLOPT_FOLLOWLOCATION, 1L);
-		curl_easy_setopt(CurlHandle, CURLOPT_FAILONERROR, 1L);
-		curl_easy_setopt(CurlHandle, CURLOPT_ACCEPT_ENCODING, "gzip");
-		curl_easy_setopt(CurlHandle, CURLOPT_MAXREDIRS, 50L);
-		curl_easy_setopt(CurlHandle, CURLOPT_XFERINFOFUNCTION, curlProgress);
-		curl_easy_setopt(CurlHandle, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
-		curl_easy_setopt(CurlHandle, CURLOPT_WRITEFUNCTION, file_handle_data);
-		curl_easy_setopt(CurlHandle, CURLOPT_SSL_VERIFYPEER, 0L);
-		curl_easy_setopt(CurlHandle, CURLOPT_VERBOSE, 1L);
-		curl_easy_setopt(CurlHandle, CURLOPT_STDERR, stdout);
+	CurlHandle = curl_easy_init();
+	curl_easy_setopt(CurlHandle, CURLOPT_BUFFERSIZE, FILE_ALLOC_SIZE);
+	curl_easy_setopt(CurlHandle, CURLOPT_URL, url.c_str());
+	curl_easy_setopt(CurlHandle, CURLOPT_NOPROGRESS, 0L);
+	curl_easy_setopt(CurlHandle, CURLOPT_USERAGENT, USER_AGENT);
+	curl_easy_setopt(CurlHandle, CURLOPT_FOLLOWLOCATION, 1L);
+	curl_easy_setopt(CurlHandle, CURLOPT_FAILONERROR, 1L);
+	curl_easy_setopt(CurlHandle, CURLOPT_ACCEPT_ENCODING, "gzip");
+	curl_easy_setopt(CurlHandle, CURLOPT_MAXREDIRS, 50L);
+	curl_easy_setopt(CurlHandle, CURLOPT_XFERINFOFUNCTION, curlProgress);
+	curl_easy_setopt(CurlHandle, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
+	curl_easy_setopt(CurlHandle, CURLOPT_WRITEFUNCTION, file_handle_data);
+	curl_easy_setopt(CurlHandle, CURLOPT_SSL_VERIFYPEER, 0L);
+	curl_easy_setopt(CurlHandle, CURLOPT_VERBOSE, 1L);
+	curl_easy_setopt(CurlHandle, CURLOPT_STDERR, stdout);
 
-		curlResult = curl_easy_perform(CurlHandle);
-		curl_easy_cleanup(CurlHandle);
-		CurlHandle = nullptr;
+	curlResult = curl_easy_perform(CurlHandle);
+	curl_easy_cleanup(CurlHandle);
+	CurlHandle = nullptr;
 
-		if (curlResult != CURLE_OK) {
-			retcode = -curlResult;
-			needToDelete = true;
+	if (curlResult != CURLE_OK) {
+		retcode = -curlResult;
+		needToDelete = true;
 			needToRetry = true;
-			goto exit;
-		}
+		goto exit;
+	}
 
-		LightEvent_Wait(&waitCommit);
-		LightEvent_Clear(&waitCommit);
+	LightEvent_Wait(&waitCommit);
+	LightEvent_Clear(&waitCommit);
 
-		file_toCommit_size = file_buffer_pos;
-		svcFlushProcessDataCache(CUR_PROCESS_HANDLE, (u32)g_buffers[g_index], file_toCommit_size);
-		g_index = !g_index;
+	file_toCommit_size = file_buffer_pos;
+	svcFlushProcessDataCache(CUR_PROCESS_HANDLE, (u32)g_buffers[g_index], file_toCommit_size);
+	g_index = !g_index;
 
-		if (!filecommit()) {
-			retcode = -3;
-			needToDelete = true;
-			goto exit;
-		}
+	if (!filecommit()) {
+		retcode = -3;
+		needToDelete = true;
+		goto exit;
+	}
 
-		fflush(downfile);
+	fflush(downfile);
 
-	exit:
-		if (fsCommitThread) {
-			killThread = true;
-			LightEvent_Signal(&readyToCommit);
-			threadJoin(fsCommitThread, U64_MAX);
-			killThread = false;
-			fsCommitThread = nullptr;
-		}
+exit:
+	if (fsCommitThread) {
+		killThread = true;
+		LightEvent_Signal(&readyToCommit);
+		threadJoin(fsCommitThread, U64_MAX);
+		killThread = false;
+		fsCommitThread = nullptr;
+	}
 
-		socExit();
+	socExit();
 
-		if (socubuf) free(socubuf);
+	if (socubuf) free(socubuf);
 
-		if (downfile) {
-			fclose(downfile);
-			downfile = nullptr;
-		}
+	if (downfile) {
+		fclose(downfile);
+		downfile = nullptr;
+	}
 
-		if (g_buffers[0]) {
-			free(g_buffers[0]);
-			g_buffers[0] = nullptr;
-		}
+	if (g_buffers[0]) {
+		free(g_buffers[0]);
+		g_buffers[0] = nullptr;
+	}
 
-		if (g_buffers[1]) {
-			free(g_buffers[1]);
-			g_buffers[1] = nullptr;
-		}
+	if (g_buffers[1]) {
+		free(g_buffers[1]);
+		g_buffers[1] = nullptr;
+	}
 
-		g_index = 0;
-		file_buffer_pos = 0;
-		file_toCommit_size = 0;
-		writeError = false;
+	g_index = 0;
+	file_buffer_pos = 0;
+	file_toCommit_size = 0;
+	writeError = false;
 
-		if (needToDelete) {
-			if (access(path.c_str(), F_OK) == 0) deleteFile(path.c_str()); // Delete file, cause not fully downloaded.
-		}
+	if (needToDelete) {
+		if (access(path.c_str(), F_OK) == 0) deleteFile(path.c_str()); // Delete file, cause not fully downloaded.
+	}
 
-		if (QueueSystem::CancelCallback) return 0;
+	if (QueueSystem::CancelCallback) return 0;
 		
 		if (needToRetry) {
 			printf("Download failed, retrying...\n");
@@ -340,7 +339,6 @@ static Result setupContext(CURL *hnd, const char *url) {
 
 /*
 	Download a file of a GitHub Release.
-
 	const std::string &url: Const Reference to the URL. (https://github.com/Owner/Repo)
 	const std::string &asset: Const Reference to the Asset. (File.filetype)
 	const std::string &path: Const Reference, where to store. (sdmc:/File.filetype)
@@ -451,7 +449,11 @@ Result downloadFromRelease(const std::string &url, const std::string &asset, con
 	@return True if Wi-Fi is connected; false if not.
 */
 bool checkWifiStatus(void) {
-	// return true; // For citra.
+#ifdef CITRA
+	// Citra's Wi-Fi check doesn't work
+	return true;
+#endif
+
 	u32 wifiStatus;
 	bool res = false;
 
@@ -470,7 +472,6 @@ void notConnectedMsg(void) { Msg::waitMsg(Lang::get("CONNECT_WIFI")); }
 
 /*
 	Return, if an update is available.
-
 	const std::string &URL: Const Reference to the URL of the eShop.
 	int revCurrent: The current Revision. (-1 if unused)
 */
@@ -548,12 +549,11 @@ bool IsUpdateAvailable(const std::string &URL, int revCurrent) {
 
 /*
 	Download a eShop and return, if revision is higher than current.
-
 	const std::string &URL: Const Reference to the URL of the eShop.
 	int currentRev: Const Reference to the current Revision. (-1 if unused)
 	std::string &fl: Output for the filepath.
 	bool isDownload: If download or updating.
-	bool isEDB: If ghosteshop.eshop download or not.
+	bool isEDB: If ghosteshop.unistore download or not.
 */
 bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool isDownload, bool isEDB) {
 	if (isEDB) Msg::DisplayMsg(Lang::get("DOWNLOADING_ESHOP_DB"));
@@ -702,7 +702,6 @@ bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool
 
 /*
 	Download a SpriteSheet.
-
 	const std::string &URL: Const Reference to the SpriteSheet URL.
 	const std::string &file: Const Reference to the filepath.
 */
@@ -923,7 +922,7 @@ void UpdateAction() {
 			}
 
 			ScriptUtils::installFile("sdmc:/GhostEshop.cia", false, Lang::get("INSTALL_GHOST_ESHOP"), true);
-			ScriptUtils::removeFile("sdmc:/GhostEshop.cia", Lang::get("DELETE_UNNEEDED_FILE"), true);
+			ScriptUtils::removeFile("sdmc:/GhostEshop.cia", true);
 			Msg::waitMsg(Lang::get("UPDATE_DONE"));
 			exiting = true;
 		}

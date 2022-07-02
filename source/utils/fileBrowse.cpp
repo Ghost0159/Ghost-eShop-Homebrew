@@ -161,7 +161,7 @@ std::vector<EshopInfo> GetEshopInfo(const std::string &path) {
 	getDirectoryContents(dirContents, { "unistore" });
 
 	for(uint i = 0; i < dirContents.size(); i++) {
-		/* Make sure to ONLY push .eshop, and no folders. Avoids crashes in that case too. */
+		/* Make sure to ONLY push .unistores, and no folders. Avoids crashes in that case too. */
 		if ((path + dirContents[i].name).find(".unistore") != std::string::npos) {
 			info.push_back( GetInfo(path + dirContents[i].name, dirContents[i].name) );
 		}

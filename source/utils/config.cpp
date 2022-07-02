@@ -39,51 +39,51 @@ void Config::sysLang() {
 
 	switch(language) {
 		case 0:
-			this->language("jp"); // Japonais (日本人), traduit.
+			this->language("jp"); // Japanese
 			break;
 
 		case 1:
-			this->language("en"); // Anglais (English), traduit.
+			this->language("en"); // English
 			break;
 
 		case 2:
-			this->language("fr"); // Français (Français), traduit.
+			this->language("fr"); // French
 			break;
 
 		case 3:
-			this->language("de"); // Allemand (German), traduit.
+			this->language("de"); // German
 			break;
 
 		case 4:
-			this->language("it"); // Italien (Italiano), traduit.
+			this->language("it"); // Italian
 			break;
 
 		case 5:
-			this->language("es"); // Espagnol (Español), traduit.
+			this->language("es"); // Spanish
 			break;
 
 		case 6:
-			this->language("zh-CN"); // Chinois simplifié (简体中文), traduit.
+			this->language("zh-CN"); // Chinese (Simplified)
 			break;
 
 		case 7:
-			this->language("kr"); // Coréen (한국어), traduit.
-			break;
-		
+			this->language("kr"); // Korean
+		break;
+
 		case 8:
-			this->language("nl"); // Néerlandais (Nederlands), pas totalement traduit.
-			break;
+			this->language("nl"); // Nederlands
+		break;
 
 		case 9:
-			this->language("pt"); // Portugais (Português), pas totalement traduit.
+			this->language("pt"); // Portuguese
 			break;
 
 		case 10:
-			this->language("ru"); // Russe (русский), pas totalement traduit.
+			this->language("ru"); // Russian
 			break;
 
 		case 11:
-			this->language("zh-TW"); // chinois traditionnel (繁體中文), traduit.
+			this->language("zh-TW"); // Chinese (Traditional)
 			break;
 
 		default:

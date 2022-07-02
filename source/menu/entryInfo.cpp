@@ -34,7 +34,7 @@ static const Structs::ButtonPos btn = { 45, 215, 24, 24 };
 static const Structs::ButtonPos sshot = { 75, 215, 24, 24 };
 static const Structs::ButtonPos notes = { 105, 215, 24, 24 };
 extern bool checkWifiStatus();
-extern bool QueueRuns;
+extern bool exiting, QueueRuns;
 
 /*
 	Draw the Entry Info part.
@@ -77,7 +77,7 @@ void StoreUtils::DrawEntryInfo(const std::unique_ptr<StoreEntry> &entry) {
 */
 void StoreUtils::EntryHandle(bool &showMark, bool &fetch, bool &sFetch, int &mode, const std::unique_ptr<StoreEntry> &entry) {
 	if (entry) {
-		if ((hDown & KEY_START) || (hDown & KEY_TOUCH && touching(touch, btn))) showMark = true;
+		if ((hDown & KEY_SELECT) || (hDown & KEY_TOUCH && touching(touch, btn))) showMark = true;
 
 		if ((hDown & KEY_Y) || (hDown & KEY_TOUCH && touching(touch, sshot))) {
 			if (!entry->GetScreenshots().empty()) {
@@ -96,7 +96,14 @@ void StoreUtils::EntryHandle(bool &showMark, bool &fetch, bool &sFetch, int &mod
 		}
 
 		if ((hDown & KEY_X) || (hDown & KEY_TOUCH && touching(touch, notes))) {
-			if (entry->GetReleaseNotes() != "") mode = 7;
+			if (entry->GetReleaseNotes() != "") {
+				ProcessReleaseNotes(entry->GetReleaseNotes());
+				mode = 7;
+			}
 		}
 	}
+
+	/* Quit UU. */
+	if (hDown & KEY_START && !QueueRuns)
+		exiting = true;
 }
