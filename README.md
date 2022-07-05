@@ -1,4 +1,4 @@
-<div align="center"><a href="https://ghosteshop.com"><img src="https://github.com/Ghost0159/Ghost-eShop-Homebrew/raw/main/ressources/icon/icon_2-96x96.png" height="64px"></a></div>
+<div align="center"><a href="https://ghosteshop.com"><img src="https://github.com/Ghost0159/Ghost-eShop-Homebrew/raw/main/ressources/icon/icon_4-2048x2048.png" height="64px"></a></div>
  
 # Ghost-Eshop-Alternative-3DS
 An Alternative eShop for the Nintendo 3DS family of systems.
