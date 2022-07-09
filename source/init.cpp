@@ -57,10 +57,10 @@ static void getCurrentUsage(){
 */
 static void InitMusic() {
 	if (access("sdmc:/3ds/dspfirm.cdc", F_OK) == 0) { // Ensure dspfirm dump exist.
-		if (access("sdmc:/3ds/Universal-Updater/music.wav", F_OK) == 0) { // Ensure music.wav exist.
+		if (access("sdmc:/3ds/Universal-Updater/GhosteShop/music.wav", F_OK) == 0) { // Ensure music.wav exist.
 			dspfirmFound = true;
 			ndspInit();
-			Music = std::make_unique<Sound>("sdmc:/3ds/Universal-Updater/music.wav");
+			Music = std::make_unique<Sound>("sdmc:/3ds/Universal-Updater/GhosteShop/music.wav");
 
 			Music->play();
 		}
