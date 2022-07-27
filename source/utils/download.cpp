@@ -146,13 +146,11 @@ static size_t file_handle_data(char *ptr, size_t size, size_t nmemb, void *userd
 
 /*
 	Download a file.
+
 	const std::string &url: The download URL.
 	const std::string &path: Where to place the file.
 */
 Result downloadToFile(const std::string &url, const std::string &path) {
-	Result retcode = 0;
-	bool needToRetry = false;
-	do {
 	if (!checkWifiStatus()) return -1; // NO WIFI.
 
 	bool needToDelete = false;
@@ -160,9 +158,8 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 	downloadNow = 0;
 	downloadSpeed = 0;
 
-		retcode = 0;
 	CURLcode curlResult;
-		needToRetry = false;
+	Result retcode = 0;
 	int res;
 
 	printf("Downloading from:\n%s\nto:\n%s\n", url.c_str(), path.c_str());
@@ -218,7 +215,6 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 	if (curlResult != CURLE_OK) {
 		retcode = -curlResult;
 		needToDelete = true;
-			needToRetry = true;
 		goto exit;
 	}
 
@@ -275,13 +271,6 @@ exit:
 	}
 
 	if (QueueSystem::CancelCallback) return 0;
-		
-		if (needToRetry) {
-			printf("Download failed, retrying...\n");
-			svcSleepThread(10000);
-		}
-	}
-	while(needToRetry);
 	return retcode;
 }
 
@@ -339,6 +328,7 @@ static Result setupContext(CURL *hnd, const char *url) {
 
 /*
 	Download a file of a GitHub Release.
+
 	const std::string &url: Const Reference to the URL. (https://github.com/Owner/Repo)
 	const std::string &asset: Const Reference to the Asset. (File.filetype)
 	const std::string &path: Const Reference, where to store. (sdmc:/File.filetype)
@@ -472,6 +462,7 @@ void notConnectedMsg(void) { Msg::waitMsg(Lang::get("CONNECT_WIFI")); }
 
 /*
 	Return, if an update is available.
+
 	const std::string &URL: Const Reference to the URL of the eShop.
 	int revCurrent: The current Revision. (-1 if unused)
 */
@@ -549,6 +540,7 @@ bool IsUpdateAvailable(const std::string &URL, int revCurrent) {
 
 /*
 	Download a eShop and return, if revision is higher than current.
+
 	const std::string &URL: Const Reference to the URL of the eShop.
 	int currentRev: Const Reference to the current Revision. (-1 if unused)
 	std::string &fl: Output for the filepath.
@@ -702,6 +694,7 @@ bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool
 
 /*
 	Download a SpriteSheet.
+
 	const std::string &URL: Const Reference to the SpriteSheet URL.
 	const std::string &file: Const Reference to the filepath.
 */
