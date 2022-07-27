@@ -47,8 +47,8 @@ void Overlays::ShowCredits() {
 		Gui::DrawString(10, 50, 0.5f, UIThemes->TextColor(), "- " + Lang::get("BROADCAST_ANONYKU"), 0, 0, font);
 		Gui::DrawString(10, 70, 0.5f, UIThemes->TextColor(), "- " + Lang::get("CITRA_BIGN_ICON"), 0, 0, font);
 		Gui::DrawString(10, 90, 0.5f, UIThemes->TextColor(), "- " + Lang::get("3D_BANNER"), 0, 0, font);
-		Gui::DrawString(10, 110, 0.5f, UIThemes->TextColor(), "- https://icons8.com/", 0, 0, font);
-		Gui::DrawString(10, 130, 0.5f, UIThemes->TextColor(), "- https://hshop.erista.me/", 0, 0, font);
+		Gui::DrawString(10, 110, 0.5f, UIThemes->TextColor(), "- icons8", 0, 0, font);
+		Gui::DrawString(10, 130, 0.5f, UIThemes->TextColor(), "- hShop", 0, 0, font);
 		Gui::DrawString(10, 170, 0.5f, UIThemes->TextColor(), Lang::get("CONTRIBUTOR_TRANSLATORS"), 210, 0, font);
 		Gui::DrawString(10, 197, 0.5f, UIThemes->TextColor(), Lang::get("WEBSITE"), 390, 0, font);
 

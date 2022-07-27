@@ -33,8 +33,8 @@
 
 class Theme {
 public:
-	Theme(const std::string &ThemeJSON = "sdmc:/3ds/Universal-Updater/GhosteShop/Themes.json");
-	nlohmann::json InitWithDefaultColors(const std::string &ThemePath = "sdmc:/3ds/Universal-Updater/GhosteShop/Themes.json");
+	Theme(const std::string &ThemeJSON = "sdmc:/3ds/Universal-Updater/GhosteShop/themes/Themes.json");
+	nlohmann::json InitWithDefaultColors(const std::string &ThemePath = "sdmc:/3ds/Universal-Updater/GhosteShop/themes/Themes.json");
 	void LoadTheme(const std::string &ThemeName);
 	std::vector<std::pair<std::string, std::string>> ThemeNames();
 	uint32_t GetThemeColor(const std::string &ThemeName, const std::string &Key, const uint32_t DefaultColor);

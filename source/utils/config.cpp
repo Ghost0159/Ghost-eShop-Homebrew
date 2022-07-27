@@ -96,7 +96,7 @@ void Config::sysLang() {
 	In case it doesn't exist.
 */
 void Config::initialize() {
-	FILE *temp = fopen("sdmc:/3ds/Universal-Updater/GhosteShop/Config.json", "w");
+	FILE *temp = fopen("sdmc:/3ds/Universal-Updater/GhosteShop/config/Config.json", "w");
 	char tmp[2] = { '{', '}' };
 	fwrite(tmp, sizeof(tmp), 1, temp);
 	fclose(temp);
@@ -106,11 +106,11 @@ void Config::initialize() {
 	Constructor of the config.
 */
 Config::Config() {
-	if (access("sdmc:/3ds/Universal-Updater/GhosteShop/Config.json", F_OK) != 0) {
+	if (access("sdmc:/3ds/Universal-Updater/GhosteShop/config/Config.json", F_OK) != 0) {
 		this->initialize();
 	}
 
-	FILE *file = fopen("sdmc:/3ds/Universal-Updater/GhosteShop/Config.json", "rt");
+	FILE *file = fopen("sdmc:/3ds/Universal-Updater/GhosteShop/config/Config.json", "rt");
 	if (file) {
 		this->json = nlohmann::json::parse(file, nullptr, false);
 		fclose(file);
@@ -158,7 +158,7 @@ Config::Config() {
 /* Write to config if changesMade. */
 void Config::save() {
 	if (this->changesMade) {
-		FILE *file = fopen("sdmc:/3ds/Universal-Updater/GhosteShop/Config.json", "w");
+		FILE *file = fopen("sdmc:/3ds/Universal-Updater/GhosteShop/config/Config.json", "w");
 
 		/* Set values. */
 		this->setString("Language", this->language());

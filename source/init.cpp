@@ -132,6 +132,8 @@ Result Init::Initialize() {
 	mkdir("sdmc:/3ds/Universal-Updater/stores", 0777);
 	mkdir("sdmc:/3ds/Universal-Updater/shortcuts", 0777);
 	mkdir("sdmc:/3ds/Universal-Updater/GhosteShop", 0777);
+	mkdir("sdmc:/3ds/Universal-Updater/GhosteShop/config", 0777);
+	mkdir("sdmc:/3ds/Universal-Updater/GhosteShop/themes", 0777);
 	mkdir("sdmc:/roms/", 0777);
 	mkdir("sdmc:/roms/nds/", 0777);
 	mkdir("sdmc:/_nds/", 0777);

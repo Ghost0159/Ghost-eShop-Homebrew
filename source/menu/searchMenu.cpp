@@ -234,7 +234,7 @@ void StoreUtils::SearchHandle(std::vector<bool> &searchIncludes, std::string &se
 		}
 	}
 
-	/* Quit UU. */
+	/* Quit GE. */
 	if (hDown & KEY_START && !QueueRuns)
 		exiting = true;
 }
