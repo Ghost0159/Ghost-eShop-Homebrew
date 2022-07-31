@@ -76,7 +76,7 @@
 	"EXIT_APP": "Ghost eShopを終了",
 	"EXTRACTING": "抽出しています...%s / %s (%.2f%%)",
 	"EXTRACT_ERROR": "エラーを抽出してください！",
-	"FEATURE_SIDE_EFFECTS": "この機能は、キューの実行中に副作用が発生する可能性があります。\ n続行してもよろしいですか？",
+	"FEATURE_SIDE_EFFECTS": "この機能は、キューの実行中に副作用が発生する可能性があります。\n続行してもよろしいですか？",
 	"FETCHING_METADATA": "古いメタデータを取得しています……",
 	"FETCHING_RECOMMENDED_ESHOP": "推奨されるeショップを取得しています……",
 	"FILE_EXTRACTED": "展開されたファイル",
