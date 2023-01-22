@@ -1,27 +1,22 @@
 /*
-*   This file is part of Universal-Updater
-*   Copyright (C) 2019-2021 Universal-Team
-*
-*   This program is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.
-*
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*
-*   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
-*       * Requiring preservation of specified reasonable legal notices or
-*         author attributions in that material or in the Appropriate Legal
-*         Notices displayed by works containing it.
-*       * Prohibiting misrepresentation of the origin of that material,
-*         or requiring that modified versions of such material be marked in
-*         reasonable ways as different from the original version.
+*   This file is part of Ghost eShop Project
+*   Copyright (C) 2020-2023 Ghost eShop Team
+*   
+*   This program is a free open-source software that allows users
+*	to browse and download digital products.  It is based on the
+*	code of the Universal-Updater project from Universal-Team.
+*   
+*   It's distributed under the terms of the GNU General Public
+*	License and it's completely free to use and modify.
+*   
+*   This program comes with no warranty, but we are constantly
+*	working on improving its functionality and user experience.
+*   
+*   If you have any suggestions or find any bugs, please let us know!
+*   
+*   Ghost eShop Team reserves the right to update the license terms
+*	at any time without prior notice.
+*   Any changes to the code must be clearly marked as such to avoid confusion.
 */
 
 #include "animation.hpp"
@@ -146,11 +141,13 @@ static size_t file_handle_data(char *ptr, size_t size, size_t nmemb, void *userd
 
 /*
 	Download a file.
-
 	const std::string &url: The download URL.
 	const std::string &path: Where to place the file.
 */
 Result downloadToFile(const std::string &url, const std::string &path) {
+	Result retcode = 0;
+	bool needToRetry = false;
+	do {
 	if (!checkWifiStatus()) return -1; // NO WIFI.
 
 	bool needToDelete = false;
@@ -158,8 +155,9 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 	downloadNow = 0;
 	downloadSpeed = 0;
 
+		retcode = 0;
 	CURLcode curlResult;
-	Result retcode = 0;
+		needToRetry = false;
 	int res;
 
 	printf("Downloading from:\n%s\nto:\n%s\n", url.c_str(), path.c_str());
@@ -215,6 +213,7 @@ Result downloadToFile(const std::string &url, const std::string &path) {
 	if (curlResult != CURLE_OK) {
 		retcode = -curlResult;
 		needToDelete = true;
+			needToRetry = true;
 		goto exit;
 	}
 
@@ -271,6 +270,13 @@ exit:
 	}
 
 	if (QueueSystem::CancelCallback) return 0;
+		
+		if (needToRetry) {
+			printf("Download failed, retrying...\n");
+			svcSleepThread(10000);
+		}
+	}
+	while(needToRetry);
 	return retcode;
 }
 
@@ -328,7 +334,6 @@ static Result setupContext(CURL *hnd, const char *url) {
 
 /*
 	Download a file of a GitHub Release.
-
 	const std::string &url: Const Reference to the URL. (https://github.com/Owner/Repo)
 	const std::string &asset: Const Reference to the Asset. (File.filetype)
 	const std::string &path: Const Reference, where to store. (sdmc:/File.filetype)
@@ -462,7 +467,6 @@ void notConnectedMsg(void) { Msg::waitMsg(Lang::get("CONNECT_WIFI")); }
 
 /*
 	Return, if an update is available.
-
 	const std::string &URL: Const Reference to the URL of the eShop.
 	int revCurrent: The current Revision. (-1 if unused)
 */
@@ -540,7 +544,6 @@ bool IsUpdateAvailable(const std::string &URL, int revCurrent) {
 
 /*
 	Download a eShop and return, if revision is higher than current.
-
 	const std::string &URL: Const Reference to the URL of the eShop.
 	int currentRev: Const Reference to the current Revision. (-1 if unused)
 	std::string &fl: Output for the filepath.
@@ -694,7 +697,6 @@ bool DownloadEshop(const std::string &URL, int currentRev, std::string &fl, bool
 
 /*
 	Download a SpriteSheet.
-
 	const std::string &URL: Const Reference to the SpriteSheet URL.
 	const std::string &file: Const Reference to the filepath.
 */

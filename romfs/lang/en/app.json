@@ -10,7 +10,7 @@
 	"ASCENDING": "Ascending",
 	"ARGUMENT_INVALID": "Argument invalid.\nPlease check the xml file for proper arguments.",
 	"AUTHOR": "Author",
-	"AUTO_UPDATE_ESHOP": "Auto-update eShop",
+	"AUTO_UPDATE_ESHOP": "Auto-update database",
 	"AUTO_UPDATE_ESHOP_DESC": "With this, the last used eShop will be updated automatically when launching Ghost eShop.",
 	"AUTO_UPDATE_GE": "Auto-update Ghost eShop",
 	"AUTO_UPDATE_GE_DESC": "When this option is enabled, Ghost eShop will check for updates every time it's opens.",
@@ -18,7 +18,6 @@
 	"AUTO_UPDATE_SETTINGS_BTN": "Auto-update settings...",
 	"AVAILABLE_DOWNLOADS": "Available Downloads",
 	"BOOT_TITLE": "Would you like to boot this title?",
-	"BROADCAST_ANONYKU": "Anonyku for broadcast on YouTube",
 	"CANCEL": "Cancel",
 	"CATEGORY": "Category",
 	"CHANGE_3DSX_PATH": "Change 3DSX path",
@@ -148,5 +147,6 @@
 	"UPDATING_SPRITE_SHEET": "Updating Spritesheet...",
 	"UPDATING_SPRITE_SHEET2": "Updating Spritesheet %i of %i...",
 	"VERSION": "Version",
-	"WEBSITE": "Full credits and changelog can be found on the wiki"
+	"WEBSITE": "Full credits and changelog can be found on the wiki",
+	"YOUTUBERS": "Youtubers for broadcasting"
 }
