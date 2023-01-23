@@ -139,11 +139,17 @@ Result Title::Install(const char *ciaPath, bool updatingSelf) {
 		}
 
 		installSize = size;
-		do {
+		while(installOffset < installSize) {
 			FSFILE_Read(fileHandle, &bytes_read, installOffset, buf, toRead);
-			FSFILE_Write(ciaHandle, &bytes_written, installOffset, buf, toRead, FS_WRITE_FLUSH);
+			ret = FSFILE_Write(ciaHandle, &bytes_written, installOffset, buf, toRead, FS_WRITE_FLUSH);
+			if (R_FAILED(ret)) {
+				printf("Error in:\nFSFILE_Write\n");
+				delete[] buf;
+				FSFILE_Close(fileHandle);
+				return ret;
+			}
 			installOffset += bytes_read;
-		} while(installOffset < installSize);
+		}
 		delete[] buf;
 
 		ret = AM_FinishCiaInstall(ciaHandle);
