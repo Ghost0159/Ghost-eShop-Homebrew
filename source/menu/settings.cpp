@@ -82,7 +82,7 @@ extern std::vector<std::pair<std::string, std::string>> Themes;
 
 /* Note: Украïнська is spelled using a latin i with dieresis to work in the system font */
 												   /* en 	|	 es		|	 fr		|   jp	 |	  de	 |	  it	 |	  pt	  |			pt-BR		   |	ru	  |	  cn-TR  |	 da	  |	    lt	  |	   pl	 |	 hu	   |	gr	   |	 uk		  |	  tr |	  ryu*/
-static const std::vector<std::string> languages = {"English", "Español", "Français", "日本人", "Deutsche", "Italiano", "Português", "Português (Brasilian)", "Pусский", "繁體中文", "Dansk", "Lietuvis", "Polskie", "Magyar", "Ελληνικά", "Український", "Türk", "琉球諸語"};
+static const std::vector<std::string> languages = {"English", "Español", "Français", "日本語", "Deutsche", "Italiano", "Português", "Português (Brasilian)", "Pусский", "繁體中文", "Dansk", "Lietuvis", "Polskie", "Magyar", "Ελληνικά", "Український", "Türk", "琉球諸語"};
 static const std::string langsTemp[] = {"en", "es", "fr", "jp", "de", "it", "pt", "pt-BR", "ru", "cn-TR", "da", "lt", "pl", "hu", "gr", "uk", "tr", "ryu"};
 static const std::pair<int, int> langSprites[] = { {-1, 0}, {-1, 0}, {-1, 0}, {sprites_jp_idx, 31}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {sprites_zh_TW_idx, 55}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0} };
 
