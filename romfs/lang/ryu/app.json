@@ -70,7 +70,7 @@
 	"ESHOP_BG_DESC": "有効にすると、トップ画面の単色のBGの代わりに、eShopが提供するBGが表示されます。",
 	"ESHOP_INVALID_ERROR": "このeShopは無効であり、\nGhost eShop でロードできません。\n構文エラーがないかどうかを確認してください。",
 	"ESHOP_TOO_NEW": "お使いのGhost eShopのバージョンは\n古すぎて、このeShopを使用できません。\n最新バージョンに更新してください。",
-	"ESHOP_TOO_OLD": "このeShopは古いため、\このバージョンのGhost eShopでは使用できません。\作成者に更新を依頼してください。",
+	"ESHOP_TOO_OLD": "このeShopは古いため、\nこのバージョンのGhost eShopでは使用できません。\n作成者に更新を依頼してください。",
 	"EXECUTE_ENTRY": "このエントリーを実行しますか？",
 	"EXIT_APP": "Ghost eShopを終了",
 	"EXTRACTING": "抽出しています... %s / %s (%.2f%%)",
