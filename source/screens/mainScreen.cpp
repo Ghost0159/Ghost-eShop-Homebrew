@@ -126,8 +126,8 @@ void MainScreen::Draw(void) const {
 	}
 
 	if (this->storeMode == 7) {
-		/* Release Notes. */
-		StoreUtils::DrawReleaseNotes(this->scrollIndex, StoreUtils::entries[StoreUtils::store->GetEntry()]);
+		/* Long Description. */
+		StoreUtils::DrawLongDescription(this->scrollIndex, StoreUtils::entries[StoreUtils::store->GetEntry()]);
 		GFX::DrawBottom();
 		return;
 	}
@@ -226,9 +226,9 @@ void MainScreen::Logic(u32 hDown, u32 hHeld, touchPosition touch) {
 		return;
 	}
 
-	/* Release Notes. */
+	/* Long Description. */
 	if (this->storeMode == 7) {
-		StoreUtils::ReleaseNotesLogic(this->scrollIndex, this->storeMode);
+		StoreUtils::LongDescriptionLogic(this->scrollIndex, this->storeMode);
 		return;
 	}
 

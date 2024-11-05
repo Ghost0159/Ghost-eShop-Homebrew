@@ -587,12 +587,12 @@ std::vector<std::string> Store::GetScreenshotNames(int index) const {
 
 	int index: The Entry Index.
 */
-std::string Store::GetReleaseNotes(int index) const {
+std::string Store::GetLongDescription(int index) const {
 	if (!this->valid) return "";
 	if (index > (int)this->storeJson["storeContent"].size() - 1) return ""; // Empty.
 
-	if (this->storeJson["storeContent"][index]["info"].contains("releasenotes") && this->storeJson["storeContent"][index]["info"]["releasenotes"].is_string()) {
-		return this->storeJson["storeContent"][index]["info"]["releasenotes"];
+	if (this->storeJson["storeContent"][index]["info"].contains("longdescription") && this->storeJson["storeContent"][index]["info"]["longdescription"].is_string()) {
+		return this->storeJson["storeContent"][index]["info"]["longdescription"];
 	}
 
 	return "";
