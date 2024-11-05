@@ -44,6 +44,9 @@ void Overlays::ShowCredits() {
 		Gui::DrawString(10, 90, 0.5f, UIThemes->TextColor(), "- " + Lang::get("3D_BANNER"), 0, 0, font);
 		Gui::DrawString(10, 110, 0.5f, UIThemes->TextColor(), "- icons8", 0, 0, font);
 		Gui::DrawString(10, 130, 0.5f, UIThemes->TextColor(), "- hShop", 0, 0, font);
+		/* geTeamMember */
+		Gui::DrawString(10, 150, 0.5f, UIThemes->TextColor(), "- BoomTchaGong for the charisma", 0, 0, font);
+		/* geTeamMember */
 		Gui::DrawString(10, 170, 0.5f, UIThemes->TextColor(), Lang::get("CONTRIBUTOR_TRANSLATORS"), 210, 0, font);
 		Gui::DrawString(10, 197, 0.5f, UIThemes->TextColor(), Lang::get("WEBSITE"), 390, 0, font);
 
