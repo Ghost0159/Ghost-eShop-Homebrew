@@ -37,7 +37,7 @@
 	4: Sorting.
 	5: Settings / Credits(?).
 	6: Screenshot Menu.
-	7: Release Notes.
+	7: Long Description.
 */
 
 class MainScreen : public Screen {

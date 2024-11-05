@@ -18,6 +18,7 @@ sprites/wifi/wifi_3.png
 sprites/cancel.png
 sprites/checked.png
 sprites/delete.png
+sprites/description.png
 sprites/download.png
 sprites/info.png
 sprites/installed.png
@@ -28,7 +29,6 @@ sprites/langs/zh-CN.png
 sprites/langs/zh-TW.png
 sprites/list.png
 sprites/noIcon.png
-sprites/notes.png
 sprites/qr_code.png
 sprites/queue0.png
 sprites/queue1.png
