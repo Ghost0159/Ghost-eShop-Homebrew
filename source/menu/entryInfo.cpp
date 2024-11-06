@@ -27,7 +27,7 @@
 extern bool touching(touchPosition touch, Structs::ButtonPos button);
 static const Structs::ButtonPos btn = { 45, 215, 24, 24 };
 static const Structs::ButtonPos sshot = { 75, 215, 24, 24 };
-static const Structs::ButtonPos description = { 105, 215, 24, 24 };
+static const Structs::ButtonPos notes = { 105, 215, 24, 24 };
 extern bool checkWifiStatus();
 extern bool exiting, QueueRuns;
 
@@ -52,7 +52,7 @@ void StoreUtils::DrawEntryInfo(const std::unique_ptr<StoreEntry> &entry) {
 
 		GFX::DrawBox(btn.x, btn.y, btn.w, btn.h, false);
 		if (!entry->GetScreenshots().empty()) GFX::DrawIcon(sprites_screenshot_idx, sshot.x, sshot.y, UIThemes->TextColor());
-		if (entry->GetLongDescription() != "") GFX::DrawIcon(sprites_description_idx, description.x, description.y, UIThemes->TextColor());
+		if (entry->GetReleaseNotes() != "") GFX::DrawIcon(sprites_notes_idx, notes.x, notes.y, UIThemes->TextColor());
 		Gui::DrawString(btn.x + 5, btn.y + 2, 0.6f, UIThemes->TextColor(), "★", 0, 0, font);
 	}
 }
@@ -90,9 +90,9 @@ void StoreUtils::EntryHandle(bool &showMark, bool &fetch, bool &sFetch, int &mod
 			}
 		}
 
-		if ((hDown & KEY_X) || (hDown & KEY_TOUCH && touching(touch, description))) {
-			if (entry->GetLongDescription() != "") {
-				ProcessLongDescription(entry->GetLongDescription());
+		if ((hDown & KEY_X) || (hDown & KEY_TOUCH && touching(touch, notes))) {
+			if (entry->GetReleaseNotes() != "") {
+				ProcessReleaseNotes(entry->GetReleaseNotes());
 				mode = 7;
 			}
 		}
