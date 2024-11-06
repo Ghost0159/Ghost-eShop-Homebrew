@@ -85,12 +85,12 @@ namespace StoreUtils {
 	void DrawSorting(bool asc, SortType st);
 	void SortHandle(bool &asc, SortType &st);
 
-	/* Long Description. */
+	/* Release Notes. */
 	size_t FindSplitPoint(const std::string &str, const std::vector<std::string> splitters);
-	void ProcessLongDescription(std::string LongDescription);
+	void ProcessReleaseNotes(std::string ReleaseNotes);
 
-	void DrawLongDescription(const int &scrollIndex, const std::unique_ptr<StoreEntry> &entry);
-	void LongDescriptionLogic(int &scrollIndex, int &storeMode);
+	void DrawReleaseNotes(const int &scrollIndex, const std::unique_ptr<StoreEntry> &entry);
+	void ReleaseNotesLogic(int &scrollIndex, int &storeMode);
 
 	bool compareTitleDescending(const std::unique_ptr<StoreEntry> &a, const std::unique_ptr<StoreEntry> &b);
 	bool compareTitleAscending(const std::unique_ptr<StoreEntry> &a, const std::unique_ptr<StoreEntry> &b);

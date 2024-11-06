@@ -53,7 +53,7 @@ public:
 	std::string GetFileTypes(int index, const std::string &entry) const;
 	std::vector<std::string> GetScreenshotList(int index) const;
 	std::vector<std::string> GetScreenshotNames(int index) const;
-	std::string GetLongDescription(int index) const;
+	std::string GetReleaseNotes(int index) const;
 
 	std::vector<std::string> GetDownloadList(int index) const;
 
